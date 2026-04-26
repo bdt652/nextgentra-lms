@@ -13,6 +13,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
+    "lint": "eslint . --ext .ts --ignore-pattern agents/",
     "agents": "tsx agents/cli.ts",
     "agents:demo": "tsx agents/demo.ts"
   },
@@ -20,7 +21,7 @@
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
-    "eslint": "^10.2.1",
+    "eslint": "^8.57.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },

@@ -14,7 +14,9 @@
     "index.ts"
   ],
   "scripts": {
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
     "class-variance-authority": "^0.7.0",
@@ -30,7 +32,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
     "autoprefixer": "^10.4.16",
-    "eslint": "^10.2.1",
+    "eslint": "^8.57.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.9.3"
