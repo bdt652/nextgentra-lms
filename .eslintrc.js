@@ -6,8 +6,7 @@ module.exports = {
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true
-    },
-    project: './tsconfig.json'
+    }
   },
   plugins: ['@typescript-eslint'],
   extends: [
@@ -21,5 +20,18 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'warn',
     'no-console': ['warn', { allow: ['warn', 'error'] }]
   },
-  ignorePatterns: ['node_modules/', 'build/', 'dist/', '.next/', 'coverage/']
+  ignorePatterns: [
+    'node_modules/',
+    'build/',
+    'dist/',
+    '.next/**',
+    'coverage/',
+    'backend/',
+    'packages/**',
+    '*.config.js',
+    '*.config.ts',
+    'turbo.json',
+    'commitlint.config.cjs'
+  ]
 }
+

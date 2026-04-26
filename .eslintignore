@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+__pycache__/
+
+# Build outputs
+.next/**
+.out/
+dist/
+build/
+.turbo/
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+__pycache__/
+.python-version
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Prisma
+/prisma/migrations/*/migration_lock.toml
+!prisma/migrations/migration_lock.toml.template
+
+# Project specific
+*.local
+.secrets
+
+# Husky
+.husky/
+
+# Commitlint
+.commitlintrc.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Additional ignores for monorepo
+packages/*/dist/
+packages/*/.turbo/
+apps/*/.next/
+apps/*/coverage/
+
+# Claude Code
+.claude/settings.local.json
+
+# Agent System
+.agents/
+packages/utils/agents/.env
