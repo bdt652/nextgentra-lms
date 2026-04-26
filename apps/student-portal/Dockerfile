@@ -3,6 +3,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Copy monorepo root files first (for workspace packages)
+COPY ../../package.json ../../package-lock.json* ./
+COPY ../../packages ./packages
+
+# Copy app files
 COPY package.json ./
 RUN npm install
 
