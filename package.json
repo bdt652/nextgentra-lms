@@ -2,7 +2,6 @@
   "name": "nextgentra-lms",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "NextGenTra LMS - Full stack learning management system with separate teacher and student portals",
   "packageManager": "npm@10.0.0",
   "workspaces": [
