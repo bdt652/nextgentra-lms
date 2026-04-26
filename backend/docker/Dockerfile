@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install specific Prisma CLI version (5.x) to avoid P1012 error with url in schema
+RUN npm install -g prisma@5.10.0
+
 # Copy application code
 COPY backend/ ./
 
@@ -25,5 +28,5 @@ USER appuser
 
 EXPOSE 8000
 
-# Generate Prisma client on container start (if needed), then run uvicorn
-CMD ["sh", "-c", "npx prisma generate && uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Generate Prisma client using pinned version, then start server
+CMD ["sh", "-c", "prisma generate && uvicorn main:app --host 0.0.0.0 --port 8000"]
