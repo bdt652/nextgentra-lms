@@ -3,15 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy monorepo root files first (for workspace packages)
-COPY ../../package.json ../../package-lock.json* ./
-COPY ../../packages ./packages
+# Copy monorepo root files (for workspace dependencies)
+COPY package.json package-lock.json* ./
+COPY packages ./packages
 
-# Copy app files
-COPY package.json ./
+# Copy app source
+COPY apps/teacher-portal/ ./
+
 RUN npm install
-
-COPY . .
 RUN npm run build
 
 # Stage 2: Runner
