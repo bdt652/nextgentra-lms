@@ -1,6 +1,6 @@
-import { defineConfig } from 'commitlint'
+const { defineConfig } = require('commitlint')
 
-export default defineConfig({
+module.exports = defineConfig({
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [

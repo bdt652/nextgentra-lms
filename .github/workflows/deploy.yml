@@ -35,7 +35,7 @@ jobs:
         run: npm run type-check
 
       - name: Test Frontend
-        run: npm run test --workspace=@nextgentra/teacher-portal --if-present
+        run: npm run test --workspace=teacher-portal --if-present
 
   deploy:
     needs: test
@@ -57,8 +57,8 @@ jobs:
             npm ci --workspaces --include-workspace-root
 
             echo "🔨 Building frontend apps..."
-            npm run build --workspace=@nextgentra/teacher-portal
-            npm run build --workspace=@nextgentra/student-portal
+            npm run build --workspace=teacher-portal
+            npm run build --workspace=student-portal
 
             echo "🐳 Deploying with Docker Compose..."
             docker compose down
