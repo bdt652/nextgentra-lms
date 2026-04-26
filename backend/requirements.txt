@@ -8,7 +8,6 @@ pydantic-settings==2.2.0
 
 # Database
 prisma==0.11.0
-prisma-client-python==0.11.0
 psycopg2-binary==2.9.9
 
 # Testing
