@@ -27,9 +27,17 @@ COPY backend/ ./
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash appuser
+
+# Switch to root for Prisma generate (needs write access to site-packages)
+USER root
+
+# Generate Prisma client using pinned version
+RUN prisma generate && chown -R appuser:appuser /app
+
+# Switch to non-root user for runtime
 USER appuser
 
 EXPOSE 8000
 
-# Generate Prisma client using pinned version, then start server
-CMD ["sh", "-c", "prisma generate && uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Start server (prisma already generated)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
