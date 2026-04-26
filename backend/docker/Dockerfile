@@ -16,11 +16,15 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy Prisma schema first (before full code copy for better caching)
+COPY prisma ./prisma
 
-# Generate Prisma client (needs Node.js)
-RUN npx prisma generate
+# Generate Prisma client with specific version (pin to Prisma 5.x to avoid P1012 error)
+# Using npx with @5.10.0 to ensure compatibility with DATABASE_URL in schema
+RUN npx prisma@5.10.0 generate
+
+# Copy application code (excluding prisma folder which we already have)
+COPY . .
 
 # Runtime stage
 FROM python:3.11-slim
