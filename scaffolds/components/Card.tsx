@@ -1,5 +1,5 @@
-import { cn } from "../../utils/cn";
-import type { HTMLAttributes } from "react";
+import { cn } from '../../utils/cn';
+import type { HTMLAttributes } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /** Card header content */
@@ -26,34 +26,15 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
  * </Card>
  * ```
  */
-export function Card({
-  className,
-  header,
-  footer,
-  children,
-  ...props
-}: CardProps) {
+export function Card({ className, header, footer, children, ...props }: CardProps) {
   return (
     <div
-      className={cn(
-        "rounded-lg border bg-card text-card-foreground shadow-sm",
-        className
-      )}
+      className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
       {...props}
     >
-      {header && (
-        <div className="flex flex-col space-y-1.5 p-6">
-          {header}
-        </div>
-      )}
-      <div className={cn("p-6 pt-0", !header && "pt-6")}>
-        {children}
-      </div>
-      {footer && (
-        <div className="flex items-center p-6 pt-0">
-          {footer}
-        </div>
-      )}
+      {header && <div className="flex flex-col space-y-1.5 p-6">{header}</div>}
+      <div className={cn('p-6 pt-0', !header && 'pt-6')}>{children}</div>
+      {footer && <div className="flex items-center p-6 pt-0">{footer}</div>}
     </div>
   );
 }
@@ -65,46 +46,27 @@ Card.Header = function CardHeader({
   ...props
 }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn("flex flex-col space-y-1.5", className)}
-      {...props}
-    >
+    <div className={cn('flex flex-col space-y-1.5', className)} {...props}>
       {children}
     </div>
   );
 };
 
-Card.Title = function CardTitle({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLHeadingElement>) {
+Card.Title = function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+      className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
       {...props}
     />
   );
 };
 
-Card.Content = function CardContent({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={cn("p-6 pt-0", className)} {...props} />
-  );
+Card.Content = function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('p-6 pt-0', className)} {...props} />;
 };
 
-Card.Footer = function CardFooter({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("flex items-center p-6 pt-0", className)}
-      {...props}
-    />
-  );
+Card.Footer = function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('flex items-center p-6 pt-0', className)} {...props} />;
 };
 
 export type { CardProps };

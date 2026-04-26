@@ -1,9 +1,9 @@
-import type { Config } from 'jest'
-import nextJest from 'next/jest'
+import type { Config } from 'jest';
+import nextJest from 'next/jest';
 
 const createJestConfig = nextJest({
   dir: './',
-})
+});
 
 const customJestConfig: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
@@ -21,6 +21,6 @@ const customJestConfig: Config = {
     '!**/.next/**',
     '!**/coverage/**',
   ],
-}
+};
 
-export default createJestConfig(customJestConfig)
+export default createJestConfig(customJestConfig);

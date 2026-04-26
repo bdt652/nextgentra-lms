@@ -39,7 +39,10 @@ Use the testing framework appropriate for the project (Jest, Pytest, etc.).`;
 
     const testTemplate = `import { describe, it, expect, jest } from '@jest/globals';
 
-describe('${filePath.split('/').pop()?.replace(/\.[^/.]+$/, '')}', () => {
+describe('${filePath
+      .split('/')
+      .pop()
+      ?.replace(/\.[^/.]+$/, '')}', () => {
   it('should handle basic functionality', () => {
     // TODO: Implement test
     expect(true).toBe(true);

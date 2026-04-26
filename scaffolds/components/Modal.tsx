@@ -1,6 +1,6 @@
-import * as React from "react";
-import { cn } from "../../utils/cn";
-import { X } from "lucide-react";
+import * as React from 'react';
+import { cn } from '../../utils/cn';
+import { X } from 'lucide-react';
 
 interface ModalProps {
   /** Whether the modal is open */
@@ -14,7 +14,7 @@ interface ModalProps {
   /** Additional CSS classes */
   className?: string;
   /** Size variant */
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 /**
@@ -28,32 +28,25 @@ interface ModalProps {
  * </Modal>
  * ```
  */
-export function Modal({
-  open,
-  onClose,
-  title,
-  children,
-  className,
-  size = "md",
-}: ModalProps) {
+export function Modal({ open, onClose, title, children, className, size = 'md' }: ModalProps) {
   React.useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [open]);
 
   if (!open) return null;
 
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
-    xl: "max-w-4xl",
+    sm: 'max-w-md',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+    xl: 'max-w-4xl',
   };
 
   return (
@@ -69,10 +62,10 @@ export function Modal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
+        aria-labelledby={title ? 'modal-title' : undefined}
         className={cn(
-          "relative z-50 w-full rounded-lg bg-background p-6 shadow-lg",
-          "animate-in fade-in zoom-in-95 duration-200",
+          'relative z-50 w-full rounded-lg bg-background p-6 shadow-lg',
+          'animate-in fade-in zoom-in-95 duration-200',
           sizeClasses[size],
           className
         )}
@@ -89,10 +82,7 @@ export function Modal({
 
         {/* Title */}
         {title && (
-          <h2
-            id="modal-title"
-            className="text-lg font-semibold leading-none tracking-tight"
-          >
+          <h2 id="modal-title" className="text-lg font-semibold leading-none tracking-tight">
             {title}
           </h2>
         )}

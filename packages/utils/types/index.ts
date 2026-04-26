@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: "TEACHER" | "STUDENT" | "ADMIN";
+  role: 'TEACHER' | 'STUDENT' | 'ADMIN';
   avatar?: string;
   created_at: string;
   updated_at: string;
@@ -11,7 +11,7 @@ export interface User {
 export interface AuthTokens {
   access_token: string;
   refresh_token: string;
-  token_type: "bearer";
+  token_type: 'bearer';
   expires_in: number;
 }
 
@@ -24,7 +24,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
-  role: "TEACHER" | "STUDENT";
+  role: 'TEACHER' | 'STUDENT';
 }
 
 export interface Course {
@@ -33,7 +33,7 @@ export interface Course {
   description?: string;
   teacher_id: string;
   teacher?: User;
-  status: "draft" | "published" | "archived";
+  status: 'draft' | 'published' | 'archived';
   created_at: string;
   updated_at: string;
   _count?: {
@@ -45,19 +45,19 @@ export interface Course {
 export interface CourseCreate {
   title: string;
   description?: string;
-  status?: "draft" | "published";
+  status?: 'draft' | 'published';
 }
 
 export interface CourseUpdate {
   title?: string;
   description?: string;
-  status?: "draft" | "published" | "archived";
+  status?: 'draft' | 'published' | 'archived';
 }
 
 export interface CourseListParams {
   page?: number;
   limit?: number;
-  status?: "draft" | "published" | "archived";
+  status?: 'draft' | 'published' | 'archived';
   teacher_id?: string;
 }
 
@@ -177,11 +177,11 @@ export interface ErrorResponse {
 }
 
 export interface HealthCheck {
-  status: "healthy" | "unhealthy";
+  status: 'healthy' | 'unhealthy';
   timestamp: string;
   services?: {
-    database: "up" | "down";
-    redis: "up" | "down";
+    database: 'up' | 'down';
+    redis: 'up' | 'down';
   };
 }
 
@@ -204,7 +204,7 @@ export interface StudentDashboardStats {
 
 export interface ActivityItem {
   id: string;
-  type: "course_enrolled" | "assignment_submitted" | "grade_received" | "course_completed";
+  type: 'course_enrolled' | 'assignment_submitted' | 'grade_received' | 'course_completed';
   description: string;
   timestamp: string;
   metadata?: Record<string, unknown>;
@@ -222,7 +222,7 @@ export interface Notification {
   user_id: string;
   title: string;
   message: string;
-  type: "info" | "success" | "warning" | "error";
+  type: 'info' | 'success' | 'warning' | 'error';
   read: boolean;
   created_at: string;
   metadata?: Record<string, unknown>;
@@ -250,4 +250,3 @@ export interface GradeExport {
   submitted_at: string;
   graded_at: string;
 }
-

@@ -76,7 +76,11 @@ export abstract class BaseAgent {
   /**
    * Write file contents
    */
-  protected async writeFile(filePath: string, content: string, context: AgentContext): Promise<boolean> {
+  protected async writeFile(
+    filePath: string,
+    content: string,
+    context: AgentContext
+  ): Promise<boolean> {
     try {
       const fs = await import('fs/promises');
       await fs.writeFile(filePath, content, 'utf-8');

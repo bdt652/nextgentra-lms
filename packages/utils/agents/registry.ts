@@ -2,7 +2,14 @@
  * Agent Registry - Central registry for all agents
  */
 
-import { RegisteredAgent, AgentConfig, AgentHandler, AgentContext, AgentTask, AgentResult } from './types';
+import {
+  RegisteredAgent,
+  AgentConfig,
+  AgentHandler,
+  AgentContext,
+  AgentTask,
+  AgentResult,
+} from './types';
 
 class AgentRegistry {
   private agents: Map<string, RegisteredAgent> = new Map();
@@ -35,14 +42,14 @@ class AgentRegistry {
    * Get all registered agents
    */
   list(): AgentConfig[] {
-    return Array.from(this.agents.values()).map(a => a.config);
+    return Array.from(this.agents.values()).map((a) => a.config);
   }
 
   /**
    * Get agents by category
    */
   listByCategory(category: string): AgentConfig[] {
-    return this.list().filter(a => a.category === category);
+    return this.list().filter((a) => a.category === category);
   }
 
   /**

@@ -54,10 +54,7 @@ async function listAgents() {
   console.log('-'.repeat(85));
   for (const agent of agents) {
     console.log(
-      agent.id.padEnd(20) +
-      agent.name.padEnd(25) +
-      agent.category.padEnd(15) +
-      agent.description
+      agent.id.padEnd(20) + agent.name.padEnd(25) + agent.category.padEnd(15) + agent.description
     );
   }
   console.log('');
@@ -70,7 +67,11 @@ async function runAgent(agentId: string, options: Record<string, unknown>) {
     process.exit(1);
   }
 
-  const { filePath, files, code } = options as { filePath?: string; files?: string[]; code?: string };
+  const { filePath, files, code } = options as {
+    filePath?: string;
+    files?: string[];
+    code?: string;
+  };
 
   // Get files to process
   let filesToProcess: string[] = files || [];
@@ -177,7 +178,9 @@ async function runAllOnFiles(agentIds: string[], patterns: string[]) {
         const outputPath = join(cwd, '.agents', agentId, filePath.replace(/^\//, ''));
         const fs = await import('fs/promises');
         await fs.mkdir(join(cwd, '.agents', agentId), { recursive: true });
-        await fs.mkdir(join(cwd, '.agents', agentId, join(...filePath.split('/').slice(0, -1))), { recursive: true });
+        await fs.mkdir(join(cwd, '.agents', agentId, join(...filePath.split('/').slice(0, -1))), {
+          recursive: true,
+        });
         await fs.writeFile(outputPath, result.output, 'utf-8');
         console.log(`  ✓ ${filePath} → ${outputPath}`);
       }
@@ -227,8 +230,8 @@ switch (command) {
 
   case 'run-all':
   case '--run-all':
-    const agentIds = args.slice(1).filter(a => !a.startsWith('--'));
-    const patterns = (args.includes('--') ? args.slice(args.indexOf('--') + 1) : ['**/*']);
+    const agentIds = args.slice(1).filter((a) => !a.startsWith('--'));
+    const patterns = args.includes('--') ? args.slice(args.indexOf('--') + 1) : ['**/*'];
 
     if (agentIds.length === 0) {
       console.error('Usage: agents run-all <agentId1> [agentId2...] [-- <patterns>]');

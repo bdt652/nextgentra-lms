@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 /**
  * Teacher Dashboard Page
@@ -20,15 +20,15 @@ import { authOptions } from "@/lib/auth";
  */
 
 export const metadata: Metadata = {
-  title: "Teacher Dashboard",
-  description: "Teacher dashboard overview",
+  title: 'Teacher Dashboard',
+  description: 'Teacher dashboard overview',
 };
 
 export default async function TeacherDashboardPage() {
   // Example: Check authentication
   const session = await getServerSession();
   if (!session) {
-    redirect("/auth/login");
+    redirect('/auth/login');
   }
 
   // Example: Fetch data (uncomment when API is ready)
@@ -40,9 +40,7 @@ export default async function TeacherDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Teacher Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {session?.user?.name || "Teacher"}!
-          </p>
+          <p className="text-muted-foreground">Welcome back, {session?.user?.name || 'Teacher'}!</p>
         </div>
         {/* Quick actions */}
         {/* <Button>Create Course</Button> */}

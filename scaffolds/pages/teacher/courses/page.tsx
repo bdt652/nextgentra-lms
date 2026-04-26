@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 /**
  * Teacher Courses Page
@@ -22,8 +22,8 @@ import { redirect } from "next/navigation";
  */
 
 export const metadata: Metadata = {
-  title: "My Courses",
-  description: "Manage your courses",
+  title: 'My Courses',
+  description: 'Manage your courses',
 };
 
 export default async function TeacherCoursesPage({
@@ -32,8 +32,8 @@ export default async function TeacherCoursesPage({
   searchParams: { page?: string; status?: string };
 }) {
   // Example: Get query params
-  const page = parseInt(searchParams.page || "1");
-  const status = searchParams.status as "draft" | "published" | "archived" | undefined;
+  const page = parseInt(searchParams.page || '1');
+  const status = searchParams.status as 'draft' | 'published' | 'archived' | undefined;
 
   // Example: Fetch data (uncomment when API is ready)
   // const response = await fetch(
@@ -47,9 +47,7 @@ export default async function TeacherCoursesPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Courses</h1>
-          <p className="text-muted-foreground">
-            Create and manage your courses
-          </p>
+          <p className="text-muted-foreground">Create and manage your courses</p>
         </div>
         {/* Create button */}
         {/* <Button onClick={() => setCreateOpen(true)}>Create Course</Button> */}

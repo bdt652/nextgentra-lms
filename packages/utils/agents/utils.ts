@@ -34,7 +34,7 @@ export async function createContext(cwd: string): Promise<AgentContext> {
 
   while (projectRoot !== path.dirname(projectRoot)) {
     const hasMarker = await Promise.any(
-      markers.map(async marker => {
+      markers.map(async (marker) => {
         try {
           const fs = await import('fs/promises');
           await fs.access(path.join(projectRoot, marker));
@@ -64,7 +64,7 @@ export async function parseFiles(patterns: string[], context: AgentContext): Pro
   const files: string[] = [];
 
   for (const pattern of patterns) {
-    const matched = await context.glob?.(pattern, context) || [];
+    const matched = (await context.glob?.(pattern, context)) || [];
     files.push(...matched);
   }
 

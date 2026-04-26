@@ -1,8 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@nextgentra/ui", "@nextgentra/utils", "@nextgentra/config"],
+  transpilePackages: ['@nextgentra/ui', '@nextgentra/utils', '@nextgentra/config'],
   typescript: {
     ignoreBuildErrors: true,
   },

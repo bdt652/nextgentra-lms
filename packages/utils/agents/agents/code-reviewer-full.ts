@@ -65,15 +65,10 @@ Output format:
         ? `Review this code focusing on: ${(focusAreas as string[]).join(', ')}`
         : 'Review this code for quality, security, and best practices';
 
-      const review = await callClaudeWithCode(
-        code,
-        instruction,
-        filePath as string,
-        {
-          temperature: this.config.temperature || 0.3,
-          model: this.config.model,
-        }
-      );
+      const review = await callClaudeWithCode(code, instruction, filePath as string, {
+        temperature: this.config.temperature || 0.3,
+        model: this.config.model,
+      });
 
       return this.success(review, {
         filePath,

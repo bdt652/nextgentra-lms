@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
 /**
  * Student Courses Page
@@ -19,8 +19,8 @@ import type { Metadata } from "next";
  */
 
 export const metadata: Metadata = {
-  title: "My Courses",
-  description: "View your enrolled courses",
+  title: 'My Courses',
+  description: 'View your enrolled courses',
 };
 
 export default async function StudentCoursesPage() {
@@ -34,9 +34,7 @@ export default async function StudentCoursesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">My Courses</h1>
-        <p className="text-muted-foreground">
-          Continue learning and track your progress
-        </p>
+        <p className="text-muted-foreground">Continue learning and track your progress</p>
       </div>
 
       {/* Filter tabs */}
