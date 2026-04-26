@@ -19,9 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install specific Prisma CLI version (5.x) to avoid P1012 error with url in schema
 RUN npm install -g prisma@5.10.0
 
-# Install prisma-client-python for Python client generation
-RUN pip install --no-cache-dir prisma-client-python
-
 # Copy application code
 COPY backend/ ./
 
