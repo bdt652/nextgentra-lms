@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push checks..."
+
+# Run lint
+echo "🔍 Running lint..."
+npm run lint 2>&1 | tee /tmp/husky-lint.log
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+  echo "❌ Lint failed. Fix errors before pushing."
+  exit 1
+fi
+
+# Run Prettier check
+echo "💅 Running Prettier check..."
+npx prettier --check "**/*.{ts,tsx,md,json,yml,yaml}" 2>&1 | tee /tmp/husky-prettier.log
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+  echo "❌ Prettier check failed. Run 'npm run format' to fix formatting."
+  exit 1
+fi
+
+# Run type check
+echo "📝 Running type check..."
+npm run type-check 2>&1 | tee /tmp/husky-type-check.log
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+  echo "❌ Type check failed. Fix errors before pushing."
+  exit 1
+fi
+
+# Run tests
+echo "🧪 Running tests..."
+npm run test 2>&1 | tee /tmp/husky-test.log
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+  echo "❌ Tests failed. Fix errors before pushing."
+  exit 1
+fi
+
+# Check for placeholder code
+echo "🔍 Checking for placeholder code..."
+node scripts/check-placeholders.js 2>&1 || true
+# Don't fail on placeholders, just warn
+# Uncomment below to fail on placeholders:
+# if [ $? -ne 0 ]; then
+#   echo "❌ Found placeholder code. Remove before pushing."
+#   exit 1
+# fi
+
+echo "✅ All pre-push checks passed!"

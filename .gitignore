@@ -185,12 +185,6 @@ dmypy.json
 # Turbo
 .turbo/
 
-# Husky
-.husky/
-
-# Commitlint
-.commitlintrc.json
-
 # TypeScript build info
 *.tsbuildinfo
 

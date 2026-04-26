@@ -1,4 +1,4 @@
-const { defineConfig } = require('commitlint')
+const { defineConfig } = require('@commitlint/cli')
 
 module.exports = defineConfig({
   extends: ['@commitlint/config-conventional'],
