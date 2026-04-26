@@ -1,6 +1,4 @@
-const { defineConfig } = require('@commitlint/cli')
-
-module.exports = defineConfig({
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [
@@ -23,4 +21,4 @@ module.exports = defineConfig({
     'subject-case': [2, 'never', ['start-case', 'camel-case', 'kebab-case']],
     'header-max-length': [2, 'always', 72],
   },
-})
+}

@@ -42,6 +42,17 @@ jobs:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Check Node.js installation
+        run: |
+          if ! command -v node &> /dev/null; then
+            echo "❌ Node.js is not installed on the deployment server."
+            echo "Please install Node.js 18+ on ${{ env.APP_HOST }}"
+            echo "Recommended: Use nvm or download from nodejs.org"
+            exit 1
+          fi
+          echo "✅ Node.js version: $(node --version)"
+          echo "✅ npm version: $(npm --version)"
+
       - name: Deploy to app-main via SSH
         run: |
           ssh ${{ env.APP_USER }}@${{ env.APP_HOST }} << 'EOF'
