@@ -1,8 +1,10 @@
-"use client";
-
-import { redirect } from "next/navigation";
-
 export default function StudentHomePage() {
-  // Simply show courses at root
-  redirect("/student/courses");
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">My Courses</h1>
+        <p className="text-muted-foreground">Build your student portal features here.</p>
+      </div>
+    </div>
+  );
 }

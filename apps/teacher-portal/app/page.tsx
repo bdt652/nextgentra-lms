@@ -1,9 +1,10 @@
-"use client";
-
-import { redirect } from "next/navigation";
-
 export default function TeacherHomePage() {
-  // Simply show dashboard at root with proper layout
-  // The layout will be handled by the root layout or we redirect to dashboard
-  redirect("/teacher/dashboard");
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Teacher Dashboard</h1>
+        <p className="text-muted-foreground">Build your teacher portal features here.</p>
+      </div>
+    </div>
+  );
 }

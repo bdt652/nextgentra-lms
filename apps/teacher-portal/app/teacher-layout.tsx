@@ -1,30 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn, Button } from "@nextgentra/ui";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Users,
-  ClipboardList,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn, Button } from '@nextgentra/ui';
+import { LogOut } from 'lucide-react';
 
-const navigation = [
-  { name: "Dashboard", href: "/teacher/dashboard", icon: LayoutDashboard },
-  { name: "Courses", href: "/teacher/courses", icon: BookOpen },
-  { name: "Students", href: "/teacher/students", icon: Users },
-  { name: "Assignments", href: "/teacher/assignments", icon: ClipboardList },
-  { name: "Settings", href: "/teacher/settings", icon: Settings },
-];
+const navigation = [{ name: 'Dashboard', href: '/', icon: null }];
 
-export default function TeacherLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
@@ -42,13 +25,12 @@ export default function TeacherLayout({
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  'flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                 )}
               >
-                <item.icon className="mr-3 h-5 w-5" />
                 {item.name}
               </Link>
             );
@@ -66,7 +48,7 @@ export default function TeacherLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-14 items-center border-b bg-white px-6">
           <h2 className="text-lg font-semibold">
-            {navigation.find((n) => n.href === pathname)?.name || "Dashboard"}
+            {navigation.find((n) => n.href === pathname)?.name || 'Dashboard'}
           </h2>
         </header>
         <main className="flex-1 overflow-auto p-6">{children}</main>
