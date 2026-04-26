@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    container_name: lms-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ALLOWED_ORIGINS: 'https://platform.nextgentra.com,https://learn.nextgentra.com,https://api.nextgentra.com'
+      NODE_ENV: production
+    ports:
+      - '192.168.24.23:4000:8000'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  teacher:
+    build:
+      context: ./apps/teacher-portal
+      dockerfile: Dockerfile
+    container_name: lms-teacher
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: 'https://api.nextgentra.com/api/v1'
+      NEXT_TELEMETRY_DISABLED: '1'
+      NODE_ENV: production
+    ports:
+      - '192.168.24.23:4001:3000'
+
+  student:
+    build:
+      context: ./apps/student-portal
+      dockerfile: Dockerfile
+    container_name: lms-student
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: 'https://api.nextgentra.com/api/v1'
+      NEXT_TELEMETRY_DISABLED: '1'
+      NODE_ENV: production
+    ports:
+      - '192.168.24.23:4002:3000'

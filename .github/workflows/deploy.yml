@@ -1,0 +1,105 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  APP_HOST: 192.168.24.23
+  APP_USER: deployer
+  APP_PATH: /opt/apps/nextgentra-lms
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --workspaces
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Test Backend
+        working-directory: ./backend
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt pytest httpx
+          pytest tests/ -v --tb=short
+
+      - name: Test Frontend
+        run: npm run test --workspace=@nextgentra/teacher-portal --if-present
+
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to app-main via SSH
+        run: |
+          ssh ${{ env.APP_USER }}@${{ env.APP_HOST }} << 'EOF'
+            set -euo pipefail
+
+            cd ${{ env.APP_PATH }}
+
+            echo "🔄 Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "📦 Installing dependencies..."
+            npm ci --workspaces --include-workspace-root
+
+            echo "🔨 Building frontend apps..."
+            npm run build --workspace=@nextgentra/teacher-portal
+            npm run build --workspace=@nextgentra/student-portal
+
+            echo "🐳 Deploying with Docker Compose..."
+            docker compose down
+
+            # Build all services
+            docker compose build --parallel
+
+            # Start services
+            docker compose up -d
+
+            echo "⏳ Waiting for services..."
+            sleep 15
+
+            # Run Prisma migrations
+            echo "🗄️ Running database migrations..."
+            docker compose exec -T backend sh -c "npx prisma migrate deploy"
+
+            # Health checks
+            echo "🏥 Health checking..."
+
+            # Backend health (api.nextgentra.com:4000)
+            for i in {1..10}; do
+              if curl -sf http://localhost:4000/health > /dev/null; then
+                echo "✅ Backend healthy (api.nextgentra.com)"
+                break
+              fi
+              echo "Waiting for backend... ($i/10)"
+              sleep 3
+            done
+
+            # Frontend checks
+            curl -sf http://localhost:4001 > /dev/null && echo "✅ Teacher Portal up (platform.nextgentra.com)" || echo "❌ Teacher Portal failed"
+            curl -sf http://localhost:4002 > /dev/null && echo "✅ Student Portal up (learn.nextgentra.com)" || echo "❌ Student Portal failed"
+
+            echo "✅ Deployment completed successfully!"
+          EOF

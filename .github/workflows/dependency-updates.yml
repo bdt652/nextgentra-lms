@@ -1,0 +1,48 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Run daily at 6 AM UTC
+  workflow_dispatch:
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check for dependency updates
+        run: |
+          echo "## Node.js Dependencies" >> $GITHUB_STEP_SUMMARY
+          npx npm-check-updates --target minor --format json >> updates.json || true
+          cat updates.json | jq -r '.dependencies[] | "- \(.name): \(.current) -> \(.latest)"' >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+
+          echo "## Python Dependencies" >> $GITHUB_STEP_SUMMARY
+          cd backend
+          pip list --outdated --format=json | jq -r '.[] | "- \(.name): \(.version) -> \(.latest_version)"' >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "No outdated Python packages found"
+
+      - name: Create PR for updates
+        if: always()
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: 'chore: update dependencies'
+          body: |
+            Automated dependency updates from Dependabot alternative
+
+            **Note:** This PR was created automatically. Please review the changes before merging.
+          branch: 'deps/update-$(date +%Y%m%d)'
+          delete-branch: true
+          base: 'develop'

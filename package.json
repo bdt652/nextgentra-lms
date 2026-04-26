@@ -1,0 +1,55 @@
+{
+  "name": "nextgentra-lms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NextGenTra LMS - Full stack learning management system with separate teacher and student portals",
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:teacher\" \"npm run dev:student\" \"npm run dev:backend\"",
+    "dev:teacher": "npm run dev -w apps/teacher-portal",
+    "dev:student": "npm run dev -w apps/student-portal",
+    "dev:backend": "cd backend && python -m uvicorn main:app --reload",
+    "build": "turbo run build",
+    "build:all": "turbo run build --parallel",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix --parallel",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:backend": "cd backend && python -m pytest tests/ -v",
+    "test:backend:coverage": "cd backend && python -m pytest tests/ --cov=app --cov-report=xml",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,yml,yaml,py}\"",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:seed": "cd backend && npx prisma db seed",
+    "db:studio": "cd backend && npx prisma studio",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "commitlint": "^20.5.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "ts-node": "^10.9.2",
+    "turbo": "^2.9.6",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "NextGenTra Team",
+  "license": "MIT"
+}

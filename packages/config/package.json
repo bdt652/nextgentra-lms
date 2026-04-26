@@ -1,0 +1,21 @@
+{
+  "name": "@nextgentra/config",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./tailwind/*": "./tailwind/*",
+    "./constants/*": "./constants/*"
+  },
+  "scripts": {
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "typescript": "^6.0.3"
+  }
+}

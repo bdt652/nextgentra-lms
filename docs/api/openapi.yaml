@@ -1,0 +1,713 @@
+openapi: 3.1.0
+info:
+  title: NextGenTra LMS API
+  description: Learning Management System Backend API
+  version: 1.0.0
+  contact:
+    name: NextGenTra Team
+    email: support@nextgentra.com
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.yourdomain.com/api/v1
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags: ['Authentication']
+      summary: Register new user
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      tags: ['Authentication']
+      summary: User login
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags: ['Authentication']
+      summary: Get current user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: ['Authentication']
+      summary: Refresh access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  description: Refresh token
+              required: [refresh_token]
+      responses:
+        '200':
+          description: New tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /courses:
+    get:
+      tags: ['Courses']
+      summary: List courses
+      operationId: listCourses
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, archived]
+        - name: teacher_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseResponse'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+    post:
+      tags: ['Courses']
+      summary: Create course
+      operationId: createCourse
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /courses/{id}:
+    get:
+      tags: ['Courses']
+      summary: Get course by ID
+      operationId: getCourse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: ['Courses']
+      summary: Update course
+      operationId: updateCourse
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseUpdate'
+      responses:
+        '200':
+          description: Course updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: ['Courses']
+      summary: Delete course
+      operationId: deleteCourse
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Course deleted
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /lessons/course/{course_id}:
+    get:
+      tags: ['Lessons']
+      summary: List lessons for a course
+      operationId: listLessons
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonResponse'
+
+    post:
+      tags: ['Lessons']
+      summary: Create lesson
+      operationId: createLesson
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonCreate'
+      responses:
+        '201':
+          description: Lesson created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /assignments:
+    get:
+      tags: ['Assignments']
+      summary: List assignments
+      operationId: listAssignments
+      parameters:
+        - name: course_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignmentResponse'
+
+    post:
+      tags: ['Assignments']
+      summary: Create assignment
+      operationId: createAssignment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentCreate'
+      responses:
+        '201':
+          description: Assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponse'
+
+  /submissions:
+    get:
+      tags: ['Submissions']
+      summary: List submissions
+      operationId: listSubmissions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: assignment_id
+          in: query
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubmissionResponse'
+
+    post:
+      tags: ['Submissions']
+      summary: Submit assignment
+      operationId: submitAssignment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                assignment_id:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+                text:
+                  type: string
+      responses:
+        '201':
+          description: Submission created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionResponse'
+
+  /submissions/{id}/grade:
+    patch:
+      tags: ['Submissions']
+      summary: Grade submission
+      operationId: gradeSubmission
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeSubmission'
+      responses:
+        '200':
+          description: Submission graded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /health:
+    get:
+      tags: ['Health']
+      summary: Health check
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [TEACHER, STUDENT, ADMIN]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        teacher_id:
+          type: string
+        status:
+          type: string
+          enum: [draft, published, archived]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: string
+        course_id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        order:
+          type: integer
+        video_url:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+        course_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date-time
+        points:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    Submission:
+      type: object
+      properties:
+        id:
+          type: string
+        assignment_id:
+          type: string
+        user_id:
+          type: string
+        file_url:
+          type: string
+          format: uri
+        text:
+          type: string
+        grade:
+          type: number
+          nullable: true
+        feedback:
+          type: string
+          nullable: true
+        submitted_at:
+          type: string
+          format: date-time
+
+    RegisterRequest:
+      type: object
+      required: [email, password, name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+        role:
+          type: string
+          enum: [TEACHER, STUDENT]
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          example: bearer
+        expires_in:
+          type: integer
+
+    CourseCreate:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          default: draft
+          enum: [draft, published]
+
+    CourseUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, published, archived]
+
+    LessonCreate:
+      type: object
+      required: [title, content, order]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        order:
+          type: integer
+        video_url:
+          type: string
+          format: uri
+
+    AssignmentCreate:
+      type: object
+      required: [title, course_id, due_date]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        course_id:
+          type: string
+        due_date:
+          type: string
+          format: date-time
+        points:
+          type: integer
+          default: 100
+
+    GradeSubmission:
+      type: object
+      required: [grade]
+      properties:
+        grade:
+          type: number
+          minimum: 0
+          maximum: 100
+        feedback:
+          type: string
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+              details:
+                type: object
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: UNAUTHORIZED
+              message:
+                type: string
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: FORBIDDEN
+              message:
+                type: string
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: NOT_FOUND
+              message:
+                type: string

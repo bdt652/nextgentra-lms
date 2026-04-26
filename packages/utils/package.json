@@ -1,0 +1,27 @@
+{
+  "name": "@nextgentra/utils",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./agents": "./agents/index.ts",
+    "./agents/cli": "./agents/cli.ts"
+  },
+  "bin": {
+    "nextgentra-agents": "./agents/cli.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "agents": "tsx agents/cli.ts",
+    "agents:demo": "tsx agents/demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1"
+  }
+}

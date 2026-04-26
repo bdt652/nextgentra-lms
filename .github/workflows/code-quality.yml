@@ -1,0 +1,27 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: ['main', 'develop']
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint commit messages
+        uses: wagoid/commitlint-github-action@v6
+
+  conventional-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        uses: Slashgear/action-conventional-pr-title@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .{1,100}$'
+          error: 'Please follow conventional commits format: "type(scope?): description"'

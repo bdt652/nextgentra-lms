@@ -1,0 +1,6 @@
+{
+  "apps/teacher-portal/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+  "apps/student-portal/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+  "**/*.{md,json,yml,yaml}": ["prettier --write"],
+  "backend/**/*.py": ["ruff check --fix || true"]
+}

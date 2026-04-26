@@ -1,0 +1,44 @@
+// This is a minimal Prisma schema for LMS
+// Add your models as needed following this pattern
+
+generator client {
+  provider = "prisma-client-python"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Example User model - customize as needed
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("student") // teacher, student, admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Example Course model - customize as needed
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  teacherId   String
+  teacherName String
+  status      String   @default("draft") // draft, published, archived
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("courses")
+}
+
+// Add more models following the same pattern:
+// - Lesson (belongs to Course)
+// - Assignment (belongs to Course)
+// - Enrollment (join User & Course)
+// - Submission (belongs to Assignment & User)
+// etc.
