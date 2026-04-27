@@ -1,8 +1,8 @@
-// This is a minimal Prisma schema for LMS
-// Add your models as needed following this pattern
+// NextGenTra LMS - Complete Prisma Schema
+// Models: User, Course, Lesson, Assignment, Enrollment, Submission
 
 generator client {
-  provider = "prisma-client-python"
+  provider = "prisma-client-py"
 }
 
 datasource db {
@@ -10,35 +10,107 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Example User model - customize as needed
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  role      String   @default("student") // teacher, student, admin
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  role          String    @default("student") // student, teacher, admin
+  hashed_password String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  taughtCourses   Course[]  @relation("TeacherCourses")
+  enrollments     Enrollment[]
+  submissions     Submission[]
 
   @@map("users")
 }
 
-// Example Course model - customize as needed
 model Course {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  teacherId   String
-  teacherName String
-  status      String   @default("draft") // draft, published, archived
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  status       String   @default("draft") // draft, published, archived
+  teacherId    String
+  teacherName  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  teacher     User        @relation("TeacherCourses", fields: [teacherId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  assignments Assignment[]
+  enrollments Enrollment[]
 
   @@map("courses")
 }
 
-// Add more models following the same pattern:
-// - Lesson (belongs to Course)
-// - Assignment (belongs to Course)
-// - Enrollment (join User & Course)
-// - Submission (belongs to Assignment & User)
-// etc.
+model Lesson {
+  id              String   @id @default(cuid())
+  title           String
+  content         String?
+  order           Int      @default(0)
+  durationMinutes Int?
+  courseId        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("lessons")
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  maxScore    Int      @default(100)
+  courseId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  course       Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+
+  @@map("assignments")
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  studentId String
+  courseId  String
+  enrolledAt DateTime @default(now())
+
+  // Relations
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@map("enrollments")
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  studentId   String
+  assignmentId String
+  content     String?
+  fileUrls    String[] // JSON array of file URLs
+  score       Int?
+  feedback    String?
+  status      String   @default("submitted") // submitted, graded
+  submittedAt DateTime @default(now())
+  gradedAt    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  student    User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignment Assignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, assignmentId])
+  @@map("submissions")
+}

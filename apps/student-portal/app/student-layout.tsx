@@ -5,7 +5,11 @@ import { usePathname } from 'next/navigation';
 import { cn, Button } from '@nextgentra/ui';
 import { LogOut } from 'lucide-react';
 
-const navigation = [{ name: 'My Courses', href: '/', icon: null }];
+const navigation = [
+  { name: 'My Courses', href: '/student/courses', icon: null },
+  { name: 'Assignments', href: '/student/assignments', icon: null },
+  { name: 'Submissions', href: '/student/submissions', icon: null },
+];
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,7 +18,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
     <div className="flex min-h-screen bg-gray-50">
       {/* Mobile header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center border-b bg-white px-4 md:hidden">
-        <Link href="/" className="font-semibold">
+        <Link href="/student/courses" className="font-semibold">
           Student Portal
         </Link>
       </div>
@@ -22,13 +26,13 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       {/* Sidebar */}
       <div className="hidden w-64 flex-col bg-white border-r md:flex">
         <div className="flex h-14 items-center border-b px-4">
-          <Link href="/" className="font-semibold">
+          <Link href="/student/courses" className="font-semibold">
             Student Portal
           </Link>
         </div>
         <nav className="flex-1 space-y-1 p-4">
           {navigation.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
             return (
               <Link
                 key={item.name}

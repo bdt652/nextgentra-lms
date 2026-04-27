@@ -1,38 +1,73 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  db:
-    image: postgres:17-alpine
-    container_name: lms_db
+  # Backend API - Connect to external DB/Redis at 192.168.24.21
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lms_backend
+    ports:
+      - '8000:8000'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lms
-    ports:
-      - '5432:5432'
+      DATABASE_URL: postgresql://lms_user:lms_123@192.168.24.21:5432/lms_db
+      REDIS_URL: redis://192.168.24.21:6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-secret-key-change-in-production}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 15
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
+      ENVIRONMENT: ${ENVIRONMENT:-development}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./backend:/app
+    command: >
+      sh -c "
+        echo 'Generating Prisma client...' &&
+        prisma generate &&
+        echo 'Starting backend...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: lms_redis
+  # Teacher Portal
+  teacher-portal:
+    build:
+      context: .
+      dockerfile: apps/teacher-portal/Dockerfile
+    container_name: lms_teacher
     ports:
-      - '6379:6379'
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8000/api/v1}
+      NODE_ENV: ${NODE_ENV:-development}
+    depends_on:
+      backend:
+        condition: service_healthy
     volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./apps/teacher-portal:/app
+      - ./packages:/app/packages
+      - /app/.next
+      - /app/node_modules
 
-volumes:
-  postgres_data:
-  redis_data:
+  # Student Portal
+  student-portal:
+    build:
+      context: .
+      dockerfile: apps/student-portal/Dockerfile
+    container_name: lms_student
+    ports:
+      - '3001:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8000/api/v1}
+      NODE_ENV: ${NODE_ENV:-development}
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./apps/student-portal:/app
+      - ./packages:/app/packages
+      - /app/.next
+      - /app/node_modules
