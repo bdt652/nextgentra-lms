@@ -16,8 +16,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code (excluding tests, .env, .git, etc.)
-COPY backend/app/ ./app/
-COPY backend/prisma/ ./prisma/
+COPY app/ ./app/
+COPY prisma/ ./prisma/
+COPY requirements.txt .
+COPY entrypoint.sh .
 
 # Make entrypoint executable
 RUN chmod +x entrypoint.sh
