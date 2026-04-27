@@ -17,10 +17,13 @@
     "@nextgentra/config": "*",
     "@nextgentra/ui": "*",
     "@nextgentra/utils": "*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.400.0",
     "next": "^15.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.11",
