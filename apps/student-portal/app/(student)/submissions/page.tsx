@@ -10,9 +10,7 @@ export default function StudentSubmissionsPage() {
           <h1 className="text-2xl font-bold tracking-tight">My Submissions</h1>
           <p className="text-muted-foreground">Track your assignment submissions and grades.</p>
         </div>
-        <div className="text-sm text-muted-foreground">
-          Build your submissions listing here.
-        </div>
+        <div className="text-sm text-muted-foreground">Build your submissions listing here.</div>
       </div>
     </StudentLayout>
   );
