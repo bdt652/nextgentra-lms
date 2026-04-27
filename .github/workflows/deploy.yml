@@ -58,6 +58,31 @@ jobs:
           ssh ${{ env.APP_USER }}@${{ env.APP_HOST }} << 'EOF'
             set -euo pipefail
 
+            # Load nvm if available (for Node.js installed via nvm)
+            export NVM_DIR="$HOME/.nvm"
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+              \. "$NVM_DIR/nvm.sh"
+              echo "✅ nvm loaded"
+            fi
+
+            # Also check common Node.js paths
+            if ! command -v node &> /dev/null; then
+              if [ -f "/usr/local/bin/node" ]; then
+                export PATH="/usr/local/bin:$PATH"
+              fi
+            fi
+
+            # Verify Node.js
+            if ! command -v node &> /dev/null; then
+              echo "❌ Node.js is not installed or not in PATH."
+              echo "Current PATH: $PATH"
+              echo "Please install Node.js 18+ or ensure it's in PATH"
+              exit 1
+            fi
+
+            echo "✅ Node.js version: $(node --version)"
+            echo "✅ npm version: $(npm --version)"
+
             cd ${{ env.APP_PATH }}
 
             echo "🔄 Pulling latest code..."
