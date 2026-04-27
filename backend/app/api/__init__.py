@@ -1,0 +1,18 @@
+"""API package initialization."""
+from .auth import router as auth_router
+from .users import router as users_router
+from .courses import router as courses_router
+from .lessons import router as lessons_router
+from .assignments import router as assignments_router
+from .enrollments import router as enrollments_router
+from .submissions import router as submissions_router
+
+__all__ = [
+    "auth_router",
+    "users_router",
+    "courses_router",
+    "lessons_router",
+    "assignments_router",
+    "enrollments_router",
+    "submissions_router",
+]
