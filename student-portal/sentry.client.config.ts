@@ -1,5 +1,4 @@
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import * as Sentry from '@sentry/nextjs';
 
 /**
  * Sentry Configuration for Student Portal
@@ -36,17 +35,6 @@ export function initSentry() {
     tracesSampleRate: environment === 'development' ? 1.0 : 0.1, // 100% in dev, 10% in prod
     // Sample rate for error profiling
     profilesSampleRate: environment === 'development' ? 1.0 : 0.1,
-    integrations: [
-      new BrowserTracing({
-        // Configure tracing for Next.js App Router
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          // This is needed for Next.js App Router integration
-          (history) => {
-            return history;
-          }
-        ),
-      }),
-    ],
     // Replay settings (session replay)
     replaysSessionSampleRate: 0.1, // 10% of sessions
     replaysOnErrorSampleRate: 1.0, // 100% of error sessions

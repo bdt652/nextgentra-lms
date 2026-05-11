@@ -1,5 +1,4 @@
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import * as Sentry from '@sentry/nextjs';
 
 /**
  * Sentry Configuration for Teacher Portal
@@ -28,13 +27,6 @@ export function initSentry() {
     release: `teacher-portal@${version}`,
     tracesSampleRate: environment === 'development' ? 1.0 : 0.1,
     profilesSampleRate: environment === 'development' ? 1.0 : 0.1,
-    integrations: [
-      new BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          (history) => history
-        ),
-      }),
-    ],
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     debug: environment === 'development',
