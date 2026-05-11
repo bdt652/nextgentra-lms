@@ -1,4 +1,5 @@
 """Tests for authentication utilities."""
+
 from datetime import timedelta
 
 from app.core.auth import (
@@ -56,8 +57,7 @@ class TestAccessToken:
         """Should create token with custom expiry."""
         custom_delta = timedelta(minutes=30)
         token = create_access_token(
-            data={"sub": "test@example.com"},
-            expires_delta=custom_delta
+            data={"sub": "test@example.com"}, expires_delta=custom_delta
         )
         assert isinstance(token, str)
 
@@ -80,6 +80,7 @@ class TestAccessToken:
         from jose import jwt
 
         from app.core.auth import ALGORITHM, SECRET_KEY
+
         token = jwt.encode({"data": "no_sub"}, SECRET_KEY, algorithm=ALGORITHM)
         token_data = decode_token(token)
         assert token_data is None
@@ -91,6 +92,7 @@ class TestAccessToken:
         from jose import jwt
 
         from app.core.auth import ALGORITHM, SECRET_KEY
+
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         assert "exp" in payload
         assert isinstance(payload["exp"], (int, float))

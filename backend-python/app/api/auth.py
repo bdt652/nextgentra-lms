@@ -1,4 +1,5 @@
 """Authentication API endpoints."""
+
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,19 +30,18 @@ async def get_user_by_id(prisma: Prisma, user_id: str) -> Optional[PrismaUser]:
     return await prisma.user.find_unique(where={"id": user_id})
 
 
-@router.post("/register", response_model=UserResponse,
-             status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(
-    user_data: UserCreate,
-    prisma: Annotated[Prisma, Depends(get_prisma)]
+    user_data: UserCreate, prisma: Annotated[Prisma, Depends(get_prisma)]
 ) -> UserResponse:
     """Register a new user."""
     # Check if user already exists
     existing = await get_user_by_email(prisma, user_data.email)
     if existing:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
 
     # Create new user in database
@@ -58,8 +58,7 @@ async def register(
 
 @router.post("/login", response_model=Token)
 async def login(
-    credentials: UserLogin,
-    prisma: Annotated[Prisma, Depends(get_prisma)]
+    credentials: UserLogin, prisma: Annotated[Prisma, Depends(get_prisma)]
 ) -> Token:
     """Authenticate user and return access token."""
     # Find user by email
@@ -86,8 +85,7 @@ async def login(
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(
-    prisma: Annotated[Prisma, Depends(get_prisma)],
-    token: str = Depends(oauth2_scheme)
+    prisma: Annotated[Prisma, Depends(get_prisma)], token: str = Depends(oauth2_scheme)
 ) -> UserResponse:
     """Get current authenticated user."""
     token_data = decode_token(token)

@@ -1,4 +1,5 @@
 """Logging configuration for the LMS backend."""
+
 import os
 import sys
 from typing import Optional
@@ -47,9 +48,7 @@ def configure_logging() -> None:
             processors=[
                 *shared_processors,
                 structlog.stdlib.filter_by_level,
-                structlog.processors.JSONRenderer(
-                    sort_keys=True, ensure_ascii=False
-                ),
+                structlog.processors.JSONRenderer(sort_keys=True, ensure_ascii=False),
             ],
             wrapper_class=structlog.stdlib.BoundLogger,
             context_class=dict,
@@ -124,11 +123,7 @@ def log_shutdown(message: str, **kwargs) -> None:
 
 
 def log_request(
-    method: str,
-    path: str,
-    status_code: int,
-    duration: float,
-    **kwargs
+    method: str, path: str, status_code: int, duration: float, **kwargs
 ) -> None:
     """Log HTTP request details."""
     logger = get_logger("http")
@@ -155,10 +150,7 @@ def log_error(error: Exception, context: Optional[dict] = None, **kwargs) -> Non
 
 
 def log_auth_event(
-    event: str,
-    user_id: Optional[str] = None,
-    email: Optional[str] = None,
-    **kwargs
+    event: str, user_id: Optional[str] = None, email: Optional[str] = None, **kwargs
 ) -> None:
     """Log authentication events."""
     logger = get_logger("auth")
@@ -171,9 +163,7 @@ def log_auth_event(
 
 
 def log_database_operation(
-    operation: str,
-    model: Optional[str] = None,
-    **kwargs
+    operation: str, model: Optional[str] = None, **kwargs
 ) -> None:
     """Log database operations (debug level)."""
     logger = get_logger("database")

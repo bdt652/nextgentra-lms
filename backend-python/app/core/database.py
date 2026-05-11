@@ -1,10 +1,12 @@
 """Database connection management."""
+
 from prisma import Prisma
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     """Application settings with environment variables."""
+
     database_url: str = ""
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"

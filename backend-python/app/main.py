@@ -1,4 +1,5 @@
 """FastAPI main application module."""
+
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -13,6 +14,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 try:
     import sentry_sdk
     from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+
     SENTRY_AVAILABLE = True
 except ImportError:
     SENTRY_AVAILABLE = False
@@ -65,9 +67,7 @@ elif sentry_dsn:
         "install sentry-sdk to enable error tracking"
     )
 else:
-    logger.info(
-        "Sentry not configured (SENTRY_DSN not set) - error tracking disabled"
-    )
+    logger.info("Sentry not configured (SENTRY_DSN not set) - error tracking disabled")
 
 
 app = FastAPI(
@@ -112,7 +112,11 @@ app.add_middleware(LoggingMiddleware)
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:8000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
