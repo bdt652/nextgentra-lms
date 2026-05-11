@@ -17,6 +17,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@sentry/react": "^10.52.0",
+    "@sentry/tracing": "^7.120.4",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"

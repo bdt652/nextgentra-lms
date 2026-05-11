@@ -237,6 +237,36 @@ All jobs must pass for PR to merge.
 - Python 3.x required, Node.js 18+ recommended
 - Use `start-dev.ps1` for one-command startup
 
+## MCP Server Configuration
+
+This project uses **Model Context Protocol (MCP)** servers to enhance Claude Code's capabilities during development.
+
+### Available MCP Servers
+
+The following MCP servers are configured in `.mcp.json`:
+
+| Server | Purpose | Version |
+|--------|---------|---------|
+| **memory** | Persistent knowledge storage across conversations | @modelcontextprotocol/server-memory@2026.1.26 |
+| **context7** | Real-time documentation lookup for libraries | @upstash/context7-mcp@2.1.4 |
+| **sequential-thinking** | Structured problem-solving with thought chains | @modelcontextprotocol/server-sequential-thinking@2025.12.18 |
+| **playwright** | Browser automation for UI testing | @playwright/mcp@0.0.69 |
+
+### Using MCP Tools
+
+When working in this project, Claude Code automatically has access to these MCP servers. You can invoke their capabilities using natural language:
+
+- **Memory**: Ask Claude to "remember this" or "check the memory" - it will store/retrieve project-specific knowledge
+- **Context7**: Ask "how do I use FastAPI CORS?" - Claude will fetch up-to-date docs from Context7
+- **Sequential Thinking**: For complex problems, Claude automatically uses this to break down tasks systematically
+- **Playwright**: For UI testing, ask "test the login flow" - Claude can automate browser actions
+
+### Installing/Updating MCP Servers
+
+To install or update MCP servers, edit `.mcp.json` and restart the Claude Code extension to reload the configuration.
+
+See [MCP Documentation](https://modelcontextprotocol.io) for more details.
+
 ## File Organization
 
 ```
@@ -317,6 +347,275 @@ Skip Husky temporarily:
 git commit --no-verify
 ```
 Use sparingly - only for emergencies like typo fixes.
+
+## Branching Strategy
+
+This project uses **GitHub Flow** with modifications for release stability.
+
+### Branch Naming Convention
+
+```
+main                    # Production-ready code (default branch)
+feature/xxx            # New features
+fix/xxx                # Bug fixes
+release/v1.2.0         # Release preparation branches
+hotfix/critical-issue  # Emergency production fixes
+```
+
+### Standard Workflow
+
+1. **Create a feature branch** from `main`:
+   ```bash
+   git checkout -b feature/student-dashboard
+   ```
+
+2. **Make commits** using [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m "feat(dashboard): add student progress chart"
+   git commit -m "fix(auth): resolve login redirect bug"
+   ```
+
+3. **Push and open a Pull Request** to `main`:
+   - All CI checks must pass (backend + frontend quality gates)
+   - At least one code review approval required
+   - Link to an issue/ticket in PR description
+
+4. **Squash and merge** to `main` (keep commit history clean)
+
+5. **CI/CD** will:
+   - Run all quality checks
+   - Deploy to staging (if configured)
+   - Notify team (if configured)
+
+### Release Branches
+
+When preparing a production release:
+
+1. **Create release branch** from `main`:
+   ```bash
+   git checkout -b release/v1.2.0
+   ```
+
+2. **Perform final testing** and fix any last-minute issues directly on this branch
+
+3. **Bump versions** in all projects:
+   - `backend-python/pyproject.toml`
+   - `student-portal/package.json`
+   - `teacher-portal/package.json`
+
+4. **Update CHANGELOG.md** with new version section
+
+5. **Commit version bump**:
+   ```bash
+   git commit -m "chore(release): prepare v1.2.0"
+   ```
+
+6. **Open PR** from `release/v1.2.0` → `main` (merge after approval)
+
+7. **Create Git tag** and push:
+   ```bash
+   git checkout main
+   git pull origin main
+   git tag -a v1.2.0 -m "Release v1.2.0"
+   git push origin v1.2.0
+   ```
+
+8. **Create GitHub Release** from the tag (auto-generate release notes from commits)
+
+9. **Deploy to production**
+
+10. **Delete release branch** (optional cleanup)
+
+### Hotfix Process
+
+For critical production issues:
+
+1. **Create hotfix branch** from `main`:
+   ```bash
+   git checkout -b hotfix/login-crash
+   ```
+
+2. **Fix the issue**, commit, push
+
+3. **Open PR** to `main` (expedited review)
+
+4. **Merge to main**, create tag `v1.2.1`
+
+5. **Also cherry-pick** to any active `release/` branches if needed
+
+6. **Deploy immediately**
+
+### Branch Protection Rules (GitHub)
+
+Configure these in repository settings:
+
+- **`main` branch**:
+  - Require pull request reviews (1 approval)
+  - Require status checks (all CI jobs must pass)
+  - Require linear history (no merge commits)
+  - Require signed commits (optional but recommended)
+  - Restrict pushes (only maintainers can force push)
+
+- **`release/*` branches**:
+  - Same protections as `main`
+  - Allow maintainers to bypass (for urgent fixes)
+
+### Why GitHub Flow?
+
+- **Simplicity**: Only one long-lived branch (`main`)
+- **Continuous delivery**: Always deployable code
+- **Reduced merge conflicts**: Small, frequent merges
+- **Better code review**: Every change goes through PR
+- **Rollback capability**: Release branches enable quick rollbacks
+
+See [GitHub Flow documentation](https://docs.github.com/en/get-started/quickstart/github-flow) for more details.
+
+## Release Process
+
+This document describes the semi-automated release process for NextGenTra LMS.
+
+### Pre-Release Checklist
+
+Before creating a release, verify:
+
+- [ ] All features/fixes merged to `main`
+- [ ] CI pipeline passes on `main` (all 3 jobs: backend, student, teacher)
+- [ ] No merge conflicts in `main`
+- [ ] Version numbers identified (X.Y.Z format: major.minor.patch)
+- [ ] CHANGELOG.md updated with all changes since last release
+- [ ] Database migrations are backward compatible (if any)
+- [ ] Environment variables documented (`.env.example` is current)
+- [ ] API documentation updated (if endpoints changed)
+- [ ] All security reviews completed (for major releases)
+- [ ] Staging deployment tested (if staging environment exists)
+
+### Release Execution Steps
+
+#### 1. Create Release Branch
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b release/v1.2.0
+```
+
+#### 2. Bump Versions
+
+Update version strings in all projects:
+
+- `backend-python/pyproject.toml`: `version = "1.2.0"`
+- `student-portal/package.json`: `"version": "1.2.0"`
+- `teacher-portal/package.json`: `"version": "1.2.0"`
+
+**Use the version bump script** (recommended):
+```bash
+./scripts/bump-version.sh 1.2.0
+# or
+./scripts/bump-version.py 1.2.0
+```
+
+#### 3. Update CHANGELOG
+
+Move all "Unreleased" changes in `CHANGELOG.md` to a new `## [1.2.0] - YYYY-MM-DD` section.
+
+**Use conventional-changelog** (recommended):
+```bash
+npx conventional-changelog -p angular -i CHANGELOG.md -s -r 0
+```
+
+#### 4. Commit Release Preparation
+
+```bash
+git add .
+git commit -m "chore(release): prepare v1.2.0"
+```
+
+#### 5. Push and Open PR
+
+```bash
+git push -u origin release/v1.2.0
+```
+
+Then open PR: `release/v1.2.0` → `main`
+
+- Get PR approval from at least one maintainer
+- Ensure CI passes on the release branch
+- Squash and merge to `main`
+
+#### 6. Tag the Release
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.2.0 -m "Release v1.2.0"
+git push origin v1.2.0
+```
+
+#### 7. Create GitHub Release
+
+1. Go to repository **Releases** page
+2. Click "Draft a new release"
+3. Select tag `v1.2.0`
+4. Auto-generate release notes from merged PRs
+5. Add any additional notes (breaking changes, migration steps)
+6. Mark as **latest release**
+7. Publish
+
+#### 8. Deploy to Production
+
+Follow your deployment procedure:
+- Pull latest `main` on production server(s)
+- Run database migrations (if any): `npx prisma migrate deploy`
+- Restart services (systemd, Docker, etc.)
+- Verify health endpoint: `curl http://your-api/health`
+
+#### 9. Post-Release
+
+- Announce release to stakeholders (Slack, email, etc.)
+- Monitor Sentry for new errors
+- Update team documentation if needed
+- Delete release branch: `git branch -d release/v1.2.0` (optional)
+
+### Automated Release Workflow (Optional)
+
+You can add `.github/workflows/release.yml` to automate:
+
+- Building Docker images
+- Deploying to staging/production
+- Sending notifications to Slack/Discord
+- Updating dependency manifests (if needed)
+
+Example trigger: On `push` of tags matching `v*.*.*`
+
+### Version Numbering (Semantic Versioning)
+
+Follow [SemVer 2.0.0](https://semver.org/):
+
+- **Major (X.0.0)**: Breaking changes (backward incompatible)
+- **Minor (1.Y.0)**: New features (backward compatible)
+- **Patch (1.2.Z)**: Bug fixes (backward compatible)
+
+Given current project stage (pre-1.0), you may use `0.x.y` where:
+- `0.1.0` = initial development
+- Increment minor for features, patch for fixes
+- Major = 1.0.0 when API stabilizes
+
+### Rollback Procedure
+
+If a release introduces critical issues:
+
+1. **Roll back to previous tag**:
+   ```bash
+   git checkout main
+   git revert <commit-hash-of-release-merge>  # Creates an undo commit
+   git push origin main
+   ```
+
+2. **Or create hotfix**: Follow hotfix process to fix and release `v1.2.1` quickly
+
+3. **Deploy the rollback/hotfix** immediately
+
+4. **Investigate** the issue in a feature branch before next release
 
 ## Next Steps for Development
 
