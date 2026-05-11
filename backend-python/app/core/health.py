@@ -1,11 +1,12 @@
 """Health check utilities for monitoring system dependencies."""
 import asyncio
 from datetime import datetime, timezone
+from typing import Optional
 
-import redis
-from fastapi import HTTPException, status
+from fastapi import status
 from fastapi.responses import JSONResponse
 from prisma import Prisma
+import redis
 
 from app.core.database import get_prisma, settings
 from app.core.logging import get_logger
@@ -16,7 +17,7 @@ logger = get_logger(__name__)
 class HealthCheckResult:
     """Represents the result of a health check."""
 
-    def __init__(self, name: str, status: str, details: dict = None):
+    def __init__(self, name: str, status: str, details: Optional[dict] = None):
         self.name = name
         self.status = status  # "healthy", "degraded", "unhealthy"
         self.details = details or {}
@@ -37,7 +38,7 @@ async def check_database() -> HealthCheckResult:
     try:
         prisma: Prisma = get_prisma()
         # Test connection with simple query
-        result = await prisma.execute_raw("SELECT 1")
+        await prisma.execute_raw("SELECT 1")
 
         # Check if we can query the User table
         user_count = await prisma.user.count()

@@ -1,12 +1,10 @@
 """Logging configuration for the LMS backend."""
 import os
 import sys
-from datetime import datetime
+from typing import Optional
 
 import structlog
 from structlog.contextvars import merge_contextvars
-
-from app.core.database import settings
 
 
 def get_log_level() -> str:
@@ -36,9 +34,7 @@ def configure_logging() -> None:
             processors=[
                 *shared_processors,
                 structlog.stdlib.filter_by_level,
-                structlog.dev.ConsoleRenderer(
-                    colors=True, exception_formatter=structlog.dev.ConsoleRenderer()
-                ),
+                structlog.dev.ConsoleRenderer(colors=True),
             ],
             wrapper_class=structlog.stdlib.BoundLogger,
             context_class=dict,
@@ -102,7 +98,7 @@ def configure_logging() -> None:
     logging.config.dictConfig(logging_config)
 
 
-def get_logger(name: str = None) -> structlog.stdlib.BoundLogger:
+def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
     """Get a structured logger instance.
 
     Args:
@@ -127,7 +123,13 @@ def log_shutdown(message: str, **kwargs) -> None:
     logger.info(message, **kwargs)
 
 
-def log_request(method: str, path: str, status_code: int, duration: float, **kwargs) -> None:
+def log_request(
+    method: str,
+    path: str,
+    status_code: int,
+    duration: float,
+    **kwargs
+) -> None:
     """Log HTTP request details."""
     logger = get_logger("http")
     logger.info(
@@ -140,7 +142,7 @@ def log_request(method: str, path: str, status_code: int, duration: float, **kwa
     )
 
 
-def log_error(error: Exception, context: dict = None, **kwargs) -> None:
+def log_error(error: Exception, context: Optional[dict] = None, **kwargs) -> None:
     """Log error with context."""
     logger = get_logger("error")
     logger.error(
@@ -152,7 +154,12 @@ def log_error(error: Exception, context: dict = None, **kwargs) -> None:
     )
 
 
-def log_auth_event(event: str, user_id: str = None, email: str = None, **kwargs) -> None:
+def log_auth_event(
+    event: str,
+    user_id: Optional[str] = None,
+    email: Optional[str] = None,
+    **kwargs
+) -> None:
     """Log authentication events."""
     logger = get_logger("auth")
     logger.info(
@@ -163,7 +170,11 @@ def log_auth_event(event: str, user_id: str = None, email: str = None, **kwargs)
     )
 
 
-def log_database_operation(operation: str, model: str = None, **kwargs) -> None:
+def log_database_operation(
+    operation: str,
+    model: Optional[str] = None,
+    **kwargs
+) -> None:
     """Log database operations (debug level)."""
     logger = get_logger("database")
     logger.debug(

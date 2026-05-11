@@ -1,8 +1,8 @@
 """FastAPI main application module."""
-import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+import os
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +20,13 @@ except ImportError:
 from app.api import auth
 from app.core.database import connect_db, disconnect_db
 from app.core.health import health_check_endpoint
-from app.core.logging import configure_logging, log_request, get_logger, log_startup, log_shutdown
+from app.core.logging import (
+    configure_logging,
+    get_logger,
+    log_request,
+    log_shutdown,
+    log_startup,
+)
 
 # Initialize logging configuration
 configure_logging()
@@ -31,7 +37,8 @@ logger = get_logger(__name__)
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     """Manage database connection lifecycle."""
     # Startup: connect to database
-    log_startup("Starting application", version="1.0.0", environment=os.getenv("ENVIRONMENT", "development"))
+    env = os.getenv("ENVIRONMENT", "development")
+    log_startup("Starting application", version="1.0.0", environment=env)
     await connect_db()
     log_startup("Database connected successfully")
     yield
@@ -46,16 +53,21 @@ if sentry_dsn and SENTRY_AVAILABLE:
     sentry_sdk.init(
         dsn=sentry_dsn,
         environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
-        release=f"backend@1.0.0",
+        release="backend@1.0.0",
         traces_sample_rate=1.0 if os.getenv("ENVIRONMENT") == "development" else 0.1,
         send_default_pii=False,  # Don't send PII for GDPR compliance
         debug=os.getenv("ENVIRONMENT") == "development",
     )
     logger.info("Sentry error tracking initialized", dsn=sentry_dsn[:30] + "...")
 elif sentry_dsn:
-    logger.warning("Sentry SDK not installed but SENTRY_DSN is set - install sentry-sdk to enable error tracking")
+    logger.warning(
+        "Sentry SDK not installed but SENTRY_DSN is set - "
+        "install sentry-sdk to enable error tracking"
+    )
 else:
-    logger.info("Sentry not configured (SENTRY_DSN not set) - error tracking disabled")
+    logger.info(
+        "Sentry not configured (SENTRY_DSN not set) - error tracking disabled"
+    )
 
 
 app = FastAPI(

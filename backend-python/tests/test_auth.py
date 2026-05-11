@@ -1,12 +1,11 @@
 """Tests for authentication utilities."""
-import pytest
 from datetime import timedelta
+
 from app.core.auth import (
-    verify_password,
-    get_password_hash,
     create_access_token,
     decode_token,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
+    get_password_hash,
+    verify_password,
 )
 from app.schemas.user import TokenData
 
@@ -79,7 +78,8 @@ class TestAccessToken:
         """Should return None if token has no 'sub' claim."""
         # Create token without 'sub' by directly encoding
         from jose import jwt
-        from app.core.auth import SECRET_KEY, ALGORITHM
+
+        from app.core.auth import ALGORITHM, SECRET_KEY
         token = jwt.encode({"data": "no_sub"}, SECRET_KEY, algorithm=ALGORITHM)
         token_data = decode_token(token)
         assert token_data is None
@@ -89,7 +89,8 @@ class TestAccessToken:
         token = create_access_token(data={"sub": "test@example.com"})
         # Decode without verification to check exp
         from jose import jwt
-        from app.core.auth import SECRET_KEY, ALGORITHM
+
+        from app.core.auth import ALGORITHM, SECRET_KEY
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         assert "exp" in payload
         assert isinstance(payload["exp"], (int, float))
