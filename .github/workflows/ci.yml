@@ -28,6 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .
+          echo "DATABASE_URL=postgresql://postgres:password@localhost:5432/nextgentra" > .env
+          prisma generate --schema .prisma/schema.prisma
 
       - name: Run Ruff linter
         run: |
