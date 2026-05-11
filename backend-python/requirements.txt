@@ -21,4 +21,4 @@ pytest-asyncio==0.25.3
 pytest-cov==6.1.1
 pytest-mock==3.14.0
 types-python-jose==3.5.0.20260408
-types-passlib==1.7.7.20241208
+types-passlib==1.7.7.20260211
