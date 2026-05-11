@@ -27,6 +27,7 @@ jobs:
           cd backend-python
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
 
       - name: Run Ruff linter
         run: |
@@ -46,6 +47,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           cd backend-python
+          export PYTHONPATH=$(pwd)
           pytest --cov=app --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
