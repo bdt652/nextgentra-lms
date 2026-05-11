@@ -2,10 +2,10 @@
 
 import os
 import sys
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
-import structlog
-from structlog.contextvars import merge_contextvars
+import structlog  # type: ignore
+from structlog.contextvars import merge_contextvars  # type: ignore
 
 
 def get_log_level() -> str:
@@ -18,8 +18,8 @@ def configure_logging() -> None:
     log_level = get_log_level()
     is_development = os.getenv("ENVIRONMENT", "development").lower() == "development"
 
-    # Shared processors
-    shared_processors = [
+    # Shared processors - type: list of callables
+    shared_processors: list[Callable[..., Any]] = [
         merge_contextvars,
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
