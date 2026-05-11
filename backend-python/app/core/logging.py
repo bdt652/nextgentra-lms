@@ -122,9 +122,7 @@ def log_shutdown(message: str, **kwargs: Any) -> None:
     logger.info(message, **kwargs)
 
 
-def log_request(
-    method: str, path: str, status_code: int, duration: float, **kwargs: Any
-) -> None:
+def log_request(method: str, path: str, status_code: int, duration: float, **kwargs: Any) -> None:
     """Log HTTP request details."""
     logger = get_logger("http")
     logger.info(
@@ -165,9 +163,7 @@ def log_auth_event(
     )
 
 
-def log_database_operation(
-    operation: str, model: Optional[str] = None, **kwargs: Any
-) -> None:
+def log_database_operation(operation: str, model: Optional[str] = None, **kwargs: Any) -> None:
     """Log database operations (debug level)."""
     logger = get_logger("database")
     logger.debug(

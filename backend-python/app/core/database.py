@@ -1,7 +1,8 @@
 """Database connection management."""
 
-from prisma import Prisma  # type: ignore
 from pydantic_settings import BaseSettings
+
+from prisma import Prisma  # type: ignore
 
 
 class Settings(BaseSettings):
@@ -12,6 +13,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 7
 
     class Config:
         env_file = ".env"

@@ -1,0 +1,1839 @@
+[1m============================= test session starts =============================[0m
+platform win32 -- Python 3.13.1, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\THANG\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: F:\projects\nextgentra\lms\backend-python
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.25.3, cov-6.1.1, mock-3.14.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=function
+[1mcollecting ... [0m2026-05-11T18:07:48.144623Z [info     ] Sentry not configured (SENTRY_DSN not set) - error tracking disabled [app.main]
+collected 1 item
+
+tests/integration/test_auth_api.py::TestStudentAuth::test_student_registration [31mFAILED[0m
+
+================================== FAILURES ===================================
+[31m[1m__________________ TestStudentAuth.test_student_registration __________________[0m
+
+self = <test_auth_api.TestStudentAuth object at 0x000001FEC4EBFC50>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_student_registration[39;49;00m([96mself[39;49;00m):[90m[39;49;00m
+    [90m    [39;49;00m[33m"""Test student registration succeeds with valid data."""[39;49;00m[90m[39;49;00m
+>       response = client.post([90m[39;49;00m
+            [33m"[39;49;00m[33m/auth/student/register[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            json={[90m[39;49;00m
+                [33m"[39;49;00m[33memail[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mstudent@example.com[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mname[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mTest Student[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mstudent_code[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mSTU001[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mclass_[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33m12A1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mpassword[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mpassword123[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            },[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mtests\integration\test_auth_api.py[0m:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+url = '/auth/student/register'
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mpost[39;49;00m(  [90m# type: ignore[override][39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        url: httpx._types.URLTypes,[90m[39;49;00m
+        *,[90m[39;49;00m
+        content: httpx._types.RequestContent | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        data: _RequestData | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        files: httpx._types.RequestFiles | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        json: Any = [94mNone[39;49;00m,[90m[39;49;00m
+        params: httpx._types.QueryParamTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        headers: httpx._types.HeaderTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        cookies: httpx._types.CookieTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        auth: httpx._types.AuthTypes | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        timeout: httpx._types.TimeoutTypes | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        extensions: [96mdict[39;49;00m[[96mstr[39;49;00m, Any] | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+    ) -> httpx.Response:[90m[39;49;00m
+>       [94mreturn[39;49;00m [96msuper[39;49;00m().post([90m[39;49;00m
+            url,[90m[39;49;00m
+            content=content,[90m[39;49;00m
+            data=data,[90m[39;49;00m
+            files=files,[90m[39;49;00m
+            json=json,[90m[39;49;00m
+            params=params,[90m[39;49;00m
+            headers=headers,[90m[39;49;00m
+            cookies=cookies,[90m[39;49;00m
+            auth=auth,[90m[39;49;00m
+            follow_redirects=follow_redirects,[90m[39;49;00m
+            timeout=timeout,[90m[39;49;00m
+            extensions=extensions,[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\testclient.py[0m:546: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+url = '/auth/student/register'
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mpost[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        url: URLTypes,[90m[39;49;00m
+        *,[90m[39;49;00m
+        content: RequestContent | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        data: RequestData | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        files: RequestFiles | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        json: typing.Any | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        params: QueryParamTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        headers: HeaderTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        cookies: CookieTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        extensions: RequestExtensions | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    Send a `POST` request.[39;49;00m
+    [33m[39;49;00m
+    [33m    **Parameters**: See `httpx.request`.[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+>       [94mreturn[39;49;00m [96mself[39;49;00m.request([90m[39;49;00m
+            [33m"[39;49;00m[33mPOST[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            url,[90m[39;49;00m
+            content=content,[90m[39;49;00m
+            data=data,[90m[39;49;00m
+            files=files,[90m[39;49;00m
+            json=json,[90m[39;49;00m
+            params=params,[90m[39;49;00m
+            headers=headers,[90m[39;49;00m
+            cookies=cookies,[90m[39;49;00m
+            auth=auth,[90m[39;49;00m
+            follow_redirects=follow_redirects,[90m[39;49;00m
+            timeout=timeout,[90m[39;49;00m
+            extensions=extensions,[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:1145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+method = 'POST', url = URL('http://testserver/auth/student/register')
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mrequest[39;49;00m(  [90m# type: ignore[override][39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        method: [96mstr[39;49;00m,[90m[39;49;00m
+        url: httpx._types.URLTypes,[90m[39;49;00m
+        *,[90m[39;49;00m
+        content: httpx._types.RequestContent | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        data: _RequestData | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        files: httpx._types.RequestFiles | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        json: Any = [94mNone[39;49;00m,[90m[39;49;00m
+        params: httpx._types.QueryParamTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        headers: httpx._types.HeaderTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        cookies: httpx._types.CookieTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        auth: httpx._types.AuthTypes | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        timeout: httpx._types.TimeoutTypes | httpx._client.UseClientDefault = httpx._client.USE_CLIENT_DEFAULT,[90m[39;49;00m
+        extensions: [96mdict[39;49;00m[[96mstr[39;49;00m, Any] | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+    ) -> httpx.Response:[90m[39;49;00m
+        [94mif[39;49;00m timeout [95mis[39;49;00m [95mnot[39;49;00m httpx.USE_CLIENT_DEFAULT:[90m[39;49;00m
+            warnings.warn([90m[39;49;00m
+                [33m"[39;49;00m[33mYou should not use the [39;49;00m[33m'[39;49;00m[33mtimeout[39;49;00m[33m'[39;49;00m[33m argument with the TestClient. [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                [33m"[39;49;00m[33mSee https://github.com/Kludex/starlette/issues/1108 for more information.[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [96mDeprecationWarning[39;49;00m,[90m[39;49;00m
+            )[90m[39;49;00m
+        url = [96mself[39;49;00m._merge_url(url)[90m[39;49;00m
+>       [94mreturn[39;49;00m [96msuper[39;49;00m().request([90m[39;49;00m
+            method,[90m[39;49;00m
+            url,[90m[39;49;00m
+            content=content,[90m[39;49;00m
+            data=data,[90m[39;49;00m
+            files=files,[90m[39;49;00m
+            json=json,[90m[39;49;00m
+            params=params,[90m[39;49;00m
+            headers=headers,[90m[39;49;00m
+            cookies=cookies,[90m[39;49;00m
+            auth=auth,[90m[39;49;00m
+            follow_redirects=follow_redirects,[90m[39;49;00m
+            timeout=timeout,[90m[39;49;00m
+            extensions=extensions,[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\testclient.py[0m:445: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+method = 'POST', url = URL('http://testserver/auth/student/register')
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mrequest[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        method: [96mstr[39;49;00m,[90m[39;49;00m
+        url: URLTypes,[90m[39;49;00m
+        *,[90m[39;49;00m
+        content: RequestContent | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        data: RequestData | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        files: RequestFiles | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        json: typing.Any | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        params: QueryParamTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        headers: HeaderTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        cookies: CookieTypes | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        auth: AuthTypes | UseClientDefault | [94mNone[39;49;00m = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        extensions: RequestExtensions | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    Build and send a request.[39;49;00m
+    [33m[39;49;00m
+    [33m    Equivalent to:[39;49;00m
+    [33m[39;49;00m
+    [33m    ```python[39;49;00m
+    [33m    request = client.build_request(...)[39;49;00m
+    [33m    response = client.send(request, ...)[39;49;00m
+    [33m    ```[39;49;00m
+    [33m[39;49;00m
+    [33m    See `Client.build_request()`, `Client.send()` and[39;49;00m
+    [33m    [Merging of configuration][0] for how the various parameters[39;49;00m
+    [33m    are merged with client-level configuration.[39;49;00m
+    [33m[39;49;00m
+    [33m    [0]: /advanced/#merging-of-configuration[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m cookies [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+            message = ([90m[39;49;00m
+                [33m"[39;49;00m[33mSetting per-request cookies=<...> is being deprecated, because [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                [33m"[39;49;00m[33mthe expected behaviour on cookie persistence is ambiguous. Set [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                [33m"[39;49;00m[33mcookies directly on the client instance instead.[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+            )[90m[39;49;00m
+            warnings.warn(message, [96mDeprecationWarning[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        request = [96mself[39;49;00m.build_request([90m[39;49;00m
+            method=method,[90m[39;49;00m
+            url=url,[90m[39;49;00m
+            content=content,[90m[39;49;00m
+            data=data,[90m[39;49;00m
+            files=files,[90m[39;49;00m
+            json=json,[90m[39;49;00m
+            params=params,[90m[39;49;00m
+            headers=headers,[90m[39;49;00m
+            cookies=cookies,[90m[39;49;00m
+            timeout=timeout,[90m[39;49;00m
+            extensions=extensions,[90m[39;49;00m
+        )[90m[39;49;00m
+>       [94mreturn[39;49;00m [96mself[39;49;00m.send(request, auth=auth, follow_redirects=follow_redirects)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:827: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92msend[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        request: Request,[90m[39;49;00m
+        *,[90m[39;49;00m
+        stream: [96mbool[39;49;00m = [94mFalse[39;49;00m,[90m[39;49;00m
+        auth: AuthTypes | UseClientDefault | [94mNone[39;49;00m = USE_CLIENT_DEFAULT,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m | UseClientDefault = USE_CLIENT_DEFAULT,[90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    Send a request.[39;49;00m
+    [33m[39;49;00m
+    [33m    The request is sent as-is, unmodified.[39;49;00m
+    [33m[39;49;00m
+    [33m    Typically you'll want to build one with `Client.build_request()`[39;49;00m
+    [33m    so that any client-level configuration is merged into the request,[39;49;00m
+    [33m    but passing an explicit `httpx.Request()` is supported as well.[39;49;00m
+    [33m[39;49;00m
+    [33m    See also: [Request instances][0][39;49;00m
+    [33m[39;49;00m
+    [33m    [0]: /advanced/#request-instances[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m [96mself[39;49;00m._state == ClientState.CLOSED:[90m[39;49;00m
+            [94mraise[39;49;00m [96mRuntimeError[39;49;00m([33m"[39;49;00m[33mCannot send a request, as the client has been closed.[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        [96mself[39;49;00m._state = ClientState.OPENED[90m[39;49;00m
+        follow_redirects = ([90m[39;49;00m
+            [96mself[39;49;00m.follow_redirects[90m[39;49;00m
+            [94mif[39;49;00m [96misinstance[39;49;00m(follow_redirects, UseClientDefault)[90m[39;49;00m
+            [94melse[39;49;00m follow_redirects[90m[39;49;00m
+        )[90m[39;49;00m
+    [90m[39;49;00m
+        auth = [96mself[39;49;00m._build_request_auth(request, auth)[90m[39;49;00m
+    [90m[39;49;00m
+>       response = [96mself[39;49;00m._send_handling_auth([90m[39;49;00m
+            request,[90m[39;49;00m
+            auth=auth,[90m[39;49;00m
+            follow_redirects=follow_redirects,[90m[39;49;00m
+            history=[],[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:914: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+auth = <httpx.Auth object at 0x000001FEC4F05BE0>, follow_redirects = True
+history = []
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92m_send_handling_auth[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        request: Request,[90m[39;49;00m
+        auth: Auth,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m,[90m[39;49;00m
+        history: [96mlist[39;49;00m[Response],[90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+        auth_flow = auth.sync_auth_flow(request)[90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            request = [96mnext[39;49;00m(auth_flow)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mwhile[39;49;00m [94mTrue[39;49;00m:[90m[39;49;00m
+>               response = [96mself[39;49;00m._send_handling_redirects([90m[39;49;00m
+                    request,[90m[39;49;00m
+                    follow_redirects=follow_redirects,[90m[39;49;00m
+                    history=history,[90m[39;49;00m
+                )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:942: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+follow_redirects = True, history = []
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92m_send_handling_redirects[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        request: Request,[90m[39;49;00m
+        follow_redirects: [96mbool[39;49;00m,[90m[39;49;00m
+        history: [96mlist[39;49;00m[Response],[90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+        [94mwhile[39;49;00m [94mTrue[39;49;00m:[90m[39;49;00m
+            [94mif[39;49;00m [96mlen[39;49;00m(history) > [96mself[39;49;00m.max_redirects:[90m[39;49;00m
+                [94mraise[39;49;00m TooManyRedirects([90m[39;49;00m
+                    [33m"[39;49;00m[33mExceeded maximum allowed redirects.[39;49;00m[33m"[39;49;00m, request=request[90m[39;49;00m
+                )[90m[39;49;00m
+    [90m[39;49;00m
+            [94mfor[39;49;00m hook [95min[39;49;00m [96mself[39;49;00m._event_hooks[[33m"[39;49;00m[33mrequest[39;49;00m[33m"[39;49;00m]:[90m[39;49;00m
+                hook(request)[90m[39;49;00m
+    [90m[39;49;00m
+>           response = [96mself[39;49;00m._send_single_request(request)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:979: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient.TestClient object at 0x000001FEC4E4FE00>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92m_send_single_request[39;49;00m([96mself[39;49;00m, request: Request) -> Response:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    Sends a single request, without handling any redirections.[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+        transport = [96mself[39;49;00m._transport_for_url(request.url)[90m[39;49;00m
+        timer = Timer()[90m[39;49;00m
+        timer.sync_start()[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m [95mnot[39;49;00m [96misinstance[39;49;00m(request.stream, SyncByteStream):[90m[39;49;00m
+            [94mraise[39;49;00m [96mRuntimeError[39;49;00m([90m[39;49;00m
+                [33m"[39;49;00m[33mAttempted to send an async request with a sync Client instance.[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+            )[90m[39;49;00m
+    [90m[39;49;00m
+        [94mwith[39;49;00m request_context(request=request):[90m[39;49;00m
+>           response = transport.handle_request(request)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py[0m:1015: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient._TestClientTransport object at 0x000001FEC4F04C20>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mhandle_request[39;49;00m([96mself[39;49;00m, request: httpx.Request) -> httpx.Response:[90m[39;49;00m
+        scheme = request.url.scheme[90m[39;49;00m
+        netloc = request.url.netloc.decode(encoding=[33m"[39;49;00m[33mascii[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        path = request.url.path[90m[39;49;00m
+        raw_path = request.url.raw_path[90m[39;49;00m
+        query = request.url.query.decode(encoding=[33m"[39;49;00m[33mascii[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        default_port = {[33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m: [94m80[39;49;00m, [33m"[39;49;00m[33mws[39;49;00m[33m"[39;49;00m: [94m80[39;49;00m, [33m"[39;49;00m[33mhttps[39;49;00m[33m"[39;49;00m: [94m443[39;49;00m, [33m"[39;49;00m[33mwss[39;49;00m[33m"[39;49;00m: [94m443[39;49;00m}[scheme][90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m [33m"[39;49;00m[33m:[39;49;00m[33m"[39;49;00m [95min[39;49;00m netloc:[90m[39;49;00m
+            host, port_string = netloc.split([33m"[39;49;00m[33m:[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[90m[39;49;00m
+            port = [96mint[39;49;00m(port_string)[90m[39;49;00m
+        [94melse[39;49;00m:[90m[39;49;00m
+            host = netloc[90m[39;49;00m
+            port = default_port[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Include the 'host' header.[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m [33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m [95min[39;49;00m request.headers:[90m[39;49;00m
+            headers: [96mlist[39;49;00m[[96mtuple[39;49;00m[[96mbytes[39;49;00m, [96mbytes[39;49;00m]] = [][90m[39;49;00m
+        [94melif[39;49;00m port == default_port:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            headers = [([33mb[39;49;00m[33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m, host.encode())][90m[39;49;00m
+        [94melse[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            headers = [([33mb[39;49;00m[33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m, ([33mf[39;49;00m[33m"[39;49;00m[33m{[39;49;00mhost[33m}[39;49;00m[33m:[39;49;00m[33m{[39;49;00mport[33m}[39;49;00m[33m"[39;49;00m).encode())][90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Include other request headers.[39;49;00m[90m[39;49;00m
+        headers += [(key.lower().encode(), value.encode()) [94mfor[39;49;00m key, value [95min[39;49;00m request.headers.multi_items()][90m[39;49;00m
+    [90m[39;49;00m
+        scope: [96mdict[39;49;00m[[96mstr[39;49;00m, Any][90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m scheme [95min[39;49;00m {[33m"[39;49;00m[33mws[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mwss[39;49;00m[33m"[39;49;00m}:[90m[39;49;00m
+            subprotocol = request.headers.get([33m"[39;49;00m[33msec-websocket-protocol[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+            [94mif[39;49;00m subprotocol [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                subprotocols: Sequence[[96mstr[39;49;00m] = [][90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                subprotocols = [value.strip() [94mfor[39;49;00m value [95min[39;49;00m subprotocol.split([33m"[39;49;00m[33m,[39;49;00m[33m"[39;49;00m)][90m[39;49;00m
+            scope = {[90m[39;49;00m
+                [33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mwebsocket[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mpath[39;49;00m[33m"[39;49;00m: unquote(path),[90m[39;49;00m
+                [33m"[39;49;00m[33mraw_path[39;49;00m[33m"[39;49;00m: raw_path.split([33mb[39;49;00m[33m"[39;49;00m[33m?[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[[94m0[39;49;00m],[90m[39;49;00m
+                [33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.root_path,[90m[39;49;00m
+                [33m"[39;49;00m[33mscheme[39;49;00m[33m"[39;49;00m: scheme,[90m[39;49;00m
+                [33m"[39;49;00m[33mquery_string[39;49;00m[33m"[39;49;00m: query.encode(),[90m[39;49;00m
+                [33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m: headers,[90m[39;49;00m
+                [33m"[39;49;00m[33mclient[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.client,[90m[39;49;00m
+                [33m"[39;49;00m[33mserver[39;49;00m[33m"[39;49;00m: [host, port],[90m[39;49;00m
+                [33m"[39;49;00m[33msubprotocols[39;49;00m[33m"[39;49;00m: subprotocols,[90m[39;49;00m
+                [33m"[39;49;00m[33mstate[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.app_state.copy(),[90m[39;49;00m
+                [33m"[39;49;00m[33mextensions[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mwebsocket.http.response[39;49;00m[33m"[39;49;00m: {}},[90m[39;49;00m
+            }[90m[39;49;00m
+            session = WebSocketTestSession([96mself[39;49;00m.app, scope, [96mself[39;49;00m.portal_factory)[90m[39;49;00m
+            [94mraise[39;49;00m _Upgrade(session)[90m[39;49;00m
+    [90m[39;49;00m
+        scope = {[90m[39;49;00m
+            [33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mhttp_version[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33m1.1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmethod[39;49;00m[33m"[39;49;00m: request.method,[90m[39;49;00m
+            [33m"[39;49;00m[33mpath[39;49;00m[33m"[39;49;00m: unquote(path),[90m[39;49;00m
+            [33m"[39;49;00m[33mraw_path[39;49;00m[33m"[39;49;00m: raw_path.split([33mb[39;49;00m[33m"[39;49;00m[33m?[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[[94m0[39;49;00m],[90m[39;49;00m
+            [33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.root_path,[90m[39;49;00m
+            [33m"[39;49;00m[33mscheme[39;49;00m[33m"[39;49;00m: scheme,[90m[39;49;00m
+            [33m"[39;49;00m[33mquery_string[39;49;00m[33m"[39;49;00m: query.encode(),[90m[39;49;00m
+            [33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m: headers,[90m[39;49;00m
+            [33m"[39;49;00m[33mclient[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.client,[90m[39;49;00m
+            [33m"[39;49;00m[33mserver[39;49;00m[33m"[39;49;00m: [host, port],[90m[39;49;00m
+            [33m"[39;49;00m[33mextensions[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m: {}},[90m[39;49;00m
+            [33m"[39;49;00m[33mstate[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.app_state.copy(),[90m[39;49;00m
+        }[90m[39;49;00m
+    [90m[39;49;00m
+        request_complete = [94mFalse[39;49;00m[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+        response_complete: anyio.Event[90m[39;49;00m
+        raw_kwargs: [96mdict[39;49;00m[[96mstr[39;49;00m, Any] = {[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m: io.BytesIO()}[90m[39;49;00m
+        template = [94mNone[39;49;00m[90m[39;49;00m
+        context = [94mNone[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mreceive[39;49;00m() -> Message:[90m[39;49;00m
+            [94mnonlocal[39;49;00m request_complete[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m request_complete:[90m[39;49;00m
+                [94mif[39;49;00m [95mnot[39;49;00m response_complete.is_set():[90m[39;49;00m
+                    [94mawait[39;49;00m response_complete.wait()[90m[39;49;00m
+                [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+            body = request.read()[90m[39;49;00m
+            [94mif[39;49;00m [96misinstance[39;49;00m(body, [96mstr[39;49;00m):[90m[39;49;00m
+                body_bytes: [96mbytes[39;49;00m = body.encode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m body [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                body_bytes = [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m [96misinstance[39;49;00m(body, GeneratorType):[90m[39;49;00m
+                [94mtry[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+                    chunk = body.send([94mNone[39;49;00m)[90m[39;49;00m
+                    [94mif[39;49;00m [96misinstance[39;49;00m(chunk, [96mstr[39;49;00m):[90m[39;49;00m
+                        chunk = chunk.encode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: chunk, [33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+                [94mexcept[39;49;00m [96mStopIteration[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+                    request_complete = [94mTrue[39;49;00m[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                body_bytes = body[90m[39;49;00m
+    [90m[39;49;00m
+            request_complete = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: body_bytes}[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msend[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m raw_kwargs, response_started, template, context[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [94massert[39;49;00m [95mnot[39;49;00m response_started, [33m'[39;49;00m[33mReceived multiple [39;49;00m[33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[33m messages.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                raw_kwargs[[33m"[39;49;00m[33mstatus_code[39;49;00m[33m"[39;49;00m] = message[[33m"[39;49;00m[33mstatus[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                raw_kwargs[[33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m] = [(key.decode(), value.decode()) [94mfor[39;49;00m key, value [95min[39;49;00m message.get([33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m, [])][90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [94massert[39;49;00m response_started, [33m'[39;49;00m[33mReceived [39;49;00m[33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m[33m without [39;49;00m[33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[33m.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                [94massert[39;49;00m [95mnot[39;49;00m response_complete.is_set(), [33m'[39;49;00m[33mReceived [39;49;00m[33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m[33m after response completed.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                body = message.get([33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m, [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                more_body = message.get([33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m, [94mFalse[39;49;00m)[90m[39;49;00m
+                [94mif[39;49;00m request.method != [33m"[39;49;00m[33mHEAD[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                    raw_kwargs[[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m].write(body)[90m[39;49;00m
+                [94mif[39;49;00m [95mnot[39;49;00m more_body:[90m[39;49;00m
+                    raw_kwargs[[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m].seek([94m0[39;49;00m)[90m[39;49;00m
+                    response_complete.set()[90m[39;49;00m
+            [94melif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                template = message[[33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m][[33m"[39;49;00m[33mtemplate[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                context = message[[33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m][[33m"[39;49;00m[33mcontext[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.portal_factory() [94mas[39;49;00m portal:[90m[39;49;00m
+                response_complete = portal.call(anyio.Event)[90m[39;49;00m
+                portal.call([96mself[39;49;00m.app, scope, receive, send)[90m[39;49;00m
+        [94mexcept[39;49;00m [96mBaseException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+            [94mif[39;49;00m [96mself[39;49;00m.raise_server_exceptions:[90m[39;49;00m
+>               [94mraise[39;49;00m exc[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\testclient.py[0m:348: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.testclient._TestClientTransport object at 0x000001FEC4F04C20>
+request = <Request('POST', 'http://testserver/auth/student/register')>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mhandle_request[39;49;00m([96mself[39;49;00m, request: httpx.Request) -> httpx.Response:[90m[39;49;00m
+        scheme = request.url.scheme[90m[39;49;00m
+        netloc = request.url.netloc.decode(encoding=[33m"[39;49;00m[33mascii[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        path = request.url.path[90m[39;49;00m
+        raw_path = request.url.raw_path[90m[39;49;00m
+        query = request.url.query.decode(encoding=[33m"[39;49;00m[33mascii[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        default_port = {[33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m: [94m80[39;49;00m, [33m"[39;49;00m[33mws[39;49;00m[33m"[39;49;00m: [94m80[39;49;00m, [33m"[39;49;00m[33mhttps[39;49;00m[33m"[39;49;00m: [94m443[39;49;00m, [33m"[39;49;00m[33mwss[39;49;00m[33m"[39;49;00m: [94m443[39;49;00m}[scheme][90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m [33m"[39;49;00m[33m:[39;49;00m[33m"[39;49;00m [95min[39;49;00m netloc:[90m[39;49;00m
+            host, port_string = netloc.split([33m"[39;49;00m[33m:[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[90m[39;49;00m
+            port = [96mint[39;49;00m(port_string)[90m[39;49;00m
+        [94melse[39;49;00m:[90m[39;49;00m
+            host = netloc[90m[39;49;00m
+            port = default_port[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Include the 'host' header.[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m [33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m [95min[39;49;00m request.headers:[90m[39;49;00m
+            headers: [96mlist[39;49;00m[[96mtuple[39;49;00m[[96mbytes[39;49;00m, [96mbytes[39;49;00m]] = [][90m[39;49;00m
+        [94melif[39;49;00m port == default_port:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            headers = [([33mb[39;49;00m[33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m, host.encode())][90m[39;49;00m
+        [94melse[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            headers = [([33mb[39;49;00m[33m"[39;49;00m[33mhost[39;49;00m[33m"[39;49;00m, ([33mf[39;49;00m[33m"[39;49;00m[33m{[39;49;00mhost[33m}[39;49;00m[33m:[39;49;00m[33m{[39;49;00mport[33m}[39;49;00m[33m"[39;49;00m).encode())][90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Include other request headers.[39;49;00m[90m[39;49;00m
+        headers += [(key.lower().encode(), value.encode()) [94mfor[39;49;00m key, value [95min[39;49;00m request.headers.multi_items()][90m[39;49;00m
+    [90m[39;49;00m
+        scope: [96mdict[39;49;00m[[96mstr[39;49;00m, Any][90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m scheme [95min[39;49;00m {[33m"[39;49;00m[33mws[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mwss[39;49;00m[33m"[39;49;00m}:[90m[39;49;00m
+            subprotocol = request.headers.get([33m"[39;49;00m[33msec-websocket-protocol[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+            [94mif[39;49;00m subprotocol [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                subprotocols: Sequence[[96mstr[39;49;00m] = [][90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                subprotocols = [value.strip() [94mfor[39;49;00m value [95min[39;49;00m subprotocol.split([33m"[39;49;00m[33m,[39;49;00m[33m"[39;49;00m)][90m[39;49;00m
+            scope = {[90m[39;49;00m
+                [33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mwebsocket[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mpath[39;49;00m[33m"[39;49;00m: unquote(path),[90m[39;49;00m
+                [33m"[39;49;00m[33mraw_path[39;49;00m[33m"[39;49;00m: raw_path.split([33mb[39;49;00m[33m"[39;49;00m[33m?[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[[94m0[39;49;00m],[90m[39;49;00m
+                [33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.root_path,[90m[39;49;00m
+                [33m"[39;49;00m[33mscheme[39;49;00m[33m"[39;49;00m: scheme,[90m[39;49;00m
+                [33m"[39;49;00m[33mquery_string[39;49;00m[33m"[39;49;00m: query.encode(),[90m[39;49;00m
+                [33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m: headers,[90m[39;49;00m
+                [33m"[39;49;00m[33mclient[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.client,[90m[39;49;00m
+                [33m"[39;49;00m[33mserver[39;49;00m[33m"[39;49;00m: [host, port],[90m[39;49;00m
+                [33m"[39;49;00m[33msubprotocols[39;49;00m[33m"[39;49;00m: subprotocols,[90m[39;49;00m
+                [33m"[39;49;00m[33mstate[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.app_state.copy(),[90m[39;49;00m
+                [33m"[39;49;00m[33mextensions[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mwebsocket.http.response[39;49;00m[33m"[39;49;00m: {}},[90m[39;49;00m
+            }[90m[39;49;00m
+            session = WebSocketTestSession([96mself[39;49;00m.app, scope, [96mself[39;49;00m.portal_factory)[90m[39;49;00m
+            [94mraise[39;49;00m _Upgrade(session)[90m[39;49;00m
+    [90m[39;49;00m
+        scope = {[90m[39;49;00m
+            [33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mhttp_version[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33m1.1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmethod[39;49;00m[33m"[39;49;00m: request.method,[90m[39;49;00m
+            [33m"[39;49;00m[33mpath[39;49;00m[33m"[39;49;00m: unquote(path),[90m[39;49;00m
+            [33m"[39;49;00m[33mraw_path[39;49;00m[33m"[39;49;00m: raw_path.split([33mb[39;49;00m[33m"[39;49;00m[33m?[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m)[[94m0[39;49;00m],[90m[39;49;00m
+            [33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.root_path,[90m[39;49;00m
+            [33m"[39;49;00m[33mscheme[39;49;00m[33m"[39;49;00m: scheme,[90m[39;49;00m
+            [33m"[39;49;00m[33mquery_string[39;49;00m[33m"[39;49;00m: query.encode(),[90m[39;49;00m
+            [33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m: headers,[90m[39;49;00m
+            [33m"[39;49;00m[33mclient[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.client,[90m[39;49;00m
+            [33m"[39;49;00m[33mserver[39;49;00m[33m"[39;49;00m: [host, port],[90m[39;49;00m
+            [33m"[39;49;00m[33mextensions[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m: {}},[90m[39;49;00m
+            [33m"[39;49;00m[33mstate[39;49;00m[33m"[39;49;00m: [96mself[39;49;00m.app_state.copy(),[90m[39;49;00m
+        }[90m[39;49;00m
+    [90m[39;49;00m
+        request_complete = [94mFalse[39;49;00m[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+        response_complete: anyio.Event[90m[39;49;00m
+        raw_kwargs: [96mdict[39;49;00m[[96mstr[39;49;00m, Any] = {[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m: io.BytesIO()}[90m[39;49;00m
+        template = [94mNone[39;49;00m[90m[39;49;00m
+        context = [94mNone[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mreceive[39;49;00m() -> Message:[90m[39;49;00m
+            [94mnonlocal[39;49;00m request_complete[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m request_complete:[90m[39;49;00m
+                [94mif[39;49;00m [95mnot[39;49;00m response_complete.is_set():[90m[39;49;00m
+                    [94mawait[39;49;00m response_complete.wait()[90m[39;49;00m
+                [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+            body = request.read()[90m[39;49;00m
+            [94mif[39;49;00m [96misinstance[39;49;00m(body, [96mstr[39;49;00m):[90m[39;49;00m
+                body_bytes: [96mbytes[39;49;00m = body.encode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m body [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                body_bytes = [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m [96misinstance[39;49;00m(body, GeneratorType):[90m[39;49;00m
+                [94mtry[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+                    chunk = body.send([94mNone[39;49;00m)[90m[39;49;00m
+                    [94mif[39;49;00m [96misinstance[39;49;00m(chunk, [96mstr[39;49;00m):[90m[39;49;00m
+                        chunk = chunk.encode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: chunk, [33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+                [94mexcept[39;49;00m [96mStopIteration[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+                    request_complete = [94mTrue[39;49;00m[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                body_bytes = body[90m[39;49;00m
+    [90m[39;49;00m
+            request_complete = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.request[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m: body_bytes}[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msend[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m raw_kwargs, response_started, template, context[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [94massert[39;49;00m [95mnot[39;49;00m response_started, [33m'[39;49;00m[33mReceived multiple [39;49;00m[33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[33m messages.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                raw_kwargs[[33m"[39;49;00m[33mstatus_code[39;49;00m[33m"[39;49;00m] = message[[33m"[39;49;00m[33mstatus[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                raw_kwargs[[33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m] = [(key.decode(), value.decode()) [94mfor[39;49;00m key, value [95min[39;49;00m message.get([33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m, [])][90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94melif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [94massert[39;49;00m response_started, [33m'[39;49;00m[33mReceived [39;49;00m[33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m[33m without [39;49;00m[33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[33m.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                [94massert[39;49;00m [95mnot[39;49;00m response_complete.is_set(), [33m'[39;49;00m[33mReceived [39;49;00m[33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m[33m after response completed.[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+                body = message.get([33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m, [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                more_body = message.get([33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m, [94mFalse[39;49;00m)[90m[39;49;00m
+                [94mif[39;49;00m request.method != [33m"[39;49;00m[33mHEAD[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                    raw_kwargs[[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m].write(body)[90m[39;49;00m
+                [94mif[39;49;00m [95mnot[39;49;00m more_body:[90m[39;49;00m
+                    raw_kwargs[[33m"[39;49;00m[33mstream[39;49;00m[33m"[39;49;00m].seek([94m0[39;49;00m)[90m[39;49;00m
+                    response_complete.set()[90m[39;49;00m
+            [94melif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                template = message[[33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m][[33m"[39;49;00m[33mtemplate[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                context = message[[33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m][[33m"[39;49;00m[33mcontext[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.portal_factory() [94mas[39;49;00m portal:[90m[39;49;00m
+                response_complete = portal.call(anyio.Event)[90m[39;49;00m
+>               portal.call([96mself[39;49;00m.app, scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\testclient.py[0m:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <anyio._backends._asyncio.BlockingPortal object at 0x000001FEC4F05550>
+func = <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>
+args = ({'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <fu...ls>.receive at 0x000001FEC4F177E0>, <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>)
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mcall[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        func: Callable[[Unpack[PosArgsT]], Awaitable[T_Retval] | T_Retval],[90m[39;49;00m
+        *args: Unpack[PosArgsT],[90m[39;49;00m
+    ) -> T_Retval:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    Call the given function in the event loop thread.[39;49;00m
+    [33m[39;49;00m
+    [33m    If the callable returns a coroutine object, it is awaited on.[39;49;00m
+    [33m[39;49;00m
+    [33m    :param func: any callable[39;49;00m
+    [33m    :raises RuntimeError: if the portal is not running or if this method is called[39;49;00m
+    [33m        from within the event loop thread[39;49;00m
+    [33m[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+>       [94mreturn[39;49;00m cast(T_Retval, [96mself[39;49;00m.start_task_soon(func, *args).result())[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\from_thread.py[0m:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = None, timeout = None
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mresult[39;49;00m([96mself[39;49;00m, timeout=[94mNone[39;49;00m):[90m[39;49;00m
+    [90m    [39;49;00m[33m"""Return the result of the call that the future represents.[39;49;00m
+    [33m[39;49;00m
+    [33m    Args:[39;49;00m
+    [33m        timeout: The number of seconds to wait for the result if the future[39;49;00m
+    [33m            isn't done. If None, then there is no limit on the wait time.[39;49;00m
+    [33m[39;49;00m
+    [33m    Returns:[39;49;00m
+    [33m        The result of the call that the future represents.[39;49;00m
+    [33m[39;49;00m
+    [33m    Raises:[39;49;00m
+    [33m        CancelledError: If the future was cancelled.[39;49;00m
+    [33m        TimeoutError: If the future didn't finish executing before the given[39;49;00m
+    [33m            timeout.[39;49;00m
+    [33m        Exception: If the call raised then that exception will be raised.[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m._condition:[90m[39;49;00m
+                [94mif[39;49;00m [96mself[39;49;00m._state [95min[39;49;00m [CANCELLED, CANCELLED_AND_NOTIFIED]:[90m[39;49;00m
+                    [94mraise[39;49;00m CancelledError()[90m[39;49;00m
+                [94melif[39;49;00m [96mself[39;49;00m._state == FINISHED:[90m[39;49;00m
+                    [94mreturn[39;49;00m [96mself[39;49;00m.__get_result()[90m[39;49;00m
+    [90m[39;49;00m
+                [96mself[39;49;00m._condition.wait(timeout)[90m[39;49;00m
+    [90m[39;49;00m
+                [94mif[39;49;00m [96mself[39;49;00m._state [95min[39;49;00m [CANCELLED, CANCELLED_AND_NOTIFIED]:[90m[39;49;00m
+                    [94mraise[39;49;00m CancelledError()[90m[39;49;00m
+                [94melif[39;49;00m [96mself[39;49;00m._state == FINISHED:[90m[39;49;00m
+>                   [94mreturn[39;49;00m [96mself[39;49;00m.__get_result()[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py[0m:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = None
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92m__get_result[39;49;00m([96mself[39;49;00m):[90m[39;49;00m
+        [94mif[39;49;00m [96mself[39;49;00m._exception:[90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+>               [94mraise[39;49;00m [96mself[39;49;00m._exception[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py[0m:401: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <anyio._backends._asyncio.BlockingPortal object at 0x000001FEC4F05550>
+func = <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>
+args = ({'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <fu...ls>.receive at 0x000001FEC4F177E0>, <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>)
+kwargs = {}
+future = <Future at 0x1fec4f263f0 state=finished raised ClientNotConnectedError>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_call_func[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        func: Callable[[Unpack[PosArgsT]], Awaitable[T_Retval] | T_Retval],[90m[39;49;00m
+        args: [96mtuple[39;49;00m[Unpack[PosArgsT]],[90m[39;49;00m
+        kwargs: [96mdict[39;49;00m[[96mstr[39;49;00m, Any],[90m[39;49;00m
+        future: Future[T_Retval],[90m[39;49;00m
+    ) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mdef[39;49;00m[90m [39;49;00m[92mcallback[39;49;00m(f: Future[T_Retval]) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mif[39;49;00m f.cancelled() [95mand[39;49;00m [96mself[39;49;00m._event_loop_thread_id [95mnot[39;49;00m [95min[39;49;00m ([90m[39;49;00m
+                [94mNone[39;49;00m,[90m[39;49;00m
+                get_ident(),[90m[39;49;00m
+            ):[90m[39;49;00m
+                [96mself[39;49;00m.call(scope.cancel)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            retval_or_awaitable = func(*args, **kwargs)[90m[39;49;00m
+            [94mif[39;49;00m isawaitable(retval_or_awaitable):[90m[39;49;00m
+                [94mwith[39;49;00m CancelScope() [94mas[39;49;00m scope:[90m[39;49;00m
+                    [94mif[39;49;00m future.cancelled():[90m[39;49;00m
+                        scope.cancel()[90m[39;49;00m
+                    [94melse[39;49;00m:[90m[39;49;00m
+                        future.add_done_callback(callback)[90m[39;49;00m
+    [90m[39;49;00m
+>                   retval = [94mawait[39;49;00m retval_or_awaitable[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\from_thread.py[0m:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m [96mself[39;49;00m.root_path:[90m[39;49;00m
+            scope[[33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m] = [96mself[39;49;00m.root_path[90m[39;49;00m
+>       [94mawait[39;49;00m [96msuper[39;49;00m().[92m__call__[39;49;00m(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\applications.py[0m:1159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        scope[[33m"[39;49;00m[33mapp[39;49;00m[33m"[39;49;00m] = [96mself[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m [96mself[39;49;00m.middleware_stack [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+            [96mself[39;49;00m.middleware_stack = [96mself[39;49;00m.build_middleware_stack()[90m[39;49;00m
+>       [94mawait[39;49;00m [96mself[39;49;00m.middleware_stack(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\applications.py[0m:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001FEC4F07620>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_send[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started, send[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, _send)[90m[39;49;00m
+        [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+            request = Request(scope)[90m[39;49;00m
+            [94mif[39;49;00m [96mself[39;49;00m.debug:[90m[39;49;00m
+                [90m# In debug mode, return traceback responses.[39;49;00m[90m[39;49;00m
+                response = [96mself[39;49;00m.debug_response(request, exc)[90m[39;49;00m
+            [94melif[39;49;00m [96mself[39;49;00m.handler [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                [90m# Use our default 500 error handler.[39;49;00m[90m[39;49;00m
+                response = [96mself[39;49;00m.error_response(request, exc)[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                [90m# Use an installed 500 error handler.[39;49;00m[90m[39;49;00m
+                [94mif[39;49;00m is_async_callable([96mself[39;49;00m.handler):[90m[39;49;00m
+                    response = [94mawait[39;49;00m [96mself[39;49;00m.handler(request, exc)[90m[39;49;00m
+                [94melse[39;49;00m:[90m[39;49;00m
+                    response = [94mawait[39;49;00m run_in_threadpool([96mself[39;49;00m.handler, request, exc)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m [95mnot[39;49;00m response_started:[90m[39;49;00m
+                [94mawait[39;49;00m response(scope, receive, send)[90m[39;49;00m
+    [90m[39;49;00m
+            [90m# We always continue to raise the exception.[39;49;00m[90m[39;49;00m
+            [90m# This allows servers to log the error, or allows test clients[39;49;00m[90m[39;49;00m
+            [90m# to optionally raise the error within the test case.[39;49;00m[90m[39;49;00m
+>           [94mraise[39;49;00m exc[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py[0m:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001FEC4F07620>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function _TestClientTransport.handle_request.<locals>.send at 0x000001FEC4F179C0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_send[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started, send[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+>           [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, _send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py[0m:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.cors.CORSMiddleware object at 0x000001FEC4F074D0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001FEC4F96700>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        method = scope[[33m"[39;49;00m[33mmethod[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+        headers = Headers(scope=scope)[90m[39;49;00m
+        origin = headers.get([33m"[39;49;00m[33morigin[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m origin [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+>           [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py[0m:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <app.main.LoggingMiddleware object at 0x000001FEC4F06F90>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001FEC4F96700>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        request = _CachedRequest(scope, receive)[90m[39;49;00m
+        wrapped_receive = request.wrapped_receive[90m[39;49;00m
+        response_sent = anyio.Event()[90m[39;49;00m
+        app_exc: [96mException[39;49;00m | [94mNone[39;49;00m = [94mNone[39;49;00m[90m[39;49;00m
+        exception_already_raised = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcall_next[39;49;00m(request: Request) -> Response:[90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mreceive_or_disconnect[39;49;00m() -> Message:[90m[39;49;00m
+                [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+                [94masync[39;49;00m [94mwith[39;49;00m anyio.create_task_group() [94mas[39;49;00m task_group:[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrap[39;49;00m(func: Callable[[], Awaitable[T]]) -> T:[90m[39;49;00m
+                        result = [94mawait[39;49;00m func()[90m[39;49;00m
+                        task_group.cancel_scope.cancel()[90m[39;49;00m
+                        [94mreturn[39;49;00m result[90m[39;49;00m
+    [90m[39;49;00m
+                    task_group.start_soon(wrap, response_sent.wait)[90m[39;49;00m
+                    message = [94mawait[39;49;00m wrap(wrapped_receive)[90m[39;49;00m
+    [90m[39;49;00m
+                [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+                [94mreturn[39;49;00m message[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msend_no_error[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+                [94mtry[39;49;00m:[90m[39;49;00m
+                    [94mawait[39;49;00m send_stream.send(message)[90m[39;49;00m
+                [94mexcept[39;49;00m anyio.BrokenResourceError:[90m[39;49;00m
+                    [90m# recv_stream has been closed, i.e. response_sent has been set.[39;49;00m[90m[39;49;00m
+                    [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcoro[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+                [94mnonlocal[39;49;00m app_exc[90m[39;49;00m
+    [90m[39;49;00m
+                [94mwith[39;49;00m send_stream:[90m[39;49;00m
+                    [94mtry[39;49;00m:[90m[39;49;00m
+                        [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive_or_disconnect, send_no_error)[90m[39;49;00m
+                    [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+                        app_exc = exc[90m[39;49;00m
+    [90m[39;49;00m
+            task_group.start_soon(coro)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+                message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+                info = message.get([33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+                [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m [95mand[39;49;00m info [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                    message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+            [94mexcept[39;49;00m anyio.EndOfStream:[90m[39;49;00m
+                [94mif[39;49;00m app_exc [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                    [94mnonlocal[39;49;00m exception_already_raised[90m[39;49;00m
+                    exception_already_raised = [94mTrue[39;49;00m[90m[39;49;00m
+                    [90m# Prevent `anyio.EndOfStream` from polluting app exception context.[39;49;00m[90m[39;49;00m
+                    [90m# If both cause and context are None then the context is suppressed[39;49;00m[90m[39;49;00m
+                    [90m# and `anyio.EndOfStream` is not present in the exception traceback.[39;49;00m[90m[39;49;00m
+                    [90m# If exception cause is not None then it is propagated with[39;49;00m[90m[39;49;00m
+                    [90m# reraising here.[39;49;00m[90m[39;49;00m
+                    [90m# If exception has no cause but has context set then the context is[39;49;00m[90m[39;49;00m
+                    [90m# propagated as a cause with the reraise. This is necessary in order[39;49;00m[90m[39;49;00m
+                    [90m# to prevent `anyio.EndOfStream` from polluting the exception[39;49;00m[90m[39;49;00m
+                    [90m# context.[39;49;00m[90m[39;49;00m
+                    [94mraise[39;49;00m app_exc [94mfrom[39;49;00m[90m [39;49;00m[04m[96mapp_exc[39;49;00m[04m[96m.[39;49;00m[04m[96m__cause__[39;49;00m [95mor[39;49;00m app_exc.__context__[90m[39;49;00m
+                [94mraise[39;49;00m [96mRuntimeError[39;49;00m([33m"[39;49;00m[33mNo response returned.[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+            [94massert[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mbody_stream[39;49;00m() -> BodyStreamGenerator:[90m[39;49;00m
+                [94masync[39;49;00m [94mfor[39;49;00m message [95min[39;49;00m recv_stream:[90m[39;49;00m
+                    [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.pathsend[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                        [94myield[39;49;00m message[90m[39;49;00m
+                        [94mbreak[39;49;00m[90m[39;49;00m
+                    [94massert[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m, [33mf[39;49;00m[33m"[39;49;00m[33mUnexpected message: [39;49;00m[33m{[39;49;00mmessage[33m}[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    body = message.get([33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m, [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                    [94mif[39;49;00m body:[90m[39;49;00m
+                        [94myield[39;49;00m body[90m[39;49;00m
+                    [94mif[39;49;00m [95mnot[39;49;00m message.get([33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m, [94mFalse[39;49;00m):[90m[39;49;00m
+                        [94mbreak[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            response = _StreamingResponse(status_code=message[[33m"[39;49;00m[33mstatus[39;49;00m[33m"[39;49;00m], content=body_stream(), info=info)[90m[39;49;00m
+            response.raw_headers = message[[33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+            [94mreturn[39;49;00m response[90m[39;49;00m
+    [90m[39;49;00m
+        streams: anyio.create_memory_object_stream[Message] = anyio.create_memory_object_stream()[90m[39;49;00m
+        send_stream, recv_stream = streams[90m[39;49;00m
+>       [94mwith[39;49;00m recv_stream, send_stream, collapse_excgroups():[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py[0m:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <contextlib._GeneratorContextManager object at 0x000001FEC4EB79A0>
+typ = <class 'ExceptionGroup'>
+value = ExceptionGroup('unhandled errors in a TaskGroup', [ClientNotConnectedError('Client is not connected to the query engine, you must call `connect()` before attempting to query data.')])
+traceback = <traceback object at 0x000001FEC50AFA00>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92m__exit__[39;49;00m([96mself[39;49;00m, typ, value, traceback):[90m[39;49;00m
+        [94mif[39;49;00m typ [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+                [96mnext[39;49;00m([96mself[39;49;00m.gen)[90m[39;49;00m
+            [94mexcept[39;49;00m [96mStopIteration[39;49;00m:[90m[39;49;00m
+                [94mreturn[39;49;00m [94mFalse[39;49;00m[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                [94mtry[39;49;00m:[90m[39;49;00m
+                    [94mraise[39;49;00m [96mRuntimeError[39;49;00m([33m"[39;49;00m[33mgenerator didn[39;49;00m[33m'[39;49;00m[33mt stop[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                [94mfinally[39;49;00m:[90m[39;49;00m
+                    [96mself[39;49;00m.gen.close()[90m[39;49;00m
+        [94melse[39;49;00m:[90m[39;49;00m
+            [94mif[39;49;00m value [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                [90m# Need to force instantiation so we can reliably[39;49;00m[90m[39;49;00m
+                [90m# tell if we get the same exception back[39;49;00m[90m[39;49;00m
+                value = typ()[90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+>               [96mself[39;49;00m.gen.throw(value)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\contextlib.py[0m:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    [0m[37m@contextmanager[39;49;00m[90m[39;49;00m
+    [94mdef[39;49;00m[90m [39;49;00m[92mcollapse_excgroups[39;49;00m() -> Generator[[94mNone[39;49;00m, [94mNone[39;49;00m, [94mNone[39;49;00m]:[90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94myield[39;49;00m[90m[39;49;00m
+        [94mexcept[39;49;00m [96mBaseException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+            [94mif[39;49;00m has_exceptiongroups:  [90m# pragma: no cover[39;49;00m[90m[39;49;00m
+                [94mwhile[39;49;00m [96misinstance[39;49;00m(exc, BaseExceptionGroup) [95mand[39;49;00m [96mlen[39;49;00m(exc.exceptions) == [94m1[39;49;00m:[90m[39;49;00m
+                    exc = exc.exceptions[[94m0[39;49;00m][90m[39;49;00m
+    [90m[39;49;00m
+>           [94mraise[39;49;00m exc[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_utils.py[0m:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <app.main.LoggingMiddleware object at 0x000001FEC4F06F90>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function _TestClientTransport.handle_request.<locals>.receive at 0x000001FEC4F177E0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001FEC4F96700>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        request = _CachedRequest(scope, receive)[90m[39;49;00m
+        wrapped_receive = request.wrapped_receive[90m[39;49;00m
+        response_sent = anyio.Event()[90m[39;49;00m
+        app_exc: [96mException[39;49;00m | [94mNone[39;49;00m = [94mNone[39;49;00m[90m[39;49;00m
+        exception_already_raised = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcall_next[39;49;00m(request: Request) -> Response:[90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mreceive_or_disconnect[39;49;00m() -> Message:[90m[39;49;00m
+                [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+                [94masync[39;49;00m [94mwith[39;49;00m anyio.create_task_group() [94mas[39;49;00m task_group:[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrap[39;49;00m(func: Callable[[], Awaitable[T]]) -> T:[90m[39;49;00m
+                        result = [94mawait[39;49;00m func()[90m[39;49;00m
+                        task_group.cancel_scope.cancel()[90m[39;49;00m
+                        [94mreturn[39;49;00m result[90m[39;49;00m
+    [90m[39;49;00m
+                    task_group.start_soon(wrap, response_sent.wait)[90m[39;49;00m
+                    message = [94mawait[39;49;00m wrap(wrapped_receive)[90m[39;49;00m
+    [90m[39;49;00m
+                [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                    [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+                [94mreturn[39;49;00m message[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msend_no_error[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+                [94mtry[39;49;00m:[90m[39;49;00m
+                    [94mawait[39;49;00m send_stream.send(message)[90m[39;49;00m
+                [94mexcept[39;49;00m anyio.BrokenResourceError:[90m[39;49;00m
+                    [90m# recv_stream has been closed, i.e. response_sent has been set.[39;49;00m[90m[39;49;00m
+                    [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcoro[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+                [94mnonlocal[39;49;00m app_exc[90m[39;49;00m
+    [90m[39;49;00m
+                [94mwith[39;49;00m send_stream:[90m[39;49;00m
+                    [94mtry[39;49;00m:[90m[39;49;00m
+                        [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive_or_disconnect, send_no_error)[90m[39;49;00m
+                    [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+                        app_exc = exc[90m[39;49;00m
+    [90m[39;49;00m
+            task_group.start_soon(coro)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+                message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+                info = message.get([33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+                [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m [95mand[39;49;00m info [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                    message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+            [94mexcept[39;49;00m anyio.EndOfStream:[90m[39;49;00m
+                [94mif[39;49;00m app_exc [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                    [94mnonlocal[39;49;00m exception_already_raised[90m[39;49;00m
+                    exception_already_raised = [94mTrue[39;49;00m[90m[39;49;00m
+                    [90m# Prevent `anyio.EndOfStream` from polluting app exception context.[39;49;00m[90m[39;49;00m
+                    [90m# If both cause and context are None then the context is suppressed[39;49;00m[90m[39;49;00m
+                    [90m# and `anyio.EndOfStream` is not present in the exception traceback.[39;49;00m[90m[39;49;00m
+                    [90m# If exception cause is not None then it is propagated with[39;49;00m[90m[39;49;00m
+                    [90m# reraising here.[39;49;00m[90m[39;49;00m
+                    [90m# If exception has no cause but has context set then the context is[39;49;00m[90m[39;49;00m
+                    [90m# propagated as a cause with the reraise. This is necessary in order[39;49;00m[90m[39;49;00m
+                    [90m# to prevent `anyio.EndOfStream` from polluting the exception[39;49;00m[90m[39;49;00m
+                    [90m# context.[39;49;00m[90m[39;49;00m
+                    [94mraise[39;49;00m app_exc [94mfrom[39;49;00m[90m [39;49;00m[04m[96mapp_exc[39;49;00m[04m[96m.[39;49;00m[04m[96m__cause__[39;49;00m [95mor[39;49;00m app_exc.__context__[90m[39;49;00m
+                [94mraise[39;49;00m [96mRuntimeError[39;49;00m([33m"[39;49;00m[33mNo response returned.[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+            [94massert[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mbody_stream[39;49;00m() -> BodyStreamGenerator:[90m[39;49;00m
+                [94masync[39;49;00m [94mfor[39;49;00m message [95min[39;49;00m recv_stream:[90m[39;49;00m
+                    [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.pathsend[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                        [94myield[39;49;00m message[90m[39;49;00m
+                        [94mbreak[39;49;00m[90m[39;49;00m
+                    [94massert[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.body[39;49;00m[33m"[39;49;00m, [33mf[39;49;00m[33m"[39;49;00m[33mUnexpected message: [39;49;00m[33m{[39;49;00mmessage[33m}[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    body = message.get([33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m, [33mb[39;49;00m[33m"[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                    [94mif[39;49;00m body:[90m[39;49;00m
+                        [94myield[39;49;00m body[90m[39;49;00m
+                    [94mif[39;49;00m [95mnot[39;49;00m message.get([33m"[39;49;00m[33mmore_body[39;49;00m[33m"[39;49;00m, [94mFalse[39;49;00m):[90m[39;49;00m
+                        [94mbreak[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            response = _StreamingResponse(status_code=message[[33m"[39;49;00m[33mstatus[39;49;00m[33m"[39;49;00m], content=body_stream(), info=info)[90m[39;49;00m
+            response.raw_headers = message[[33m"[39;49;00m[33mheaders[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+            [94mreturn[39;49;00m response[90m[39;49;00m
+    [90m[39;49;00m
+        streams: anyio.create_memory_object_stream[Message] = anyio.create_memory_object_stream()[90m[39;49;00m
+        send_stream, recv_stream = streams[90m[39;49;00m
+        [94mwith[39;49;00m recv_stream, send_stream, collapse_excgroups():[90m[39;49;00m
+            [94masync[39;49;00m [94mwith[39;49;00m anyio.create_task_group() [94mas[39;49;00m task_group:[90m[39;49;00m
+>               response = [94mawait[39;49;00m [96mself[39;49;00m.dispatch_func(request, call_next)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py[0m:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <app.main.LoggingMiddleware object at 0x000001FEC4F06F90>
+request = <starlette.middleware.base._CachedRequest object at 0x000001FEC4F078C0>
+call_next = <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001FEC4F96840>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mdispatch[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m, request: Request, call_next: Callable[[Request], Awaitable[Response]][90m[39;49;00m
+    ) -> Response:[90m[39;49;00m
+        start_time = datetime.now(timezone.utc)[90m[39;49;00m
+    [90m[39;49;00m
+>       response = [94mawait[39;49;00m call_next(request)[90m[39;49;00m
+
+[1m[31mapp\main.py[0m:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request = <starlette.middleware.base._CachedRequest object at 0x000001FEC4F078C0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcall_next[39;49;00m(request: Request) -> Response:[90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mreceive_or_disconnect[39;49;00m() -> Message:[90m[39;49;00m
+            [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+            [94masync[39;49;00m [94mwith[39;49;00m anyio.create_task_group() [94mas[39;49;00m task_group:[90m[39;49;00m
+    [90m[39;49;00m
+                [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrap[39;49;00m(func: Callable[[], Awaitable[T]]) -> T:[90m[39;49;00m
+                    result = [94mawait[39;49;00m func()[90m[39;49;00m
+                    task_group.cancel_scope.cancel()[90m[39;49;00m
+                    [94mreturn[39;49;00m result[90m[39;49;00m
+    [90m[39;49;00m
+                task_group.start_soon(wrap, response_sent.wait)[90m[39;49;00m
+                message = [94mawait[39;49;00m wrap(wrapped_receive)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m response_sent.is_set():[90m[39;49;00m
+                [94mreturn[39;49;00m {[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mhttp.disconnect[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+    [90m[39;49;00m
+            [94mreturn[39;49;00m message[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msend_no_error[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+                [94mawait[39;49;00m send_stream.send(message)[90m[39;49;00m
+            [94mexcept[39;49;00m anyio.BrokenResourceError:[90m[39;49;00m
+                [90m# recv_stream has been closed, i.e. response_sent has been set.[39;49;00m[90m[39;49;00m
+                [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcoro[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m app_exc[90m[39;49;00m
+    [90m[39;49;00m
+            [94mwith[39;49;00m send_stream:[90m[39;49;00m
+                [94mtry[39;49;00m:[90m[39;49;00m
+                    [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive_or_disconnect, send_no_error)[90m[39;49;00m
+                [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+                    app_exc = exc[90m[39;49;00m
+    [90m[39;49;00m
+        task_group.start_soon(coro)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+            info = message.get([33m"[39;49;00m[33minfo[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.debug[39;49;00m[33m"[39;49;00m [95mand[39;49;00m info [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                message = [94mawait[39;49;00m recv_stream.receive()[90m[39;49;00m
+        [94mexcept[39;49;00m anyio.EndOfStream:[90m[39;49;00m
+            [94mif[39;49;00m app_exc [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                [94mnonlocal[39;49;00m exception_already_raised[90m[39;49;00m
+                exception_already_raised = [94mTrue[39;49;00m[90m[39;49;00m
+                [90m# Prevent `anyio.EndOfStream` from polluting app exception context.[39;49;00m[90m[39;49;00m
+                [90m# If both cause and context are None then the context is suppressed[39;49;00m[90m[39;49;00m
+                [90m# and `anyio.EndOfStream` is not present in the exception traceback.[39;49;00m[90m[39;49;00m
+                [90m# If exception cause is not None then it is propagated with[39;49;00m[90m[39;49;00m
+                [90m# reraising here.[39;49;00m[90m[39;49;00m
+                [90m# If exception has no cause but has context set then the context is[39;49;00m[90m[39;49;00m
+                [90m# propagated as a cause with the reraise. This is necessary in order[39;49;00m[90m[39;49;00m
+                [90m# to prevent `anyio.EndOfStream` from polluting the exception[39;49;00m[90m[39;49;00m
+                [90m# context.[39;49;00m[90m[39;49;00m
+>               [94mraise[39;49;00m app_exc [94mfrom[39;49;00m[90m [39;49;00m[04m[96mapp_exc[39;49;00m[04m[96m.[39;49;00m[04m[96m__cause__[39;49;00m [95mor[39;49;00m app_exc.__context__[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py[0m:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mcoro[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mnonlocal[39;49;00m app_exc[90m[39;49;00m
+    [90m[39;49;00m
+        [94mwith[39;49;00m send_stream:[90m[39;49;00m
+            [94mtry[39;49;00m:[90m[39;49;00m
+>               [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive_or_disconnect, send_no_error)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py[0m:144: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001FEC4F07380>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001FEC4F96980>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m ([33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mwebsocket[39;49;00m[33m"[39;49;00m):[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        scope[[33m"[39;49;00m[33mstarlette.exception_handlers[39;49;00m[33m"[39;49;00m] = ([90m[39;49;00m
+            [96mself[39;49;00m._exception_handlers,[90m[39;49;00m
+            [96mself[39;49;00m._status_handlers,[90m[39;49;00m
+        )[90m[39;49;00m
+    [90m[39;49;00m
+        conn: Request | WebSocket[90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            conn = Request(scope, receive, send)[90m[39;49;00m
+        [94melse[39;49;00m:[90m[39;49;00m
+            conn = WebSocket(scope, receive, send)[90m[39;49;00m
+    [90m[39;49;00m
+>       [94mawait[39;49;00m wrap_app_handling_exceptions([96mself[39;49;00m.app, conn)(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py[0m:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001FEC4F96980>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrapped_app[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msender[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m app(scope, receive, sender)[90m[39;49;00m
+        [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+            handler = [94mNone[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m [96misinstance[39;49;00m(exc, HTTPException):[90m[39;49;00m
+                handler = status_handlers.get(exc.status_code)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m handler [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                handler = _lookup_exception_handler(exception_handlers, exc)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m handler [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+>               [94mraise[39;49;00m exc[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py[0m:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001FEC4F96980>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrapped_app[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msender[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+>           [94mawait[39;49;00m app(scope, receive, sender)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py[0m:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001FEC4F07230>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94masync[39;49;00m [94mwith[39;49;00m AsyncExitStack() [94mas[39;49;00m stack:[90m[39;49;00m
+            scope[[96mself[39;49;00m.context_name] = stack[90m[39;49;00m
+>           [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\middleware\asyncexitstack.py[0m:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.routing.APIRouter object at 0x000001FEC4EDC9D0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m__call__[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""[39;49;00m
+    [33m    The main entry point to the Router class.[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+>       [94mawait[39;49;00m [96mself[39;49;00m.middleware_stack(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py[0m:660: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.routing.APIRouter object at 0x000001FEC4EDC9D0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mapp[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94massert[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] [95min[39;49;00m ([33m"[39;49;00m[33mhttp[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mwebsocket[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlifespan[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m [33m"[39;49;00m[33mrouter[39;49;00m[33m"[39;49;00m [95mnot[39;49;00m [95min[39;49;00m scope:[90m[39;49;00m
+            scope[[33m"[39;49;00m[33mrouter[39;49;00m[33m"[39;49;00m] = [96mself[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m scope[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mlifespan[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m [96mself[39;49;00m.lifespan(scope, receive, send)[90m[39;49;00m
+            [94mreturn[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        partial = [94mNone[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94mfor[39;49;00m route [95min[39;49;00m [96mself[39;49;00m.routes:[90m[39;49;00m
+            [90m# Determine if any route matches the incoming scope,[39;49;00m[90m[39;49;00m
+            [90m# and hand over to the matching route if found.[39;49;00m[90m[39;49;00m
+            match, child_scope = route.matches(scope)[90m[39;49;00m
+            [94mif[39;49;00m match == Match.FULL:[90m[39;49;00m
+                scope.update(child_scope)[90m[39;49;00m
+>               [94mawait[39;49;00m route.handle(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py[0m:680: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = APIRoute(path='/auth/student/register', name='register_student', methods=['POST'])
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mhandle[39;49;00m([96mself[39;49;00m, scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mif[39;49;00m [96mself[39;49;00m.methods [95mand[39;49;00m scope[[33m"[39;49;00m[33mmethod[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m [96mself[39;49;00m.methods:[90m[39;49;00m
+            headers = {[33m"[39;49;00m[33mAllow[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33m, [39;49;00m[33m"[39;49;00m.join([96mself[39;49;00m.methods)}[90m[39;49;00m
+            [94mif[39;49;00m [33m"[39;49;00m[33mapp[39;49;00m[33m"[39;49;00m [95min[39;49;00m scope:[90m[39;49;00m
+                [94mraise[39;49;00m HTTPException(status_code=[94m405[39;49;00m, headers=headers)[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+                response = PlainTextResponse([33m"[39;49;00m[33mMethod Not Allowed[39;49;00m[33m"[39;49;00m, status_code=[94m405[39;49;00m, headers=headers)[90m[39;49;00m
+            [94mawait[39;49;00m response(scope, receive, send)[90m[39;49;00m
+        [94melse[39;49;00m:[90m[39;49;00m
+>           [94mawait[39;49;00m [96mself[39;49;00m.app(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py[0m:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mapp[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        request = Request(scope, receive, send)[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mapp[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [90m# Starts customization[39;49;00m[90m[39;49;00m
+            response_awaited = [94mFalse[39;49;00m[90m[39;49;00m
+            [94masync[39;49;00m [94mwith[39;49;00m AsyncExitStack() [94mas[39;49;00m request_stack:[90m[39;49;00m
+                scope[[33m"[39;49;00m[33mfastapi_inner_astack[39;49;00m[33m"[39;49;00m] = request_stack[90m[39;49;00m
+                [94masync[39;49;00m [94mwith[39;49;00m AsyncExitStack() [94mas[39;49;00m function_stack:[90m[39;49;00m
+                    scope[[33m"[39;49;00m[33mfastapi_function_astack[39;49;00m[33m"[39;49;00m] = function_stack[90m[39;49;00m
+                    response = [94mawait[39;49;00m f(request)[90m[39;49;00m
+                [94mawait[39;49;00m response(scope, receive, send)[90m[39;49;00m
+                [90m# Continues customization[39;49;00m[90m[39;49;00m
+                response_awaited = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mif[39;49;00m [95mnot[39;49;00m response_awaited:[90m[39;49;00m
+                [94mraise[39;49;00m FastAPIError([90m[39;49;00m
+                    [33m"[39;49;00m[33mResponse not awaited. There[39;49;00m[33m'[39;49;00m[33ms a high chance that the [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    [33m"[39;49;00m[33mapplication code is raising an exception and a dependency with yield [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    [33m"[39;49;00m[33mhas a block with a bare except, or a block with except Exception, [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    [33m"[39;49;00m[33mand is not raising the exception again. Read more about it in the [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                    [33m"[39;49;00m[33mdocs: https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-except[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                )[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Same as in Starlette[39;49;00m[90m[39;49;00m
+>       [94mawait[39;49;00m wrap_app_handling_exceptions(app, request)(scope, receive, send)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py[0m:134: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrapped_app[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msender[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            [94mawait[39;49;00m app(scope, receive, sender)[90m[39;49;00m
+        [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m exc:[90m[39;49;00m
+            handler = [94mNone[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m [96misinstance[39;49;00m(exc, HTTPException):[90m[39;49;00m
+                handler = status_handlers.get(exc.status_code)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m handler [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                handler = _lookup_exception_handler(exception_handlers, exc)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m handler [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+>               [94mraise[39;49;00m exc[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py[0m:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96C00>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mwrapped_app[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        response_started = [94mFalse[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92msender[39;49;00m(message: Message) -> [94mNone[39;49;00m:[90m[39;49;00m
+            [94mnonlocal[39;49;00m response_started[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m message[[33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m] == [33m"[39;49;00m[33mhttp.response.start[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                response_started = [94mTrue[39;49;00m[90m[39;49;00m
+            [94mawait[39;49;00m send(message)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+>           [94mawait[39;49;00m app(scope, receive, sender)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py[0m:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001FEC4F042F0>, 'client': ('testclient', 50000), 'endpoint': <function register_student at 0x000001FEC4C72660>, 'extensions': {'http.response.debug': {}}, ...}
+receive = <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001FEC4F968E0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001FEC4F96DE0>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mapp[39;49;00m(scope: Scope, receive: Receive, send: Send) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [90m# Starts customization[39;49;00m[90m[39;49;00m
+        response_awaited = [94mFalse[39;49;00m[90m[39;49;00m
+        [94masync[39;49;00m [94mwith[39;49;00m AsyncExitStack() [94mas[39;49;00m request_stack:[90m[39;49;00m
+            scope[[33m"[39;49;00m[33mfastapi_inner_astack[39;49;00m[33m"[39;49;00m] = request_stack[90m[39;49;00m
+            [94masync[39;49;00m [94mwith[39;49;00m AsyncExitStack() [94mas[39;49;00m function_stack:[90m[39;49;00m
+                scope[[33m"[39;49;00m[33mfastapi_function_astack[39;49;00m[33m"[39;49;00m] = function_stack[90m[39;49;00m
+>               response = [94mawait[39;49;00m f(request)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py[0m:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request = <starlette.requests.Request object at 0x000001FEC4F38F50>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mapp[39;49;00m(request: Request) -> Response:[90m[39;49;00m
+        response: Response | [94mNone[39;49;00m = [94mNone[39;49;00m[90m[39;49;00m
+        file_stack = request.scope.get([33m"[39;49;00m[33mfastapi_middleware_astack[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        [94massert[39;49;00m [96misinstance[39;49;00m(file_stack, AsyncExitStack), ([90m[39;49;00m
+            [33m"[39;49;00m[33mfastapi_middleware_astack not found in request scope[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+        )[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Extract endpoint context for error messages[39;49;00m[90m[39;49;00m
+        endpoint_ctx = ([90m[39;49;00m
+            _extract_endpoint_context(dependant.call)[90m[39;49;00m
+            [94mif[39;49;00m dependant.call[90m[39;49;00m
+            [94melse[39;49;00m EndpointContext()[90m[39;49;00m
+        )[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m dependant.path:[90m[39;49;00m
+            [90m# For mounted sub-apps, include the mount path prefix[39;49;00m[90m[39;49;00m
+            mount_path = request.scope.get([33m"[39;49;00m[33mroot_path[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33m"[39;49;00m).rstrip([33m"[39;49;00m[33m/[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+            endpoint_ctx[[33m"[39;49;00m[33mpath[39;49;00m[33m"[39;49;00m] = [33mf[39;49;00m[33m"[39;49;00m[33m{[39;49;00mrequest.method[33m}[39;49;00m[33m [39;49;00m[33m{[39;49;00mmount_path[33m}[39;49;00m[33m{[39;49;00mdependant.path[33m}[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Read body and auto-close files[39;49;00m[90m[39;49;00m
+        [94mtry[39;49;00m:[90m[39;49;00m
+            body: Any = [94mNone[39;49;00m[90m[39;49;00m
+            [94mif[39;49;00m body_field:[90m[39;49;00m
+                [94mif[39;49;00m is_body_form:[90m[39;49;00m
+                    body = [94mawait[39;49;00m request.form()[90m[39;49;00m
+                    file_stack.push_async_callback(body.close)[90m[39;49;00m
+                [94melse[39;49;00m:[90m[39;49;00m
+                    body_bytes = [94mawait[39;49;00m request.body()[90m[39;49;00m
+                    [94mif[39;49;00m body_bytes:[90m[39;49;00m
+                        json_body: Any = Undefined[90m[39;49;00m
+                        content_type_value = request.headers.get([33m"[39;49;00m[33mcontent-type[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                        [94mif[39;49;00m [95mnot[39;49;00m content_type_value:[90m[39;49;00m
+                            [94mif[39;49;00m [95mnot[39;49;00m actual_strict_content_type:[90m[39;49;00m
+                                json_body = [94mawait[39;49;00m request.json()[90m[39;49;00m
+                        [94melse[39;49;00m:[90m[39;49;00m
+                            message = email.message.Message()[90m[39;49;00m
+                            message[[33m"[39;49;00m[33mcontent-type[39;49;00m[33m"[39;49;00m] = content_type_value[90m[39;49;00m
+                            [94mif[39;49;00m message.get_content_maintype() == [33m"[39;49;00m[33mapplication[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                                subtype = message.get_content_subtype()[90m[39;49;00m
+                                [94mif[39;49;00m subtype == [33m"[39;49;00m[33mjson[39;49;00m[33m"[39;49;00m [95mor[39;49;00m subtype.endswith([33m"[39;49;00m[33m+json[39;49;00m[33m"[39;49;00m):[90m[39;49;00m
+                                    json_body = [94mawait[39;49;00m request.json()[90m[39;49;00m
+                        [94mif[39;49;00m json_body != Undefined:[90m[39;49;00m
+                            body = json_body[90m[39;49;00m
+                        [94melse[39;49;00m:[90m[39;49;00m
+                            body = body_bytes[90m[39;49;00m
+        [94mexcept[39;49;00m json.JSONDecodeError [94mas[39;49;00m e:[90m[39;49;00m
+            validation_error = RequestValidationError([90m[39;49;00m
+                [[90m[39;49;00m
+                    {[90m[39;49;00m
+                        [33m"[39;49;00m[33mtype[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mjson_invalid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                        [33m"[39;49;00m[33mloc[39;49;00m[33m"[39;49;00m: ([33m"[39;49;00m[33mbody[39;49;00m[33m"[39;49;00m, e.pos),[90m[39;49;00m
+                        [33m"[39;49;00m[33mmsg[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mJSON decode error[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                        [33m"[39;49;00m[33minput[39;49;00m[33m"[39;49;00m: {},[90m[39;49;00m
+                        [33m"[39;49;00m[33mctx[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33merror[39;49;00m[33m"[39;49;00m: e.msg},[90m[39;49;00m
+                    }[90m[39;49;00m
+                ],[90m[39;49;00m
+                body=e.doc,[90m[39;49;00m
+                endpoint_ctx=endpoint_ctx,[90m[39;49;00m
+            )[90m[39;49;00m
+            [94mraise[39;49;00m validation_error [94mfrom[39;49;00m[90m [39;49;00m[04m[96me[39;49;00m[90m[39;49;00m
+        [94mexcept[39;49;00m HTTPException:[90m[39;49;00m
+            [90m# If a middleware raises an HTTPException, it should be raised again[39;49;00m[90m[39;49;00m
+            [94mraise[39;49;00m[90m[39;49;00m
+        [94mexcept[39;49;00m [96mException[39;49;00m [94mas[39;49;00m e:[90m[39;49;00m
+            http_error = HTTPException([90m[39;49;00m
+                status_code=[94m400[39;49;00m, detail=[33m"[39;49;00m[33mThere was an error parsing the body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+            )[90m[39;49;00m
+            [94mraise[39;49;00m http_error [94mfrom[39;49;00m[90m [39;49;00m[04m[96me[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# Solve dependencies and run path operation function, auto-closing dependencies[39;49;00m[90m[39;49;00m
+        errors: [96mlist[39;49;00m[Any] = [][90m[39;49;00m
+        async_exit_stack = request.scope.get([33m"[39;49;00m[33mfastapi_inner_astack[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        [94massert[39;49;00m [96misinstance[39;49;00m(async_exit_stack, AsyncExitStack), ([90m[39;49;00m
+            [33m"[39;49;00m[33mfastapi_inner_astack not found in request scope[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+        )[90m[39;49;00m
+        solved_result = [94mawait[39;49;00m solve_dependencies([90m[39;49;00m
+            request=request,[90m[39;49;00m
+            dependant=dependant,[90m[39;49;00m
+            body=cast([96mdict[39;49;00m[[96mstr[39;49;00m, Any] | FormData | [96mbytes[39;49;00m | [94mNone[39;49;00m, body),[90m[39;49;00m
+            dependency_overrides_provider=dependency_overrides_provider,[90m[39;49;00m
+            async_exit_stack=async_exit_stack,[90m[39;49;00m
+            embed_body_fields=embed_body_fields,[90m[39;49;00m
+        )[90m[39;49;00m
+        errors = solved_result.errors[90m[39;49;00m
+        [94massert[39;49;00m dependant.call  [90m# For types[39;49;00m[90m[39;49;00m
+        [94mif[39;49;00m [95mnot[39;49;00m errors:[90m[39;49;00m
+            [90m# Shared serializer for stream items (JSONL and SSE).[39;49;00m[90m[39;49;00m
+            [90m# Validates against stream_item_field when set, then[39;49;00m[90m[39;49;00m
+            [90m# serializes to JSON bytes.[39;49;00m[90m[39;49;00m
+            [94mdef[39;49;00m[90m [39;49;00m[92m_serialize_data[39;49;00m(data: Any) -> [96mbytes[39;49;00m:[90m[39;49;00m
+                [94mif[39;49;00m stream_item_field:[90m[39;49;00m
+                    value, errors_ = stream_item_field.validate([90m[39;49;00m
+                        data, {}, loc=([33m"[39;49;00m[33mresponse[39;49;00m[33m"[39;49;00m,)[90m[39;49;00m
+                    )[90m[39;49;00m
+                    [94mif[39;49;00m errors_:[90m[39;49;00m
+                        ctx = endpoint_ctx [95mor[39;49;00m EndpointContext()[90m[39;49;00m
+                        [94mraise[39;49;00m ResponseValidationError([90m[39;49;00m
+                            errors=errors_,[90m[39;49;00m
+                            body=data,[90m[39;49;00m
+                            endpoint_ctx=ctx,[90m[39;49;00m
+                        )[90m[39;49;00m
+                    [94mreturn[39;49;00m stream_item_field.serialize_json([90m[39;49;00m
+                        value,[90m[39;49;00m
+                        include=response_model_include,[90m[39;49;00m
+                        exclude=response_model_exclude,[90m[39;49;00m
+                        by_alias=response_model_by_alias,[90m[39;49;00m
+                        exclude_unset=response_model_exclude_unset,[90m[39;49;00m
+                        exclude_defaults=response_model_exclude_defaults,[90m[39;49;00m
+                        exclude_none=response_model_exclude_none,[90m[39;49;00m
+                    )[90m[39;49;00m
+                [94melse[39;49;00m:[90m[39;49;00m
+                    data = jsonable_encoder(data)[90m[39;49;00m
+                    [94mreturn[39;49;00m json.dumps(data).encode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+            [94mif[39;49;00m is_sse_stream:[90m[39;49;00m
+                [90m# Generator endpoint: stream as Server-Sent Events[39;49;00m[90m[39;49;00m
+                gen = dependant.call(**solved_result.values)[90m[39;49;00m
+    [90m[39;49;00m
+                [94mdef[39;49;00m[90m [39;49;00m[92m_serialize_sse_item[39;49;00m(item: Any) -> [96mbytes[39;49;00m:[90m[39;49;00m
+                    [94mif[39;49;00m [96misinstance[39;49;00m(item, ServerSentEvent):[90m[39;49;00m
+                        [90m# User controls the event structure.[39;49;00m[90m[39;49;00m
+                        [90m# Serialize the data payload if present.[39;49;00m[90m[39;49;00m
+                        [90m# For ServerSentEvent items we skip stream_item_field[39;49;00m[90m[39;49;00m
+                        [90m# validation (the user may mix types intentionally).[39;49;00m[90m[39;49;00m
+                        [94mif[39;49;00m item.raw_data [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                            data_str: [96mstr[39;49;00m | [94mNone[39;49;00m = item.raw_data[90m[39;49;00m
+                        [94melif[39;49;00m item.data [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+                            [94mif[39;49;00m [96mhasattr[39;49;00m(item.data, [33m"[39;49;00m[33mmodel_dump_json[39;49;00m[33m"[39;49;00m):[90m[39;49;00m
+                                data_str = item.data.model_dump_json()[90m[39;49;00m
+                            [94melse[39;49;00m:[90m[39;49;00m
+                                data_str = json.dumps(jsonable_encoder(item.data))[90m[39;49;00m
+                        [94melse[39;49;00m:[90m[39;49;00m
+                            data_str = [94mNone[39;49;00m[90m[39;49;00m
+                        [94mreturn[39;49;00m format_sse_event([90m[39;49;00m
+                            data_str=data_str,[90m[39;49;00m
+                            event=item.event,[90m[39;49;00m
+                            [96mid[39;49;00m=item.id,[90m[39;49;00m
+                            retry=item.retry,[90m[39;49;00m
+                            comment=item.comment,[90m[39;49;00m
+                        )[90m[39;49;00m
+                    [94melse[39;49;00m:[90m[39;49;00m
+                        [90m# Plain object: validate + serialize via[39;49;00m[90m[39;49;00m
+                        [90m# stream_item_field (if set) and wrap in data field[39;49;00m[90m[39;49;00m
+                        [94mreturn[39;49;00m format_sse_event([90m[39;49;00m
+                            data_str=_serialize_data(item).decode([33m"[39;49;00m[33mutf-8[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+                        )[90m[39;49;00m
+    [90m[39;49;00m
+                [94mif[39;49;00m dependant.is_async_gen_callable:[90m[39;49;00m
+                    sse_aiter: AsyncIterator[Any] = gen.[92m__aiter__[39;49;00m()[90m[39;49;00m
+                [94melse[39;49;00m:[90m[39;49;00m
+                    sse_aiter = iterate_in_threadpool(gen)[90m[39;49;00m
+    [90m[39;49;00m
+                [37m@asynccontextmanager[39;49;00m[90m[39;49;00m
+                [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_sse_producer_cm[39;49;00m() -> AsyncIterator[[90m[39;49;00m
+                    ObjectReceiveStream[[96mbytes[39;49;00m][90m[39;49;00m
+                ]:[90m[39;49;00m
+                    [90m# Use a memory stream to decouple generator iteration[39;49;00m[90m[39;49;00m
+                    [90m# from the keepalive timer. A producer task pulls items[39;49;00m[90m[39;49;00m
+                    [90m# from the generator independently, so[39;49;00m[90m[39;49;00m
+                    [90m# `anyio.fail_after` never wraps the generator's[39;49;00m[90m[39;49;00m
+                    [90m# `__anext__` directly - avoiding CancelledError that[39;49;00m[90m[39;49;00m
+                    [90m# would finalize the generator and also working for sync[39;49;00m[90m[39;49;00m
+                    [90m# generators running in a thread pool.[39;49;00m[90m[39;49;00m
+                    [90m#[39;49;00m[90m[39;49;00m
+                    [90m# This context manager is entered on the request-scoped[39;49;00m[90m[39;49;00m
+                    [90m# AsyncExitStack so its __aexit__ (which cancels the[39;49;00m[90m[39;49;00m
+                    [90m# task group) is called by the exit stack after the[39;49;00m[90m[39;49;00m
+                    [90m# streaming response completes — not by async generator[39;49;00m[90m[39;49;00m
+                    [90m# finalization via GeneratorExit.[39;49;00m[90m[39;49;00m
+                    [90m# Ref: https://peps.python.org/pep-0789/[39;49;00m[90m[39;49;00m
+                    send_stream, receive_stream = anyio.create_memory_object_stream[[90m[39;49;00m
+                        [96mbytes[39;49;00m[90m[39;49;00m
+                    ](max_buffer_size=[94m1[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_producer[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+                        [94masync[39;49;00m [94mwith[39;49;00m send_stream:[90m[39;49;00m
+                            [94masync[39;49;00m [94mfor[39;49;00m raw_item [95min[39;49;00m sse_aiter:[90m[39;49;00m
+                                [94mawait[39;49;00m send_stream.send(_serialize_sse_item(raw_item))[90m[39;49;00m
+    [90m[39;49;00m
+                    send_keepalive, receive_keepalive = ([90m[39;49;00m
+                        anyio.create_memory_object_stream[[96mbytes[39;49;00m](max_buffer_size=[94m1[39;49;00m)[90m[39;49;00m
+                    )[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_keepalive_inserter[39;49;00m() -> [94mNone[39;49;00m:[90m[39;49;00m
+    [90m                    [39;49;00m[33m"""Read from the producer and forward to the output,[39;49;00m
+    [33m                    inserting keepalive comments on timeout."""[39;49;00m[90m[39;49;00m
+                        [94masync[39;49;00m [94mwith[39;49;00m send_keepalive, receive_stream:[90m[39;49;00m
+                            [94mtry[39;49;00m:[90m[39;49;00m
+                                [94mwhile[39;49;00m [94mTrue[39;49;00m:[90m[39;49;00m
+                                    [94mtry[39;49;00m:[90m[39;49;00m
+                                        [94mwith[39;49;00m anyio.fail_after(_PING_INTERVAL):[90m[39;49;00m
+                                            data = [94mawait[39;49;00m receive_stream.receive()[90m[39;49;00m
+                                        [94mawait[39;49;00m send_keepalive.send(data)[90m[39;49;00m
+                                    [94mexcept[39;49;00m [96mTimeoutError[39;49;00m:[90m[39;49;00m
+                                        [94mawait[39;49;00m send_keepalive.send(KEEPALIVE_COMMENT)[90m[39;49;00m
+                            [94mexcept[39;49;00m anyio.EndOfStream:[90m[39;49;00m
+                                [94mpass[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mwith[39;49;00m anyio.create_task_group() [94mas[39;49;00m tg:[90m[39;49;00m
+                        tg.start_soon(_producer)[90m[39;49;00m
+                        tg.start_soon(_keepalive_inserter)[90m[39;49;00m
+                        [94myield[39;49;00m receive_keepalive[90m[39;49;00m
+                        tg.cancel_scope.cancel()[90m[39;49;00m
+    [90m[39;49;00m
+                [90m# Enter the SSE context manager on the request-scoped[39;49;00m[90m[39;49;00m
+                [90m# exit stack. The stack outlives the streaming response,[39;49;00m[90m[39;49;00m
+                [90m# so __aexit__ runs via proper structured teardown, not[39;49;00m[90m[39;49;00m
+                [90m# via GeneratorExit thrown into an async generator.[39;49;00m[90m[39;49;00m
+                sse_receive_stream = [94mawait[39;49;00m async_exit_stack.enter_async_context([90m[39;49;00m
+                    _sse_producer_cm()[90m[39;49;00m
+                )[90m[39;49;00m
+                [90m# Ensure the receive stream is closed when the exit stack[39;49;00m[90m[39;49;00m
+                [90m# unwinds, preventing ResourceWarning from __del__.[39;49;00m[90m[39;49;00m
+                async_exit_stack.push_async_callback(sse_receive_stream.aclose)[90m[39;49;00m
+    [90m[39;49;00m
+                [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_sse_with_checkpoints[39;49;00m([90m[39;49;00m
+                    stream: ObjectReceiveStream[[96mbytes[39;49;00m],[90m[39;49;00m
+                ) -> AsyncIterator[[96mbytes[39;49;00m]:[90m[39;49;00m
+                    [94masync[39;49;00m [94mfor[39;49;00m data [95min[39;49;00m stream:[90m[39;49;00m
+                        [94myield[39;49;00m data[90m[39;49;00m
+                        [90m# Guarantee a checkpoint so cancellation can be[39;49;00m[90m[39;49;00m
+                        [90m# delivered even when the producer is faster than[39;49;00m[90m[39;49;00m
+                        [90m# the consumer and receive() never suspends.[39;49;00m[90m[39;49;00m
+                        [94mawait[39;49;00m anyio.sleep([94m0[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+                sse_stream_content: AsyncIterator[[96mbytes[39;49;00m] | Iterator[[96mbytes[39;49;00m] = ([90m[39;49;00m
+                    _sse_with_checkpoints(sse_receive_stream)[90m[39;49;00m
+                )[90m[39;49;00m
+    [90m[39;49;00m
+                response = StreamingResponse([90m[39;49;00m
+                    sse_stream_content,[90m[39;49;00m
+                    media_type=[33m"[39;49;00m[33mtext/event-stream[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                    background=solved_result.background_tasks,[90m[39;49;00m
+                )[90m[39;49;00m
+                response.headers[[33m"[39;49;00m[33mCache-Control[39;49;00m[33m"[39;49;00m] = [33m"[39;49;00m[33mno-cache[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                [90m# For Nginx proxies to not buffer server sent events[39;49;00m[90m[39;49;00m
+                response.headers[[33m"[39;49;00m[33mX-Accel-Buffering[39;49;00m[33m"[39;49;00m] = [33m"[39;49;00m[33mno[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                response.headers.raw.extend(solved_result.response.headers.raw)[90m[39;49;00m
+            [94melif[39;49;00m is_json_stream:[90m[39;49;00m
+                [90m# Generator endpoint: stream as JSONL[39;49;00m[90m[39;49;00m
+                gen = dependant.call(**solved_result.values)[90m[39;49;00m
+    [90m[39;49;00m
+                [94mdef[39;49;00m[90m [39;49;00m[92m_serialize_item[39;49;00m(item: Any) -> [96mbytes[39;49;00m:[90m[39;49;00m
+                    [94mreturn[39;49;00m _serialize_data(item) + [33mb[39;49;00m[33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+                [94mif[39;49;00m dependant.is_async_gen_callable:[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_async_stream_jsonl[39;49;00m() -> AsyncIterator[[96mbytes[39;49;00m]:[90m[39;49;00m
+                        [94masync[39;49;00m [94mfor[39;49;00m item [95min[39;49;00m gen:[90m[39;49;00m
+                            [94myield[39;49;00m _serialize_item(item)[90m[39;49;00m
+                            [90m# To allow for cancellation to trigger[39;49;00m[90m[39;49;00m
+                            [90m# Ref: https://github.com/fastapi/fastapi/issues/14680[39;49;00m[90m[39;49;00m
+                            [94mawait[39;49;00m anyio.sleep([94m0[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+                    jsonl_stream_content: AsyncIterator[[96mbytes[39;49;00m] | Iterator[[96mbytes[39;49;00m] = ([90m[39;49;00m
+                        _async_stream_jsonl()[90m[39;49;00m
+                    )[90m[39;49;00m
+                [94melse[39;49;00m:[90m[39;49;00m
+    [90m[39;49;00m
+                    [94mdef[39;49;00m[90m [39;49;00m[92m_sync_stream_jsonl[39;49;00m() -> Iterator[[96mbytes[39;49;00m]:[90m[39;49;00m
+                        [94mfor[39;49;00m item [95min[39;49;00m gen:  [90m# ty: ignore[not-iterable][39;49;00m[90m[39;49;00m
+                            [94myield[39;49;00m _serialize_item(item)[90m[39;49;00m
+    [90m[39;49;00m
+                    jsonl_stream_content = _sync_stream_jsonl()[90m[39;49;00m
+    [90m[39;49;00m
+                response = StreamingResponse([90m[39;49;00m
+                    jsonl_stream_content,[90m[39;49;00m
+                    media_type=[33m"[39;49;00m[33mapplication/jsonl[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                    background=solved_result.background_tasks,[90m[39;49;00m
+                )[90m[39;49;00m
+                response.headers.raw.extend(solved_result.response.headers.raw)[90m[39;49;00m
+            [94melif[39;49;00m dependant.is_async_gen_callable [95mor[39;49;00m dependant.is_gen_callable:[90m[39;49;00m
+                [90m# Raw streaming with explicit response_class (e.g. StreamingResponse)[39;49;00m[90m[39;49;00m
+                gen = dependant.call(**solved_result.values)[90m[39;49;00m
+                [94mif[39;49;00m dependant.is_async_gen_callable:[90m[39;49;00m
+    [90m[39;49;00m
+                    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_async_stream_raw[39;49;00m([90m[39;49;00m
+                        async_gen: AsyncIterator[Any],[90m[39;49;00m
+                    ) -> AsyncIterator[Any]:[90m[39;49;00m
+                        [94masync[39;49;00m [94mfor[39;49;00m chunk [95min[39;49;00m async_gen:[90m[39;49;00m
+                            [94myield[39;49;00m chunk[90m[39;49;00m
+                            [90m# To allow for cancellation to trigger[39;49;00m[90m[39;49;00m
+                            [90m# Ref: https://github.com/fastapi/fastapi/issues/14680[39;49;00m[90m[39;49;00m
+                            [94mawait[39;49;00m anyio.sleep([94m0[39;49;00m)[90m[39;49;00m
+    [90m[39;49;00m
+                    gen = _async_stream_raw(gen)[90m[39;49;00m
+                response_args = _build_response_args([90m[39;49;00m
+                    status_code=status_code, solved_result=solved_result[90m[39;49;00m
+                )[90m[39;49;00m
+                response = actual_response_class(content=gen, **response_args)[90m[39;49;00m
+                response.headers.raw.extend(solved_result.response.headers.raw)[90m[39;49;00m
+            [94melse[39;49;00m:[90m[39;49;00m
+>               raw_response = [94mawait[39;49;00m run_endpoint_function([90m[39;49;00m
+                    dependant=dependant,[90m[39;49;00m
+                    values=solved_result.values,[90m[39;49;00m
+                    is_coroutine=is_coroutine,[90m[39;49;00m
+                )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py[0m:674: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mrun_endpoint_function[39;49;00m([90m[39;49;00m
+        *, dependant: Dependant, values: [96mdict[39;49;00m[[96mstr[39;49;00m, Any], is_coroutine: [96mbool[39;49;00m[90m[39;49;00m
+    ) -> Any:[90m[39;49;00m
+        [90m# Only called by get_request_handler. Has been split into its own function to[39;49;00m[90m[39;49;00m
+        [90m# facilitate profiling endpoints, since inner functions are harder to profile.[39;49;00m[90m[39;49;00m
+        [94massert[39;49;00m dependant.call [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m, [33m"[39;49;00m[33mdependant.call must be a function[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94mif[39;49;00m is_coroutine:[90m[39;49;00m
+>           [94mreturn[39;49;00m [94mawait[39;49;00m dependant.call(**values)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py[0m:328: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = StudentCreate(email='student@example.com', name='Test Student', student_code='STU001', class_='12A1', password='password123')
+prisma = <prisma.client.Prisma object at 0x000001FEC4917700>
+
+    [0m[37m@router[39;49;00m.post([33m"[39;49;00m[33m/register[39;49;00m[33m"[39;49;00m, response_model=StudentResponse, status_code=status.HTTP_201_CREATED)[90m[39;49;00m
+    [94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mregister_student[39;49;00m([90m[39;49;00m
+        data: StudentCreate, prisma: Annotated[Prisma, Depends(get_prisma)][90m[39;49;00m
+    ) -> StudentResponse:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""Register a new student account."""[39;49;00m[90m[39;49;00m
+>       existing = [94mawait[39;49;00m prisma.student.find_unique(where={[33m"[39;49;00m[33memail[39;49;00m[33m"[39;49;00m: data.email})[90m[39;49;00m
+
+[1m[31mapp\api\auth_student.py[0m:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <prisma.actions.StudentActions object at 0x000001FEC4611840>
+where = {'email': 'student@example.com'}, include = None
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92mfind_unique[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        where: types.StudentWhereUniqueInput,[90m[39;49;00m
+        include: Optional[types.StudentInclude] = [94mNone[39;49;00m[90m[39;49;00m
+    ) -> Optional[_PrismaModelT]:[90m[39;49;00m
+    [90m    [39;49;00m[33m"""Find a unique Student record.[39;49;00m
+    [33m[39;49;00m
+    [33m    Parameters[39;49;00m
+    [33m    ----------[39;49;00m
+    [33m    where[39;49;00m
+    [33m        Student filter to find the record, must be unique[39;49;00m
+    [33m    include[39;49;00m
+    [33m        Specifies which relations should be loaded on the returned Student model[39;49;00m
+    [33m[39;49;00m
+    [33m    Returns[39;49;00m
+    [33m    -------[39;49;00m
+    [33m    prisma.models.Student[39;49;00m
+    [33m        The found Student record[39;49;00m
+    [33m    None[39;49;00m
+    [33m        No record matching the given input could be found[39;49;00m
+    [33m[39;49;00m
+    [33m    Raises[39;49;00m
+    [33m    ------[39;49;00m
+    [33m    prisma.errors.PrismaError[39;49;00m
+    [33m        Catch all for every exception raised by Prisma Client Python[39;49;00m
+    [33m    prisma.errors.MissingRequiredValueError[39;49;00m
+    [33m        Value is required but was not found[39;49;00m
+    [33m[39;49;00m
+    [33m    Example[39;49;00m
+    [33m    -------[39;49;00m
+    [33m    ```py[39;49;00m
+    [33m    student = await Student.prisma().find_unique([39;49;00m
+    [33m        where={[39;49;00m
+    [33m            'id': 'bbejhfidcb',[39;49;00m
+    [33m        },[39;49;00m
+    [33m    )[39;49;00m
+    [33m    ```[39;49;00m
+    [33m    """[39;49;00m[90m[39;49;00m
+>       resp = [94mawait[39;49;00m [96mself[39;49;00m._client._execute([90m[39;49;00m
+            method=[33m'[39;49;00m[33mfind_unique[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+            model=[96mself[39;49;00m._model,[90m[39;49;00m
+            arguments={[90m[39;49;00m
+                [33m'[39;49;00m[33mwhere[39;49;00m[33m'[39;49;00m: where,[90m[39;49;00m
+                [33m'[39;49;00m[33minclude[39;49;00m[33m'[39;49;00m: include,[90m[39;49;00m
+            },[90m[39;49;00m
+        )[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\prisma\actions.py[0m:357: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <prisma.client.Prisma object at 0x000001FEC4917700>
+
+    [0m[94masync[39;49;00m [94mdef[39;49;00m[90m [39;49;00m[92m_execute[39;49;00m([90m[39;49;00m
+        [96mself[39;49;00m,[90m[39;49;00m
+        *,[90m[39;49;00m
+        method: PrismaMethod,[90m[39;49;00m
+        arguments: [96mdict[39;49;00m[[96mstr[39;49;00m, Any],[90m[39;49;00m
+        model: [96mtype[39;49;00m[BaseModel] | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+        root_selection: [96mlist[39;49;00m[[96mstr[39;49;00m] | [94mNone[39;49;00m = [94mNone[39;49;00m,[90m[39;49;00m
+    ) -> Any:[90m[39;49;00m
+        builder = [96mself[39;49;00m._make_query_builder([90m[39;49;00m
+            method=method, model=model, arguments=arguments, root_selection=root_selection[90m[39;49;00m
+        )[90m[39;49;00m
+>       [94mreturn[39;49;00m [94mawait[39;49;00m [96mself[39;49;00m._engine.query(builder.build(), tx_id=[96mself[39;49;00m._tx_id)[90m[39;49;00m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\prisma\_base_client.py[0m:543: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <prisma.client.Prisma object at 0x000001FEC4917700>
+
+    [0m[37m@property[39;49;00m[90m[39;49;00m
+    [94mdef[39;49;00m[90m [39;49;00m[92m_engine[39;49;00m([96mself[39;49;00m) -> _EngineT:[90m[39;49;00m
+        engine = [96mself[39;49;00m._internal_engine[90m[39;49;00m
+        [94mif[39;49;00m engine [95mis[39;49;00m [94mNone[39;49;00m:[90m[39;49;00m
+>           [94mraise[39;49;00m ClientNotConnectedError()[90m[39;49;00m
+[1m[31mE           prisma.errors.ClientNotConnectedError: Client is not connected to the query engine, you must call `connect()` before attempting to query data.[0m
+
+[1m[31mC:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\prisma\_base_client.py[0m:199: ClientNotConnectedError
+[33m============================== warnings summary ===============================[0m
+C:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_config.py:323
+C:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_config.py:323
+C:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_config.py:323
+C:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_config.py:323
+  C:\Users\THANG\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+[36m[1m=========================== short test summary info ===========================[0m
+[31mFAILED[0m tests/integration/test_auth_api.py::[1mTestStudentAuth::test_student_registration[0m - prisma.errors.ClientNotConnectedError: Client is not connected to the query...
+[31m======================== [31m[1m1 failed[0m, [33m4 warnings[0m[31m in 2.52s[0m[31m ========================[0m

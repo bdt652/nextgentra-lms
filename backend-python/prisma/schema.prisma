@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-py"
+  interface = "asyncio"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Student authentication (separate table)
+model Student {
+  id             String   @id @default(uuid())
+  student_code   String   @unique
+  email          String   @unique
+  name           String
+  class_         String?  @map("class")
+  hashed_password String
+  created_at     DateTime @default(now())
+  is_active      Boolean  @default(true)
+
+  @@index([email])
+}
+
+// Teacher & Admin authentication (with role-based permissions)
+model Teacher {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  name           String
+  hashed_password String
+  created_at     DateTime @default(now())
+  is_active      Boolean  @default(true)
+  role_id        String?
+  role           Role?     @relation(fields: [role_id], references: [id])
+
+  @@index([email])
+  @@index([role_id])
+}
+
+// Permission-based RBAC
+model Permission {
+  id        String   @id @default(uuid())
+  name      String   @unique // e.g., "course:create", "assignment:grade"
+  roles     Role[]
+}
+
+model Role {
+  id           String      @id @default(uuid())
+  name         String      @unique // "teacher", "admin"
+  description  String?
+  permissions  Permission[]
+  teachers     Teacher[]
+
+  @@index([name])
+}
+
+// Unified refresh token storage for both Student and Teacher
+model RefreshToken {
+  id         String   @id @default(uuid())
+  user_type  String   // "STUDENT" or "TEACHER"
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  revoked    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@unique([user_type, user_id])
+  @@index([token])
+  @@index([user_type, user_id])
+}
