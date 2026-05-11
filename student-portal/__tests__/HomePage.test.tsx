@@ -13,7 +13,9 @@ describe('HomePage', () => {
   it('renders the homepage with default Next.js content', () => {
     render(<HomePage />);
     // Check for the default Next.js template text
-    const titleElement = screen.getByText(/To get started, edit the page.tsx file/i);
+    const titleElement = screen.getByText(
+      /To get started, edit the page.tsx file/i
+    );
     expect(titleElement).toBeInTheDocument();
   });
 
