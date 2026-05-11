@@ -53,7 +53,13 @@ async def register(
             "hashed_password": get_password_hash(user_data.password),
         }
     )
-    return user  # type: ignore[return-value]
+    return UserResponse(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        role=user.role,
+        created_at=user.createdAt,  # type: ignore[attr-defined]
+    )
 
 
 @router.post("/login", response_model=Token)
@@ -105,4 +111,10 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return user  # type: ignore[return-value]
+    return UserResponse(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        role=user.role,
+        created_at=user.createdAt,  # type: ignore[attr-defined]
+    )

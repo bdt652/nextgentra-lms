@@ -4,8 +4,8 @@ import os
 import sys
 from typing import Any, Optional
 
-import structlog  # type: ignore
-from structlog.contextvars import merge_contextvars  # type: ignore
+import structlog
+from structlog.contextvars import merge_contextvars
 
 
 def get_log_level() -> str:
@@ -97,7 +97,7 @@ def configure_logging() -> None:
     logging.config.dictConfig(logging_config)
 
 
-def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
+def get_logger(name: Optional[str] = None) -> Any:
     """Get a structured logger instance.
 
     Args:

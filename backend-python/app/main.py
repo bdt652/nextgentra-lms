@@ -13,8 +13,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 # Optional Sentry import - will be None if not installed
 try:
-    import sentry_sdk  # type: ignore
-    from sentry_sdk.integrations.asgi import SentryAsgiMiddleware  # type: ignore
+    import sentry_sdk
+    from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
     SENTRY_AVAILABLE = True
 except ImportError:
