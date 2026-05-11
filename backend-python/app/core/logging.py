@@ -4,8 +4,8 @@ import os
 import sys
 from typing import Any, Callable, Optional
 
-import structlog  # type: ignore
-from structlog.contextvars import merge_contextvars  # type: ignore
+import structlog
+from structlog.contextvars import merge_contextvars
 
 
 def get_log_level() -> str:
