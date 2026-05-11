@@ -1,4 +1,5 @@
 """FastAPI main application module."""
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -9,7 +10,7 @@ from app.core.database import connect_db, disconnect_db
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     """Manage database connection lifecycle."""
     # Startup: connect to database
     await connect_db()
@@ -38,12 +39,12 @@ app.include_router(auth.router)
 
 
 @app.get("/")
-async def root():
+async def root() -> dict:
     """Root endpoint."""
     return {"message": "NextGenTra LMS API", "version": "1.0.0", "status": "running"}
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict:
     """Health check endpoint."""
     return {"status": "healthy", "service": "lms-backend"}

@@ -34,7 +34,7 @@ async def get_user_by_id(prisma: Prisma, user_id: str) -> Optional[PrismaUser]:
 async def register(
     user_data: UserCreate,
     prisma: Annotated[Prisma, Depends(get_prisma)]
-):
+) -> UserResponse:
     """Register a new user."""
     # Check if user already exists
     existing = await get_user_by_email(prisma, user_data.email)
@@ -53,14 +53,14 @@ async def register(
             "hashed_password": get_password_hash(user_data.password),
         }
     )
-    return user
+    return user  # type: ignore[return-value]
 
 
 @router.post("/login", response_model=Token)
 async def login(
     credentials: UserLogin,
     prisma: Annotated[Prisma, Depends(get_prisma)]
-):
+) -> Token:
     """Authenticate user and return access token."""
     # Find user by email
     user = await get_user_by_email(prisma, credentials.email)
@@ -81,14 +81,14 @@ async def login(
 
     # Create access token
     access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")
 
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(
     prisma: Annotated[Prisma, Depends(get_prisma)],
     token: str = Depends(oauth2_scheme)
-):
+) -> UserResponse:
     """Get current authenticated user."""
     token_data = decode_token(token)
     if token_data is None or token_data.email is None:
@@ -107,4 +107,4 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return user
+    return user  # type: ignore[return-value]
