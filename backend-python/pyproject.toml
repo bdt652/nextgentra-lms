@@ -100,7 +100,11 @@ disallow_untyped_defs = false
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "app.main"
+module = [
+    "app.main",
+    "app.core.database",
+    "app.core.health",
+]
 warn_unused_ignores = false
 
 [tool.pytest.ini_options]

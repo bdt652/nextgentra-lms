@@ -1,6 +1,6 @@
 """Database connection management."""
 
-from prisma import Prisma
+from prisma import Prisma  # type: ignore
 from pydantic_settings import BaseSettings
 
 

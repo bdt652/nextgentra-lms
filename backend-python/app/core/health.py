@@ -6,7 +6,7 @@ from typing import Optional
 
 from fastapi import status
 from fastapi.responses import JSONResponse
-from prisma import Prisma
+from prisma import Prisma  # type: ignore
 import redis
 
 from app.core.database import get_prisma, settings
