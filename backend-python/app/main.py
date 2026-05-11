@@ -1,19 +1,20 @@
 """FastAPI main application module."""
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Awaitable
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 import os
+from typing import Callable
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 # Optional Sentry import - will be None if not installed
 try:
-    import sentry_sdk
-    from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+    import sentry_sdk  # type: ignore
+    from sentry_sdk.integrations.asgi import SentryAsgiMiddleware  # type: ignore
 
     SENTRY_AVAILABLE = True
 except ImportError:
@@ -86,7 +87,9 @@ if sentry_dsn and SENTRY_AVAILABLE:
 class LoggingMiddleware(BaseHTTPMiddleware):
     """Middleware to log all HTTP requests."""
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         start_time = datetime.now(timezone.utc)
 
         response = await call_next(request)

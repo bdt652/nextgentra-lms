@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     """Application settings with environment variables."""
 
     database_url: str = ""
+    redis_url: str = ""  # Redis connection URL
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15

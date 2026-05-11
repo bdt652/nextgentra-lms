@@ -2,10 +2,10 @@
 
 import os
 import sys
-from typing import Optional
+from typing import Any, Optional
 
-import structlog
-from structlog.contextvars import merge_contextvars
+import structlog  # type: ignore
+from structlog.contextvars import merge_contextvars  # type: ignore
 
 
 def get_log_level() -> str:
@@ -110,20 +110,20 @@ def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
 
 
 # Convenience functions for common logging patterns
-def log_startup(message: str, **kwargs) -> None:
+def log_startup(message: str, **kwargs: Any) -> None:
     """Log application startup information."""
     logger = get_logger("startup")
     logger.info(message, **kwargs)
 
 
-def log_shutdown(message: str, **kwargs) -> None:
+def log_shutdown(message: str, **kwargs: Any) -> None:
     """Log application shutdown information."""
     logger = get_logger("shutdown")
     logger.info(message, **kwargs)
 
 
 def log_request(
-    method: str, path: str, status_code: int, duration: float, **kwargs
+    method: str, path: str, status_code: int, duration: float, **kwargs: Any
 ) -> None:
     """Log HTTP request details."""
     logger = get_logger("http")
@@ -137,7 +137,7 @@ def log_request(
     )
 
 
-def log_error(error: Exception, context: Optional[dict] = None, **kwargs) -> None:
+def log_error(error: Exception, context: Optional[dict] = None, **kwargs: Any) -> None:
     """Log error with context."""
     logger = get_logger("error")
     logger.error(
@@ -150,7 +150,10 @@ def log_error(error: Exception, context: Optional[dict] = None, **kwargs) -> Non
 
 
 def log_auth_event(
-    event: str, user_id: Optional[str] = None, email: Optional[str] = None, **kwargs
+    event: str,
+    user_id: Optional[str] = None,
+    email: Optional[str] = None,
+    **kwargs: Any,
 ) -> None:
     """Log authentication events."""
     logger = get_logger("auth")
@@ -163,7 +166,7 @@ def log_auth_event(
 
 
 def log_database_operation(
-    operation: str, model: Optional[str] = None, **kwargs
+    operation: str, model: Optional[str] = None, **kwargs: Any
 ) -> None:
     """Log database operations (debug level)."""
     logger = get_logger("database")
@@ -174,7 +177,7 @@ def log_database_operation(
     )
 
 
-def log_external_api(service: str, operation: str, status: str, **kwargs) -> None:
+def log_external_api(service: str, operation: str, status: str, **kwargs: Any) -> None:
     """Log external API calls."""
     logger = get_logger("external")
     logger.info(
