@@ -1,17 +1,29 @@
-# CODEOWNERS
-# Định nghĩa chủ sở hữu code tự động cho GitHub PR reviews
+# CODEOWNERS File
+# This file defines code owners who are automatically requested for review
+# when changes are made to specific paths in the repository.
+#
+# Syntax: <path> @owner1 @owner2
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Toàn bộ dự án
-* @your-team-or-username
+# Backend API - Python FastAPI
+/backend-python/ @bdt652
 
-# Backend Python
-/backend-python/ @your-team-or-username
+# Student Portal - Next.js
+/student-portal/ @bdt652
 
-# Student Portal
-/student-portal/ @your-team-or-username
+# Teacher Portal - Next.js
+/teacher-portal/ @bdt652
 
-# Teacher Portal
-/teacher-portal/ @your-team-or-username
+# Core configuration and documentation
+.github/ @bdt652
+CLAUDE.md @bdt652
+CODEOWNERS @bdt652
+CHANGELOG.md @bdt652
+RELEASE_CHECKLIST.md @bdt652
+README.md @bdt652
 
-# CI/CD Configuration
-.github/ @your-team-or-username
+# Scripts (deployment, setup, etc.)
+scripts/ @bdt652
+
+# Default owners for all other files (fallback)
+* @bdt652
