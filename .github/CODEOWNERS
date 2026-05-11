@@ -1,6 +1,17 @@
-# Codeowners
+# CODEOWNERS
+# Định nghĩa chủ sở hữu code tự động cho GitHub PR reviews
 
-This file defines the code owners responsible for different parts of the codebase.
-Used by GitHub for automatic review assignment.
+# Toàn bộ dự án
+* @your-team-or-username
 
-* @nextgentra/team
+# Backend Python
+/backend-python/ @your-team-or-username
+
+# Student Portal
+/student-portal/ @your-team-or-username
+
+# Teacher Portal
+/teacher-portal/ @your-team-or-username
+
+# CI/CD Configuration
+.github/ @your-team-or-username

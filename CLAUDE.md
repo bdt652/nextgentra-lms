@@ -1,673 +1,332 @@
-# Claude Code - NextGenTra LMS Project Guide
+# CLAUDE.md
 
-**This file provides explicit instructions for Claude Code and AI assistants working on this LMS project.**
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 🎯 Core Principle
+## Project Overview
 
-**Always prefer clarity and explicit instructions over assumptions.** When in doubt, ask or create a task plan first.
+**NextGenTra LMS** - A Learning Management System with a monorepo structure containing:
 
-## 📚 Essential Documentation (Read Order)
+- **Backend API** (backend-python/): FastAPI application with authentication endpoints
+- **Student Portal** (student-portal/): Next.js 16 + React 19 frontend for students (port 3001)
+- **Teacher Portal** (teacher-portal/): Next.js 16 + React 19 frontend for teachers (port 3000)
 
-1. **`.claude/memory/project.md`** - READ THIS FIRST for project context, conventions, critical rules
-2. **`.claude/memory/user.md`** - Understand developer preferences
-3. **`docs/conventions/coding-standards.md`** - Detailed coding standards
-4. **`docs/conventions/task-templates.md`** - Templates for common tasks
-5. **`docs/api/openapi.yaml`** - Complete API specification
-6. **`CONTRIBUTING.md`** - Contribution guidelines
-7. **`docs/development.md`** - Development setup guide (moved from root)
-8. **`docs/deployment.md`** - Production deployment (moved from root)
+## Architecture
 
----
+### Backend (Python FastAPI)
+- Main entry: `backend-python/app/main.py`
+- API routers in `backend-python/app/api/`
+- Core utilities in `backend-python/app/core/`
+- Pydantic schemas in `backend-python/app/schemas/`
+- Authentication: JWT tokens (15-minute expiry) with OAuth2PasswordBearer
+- Current user storage: In-memory dictionary (not production-ready)
+- CORS: Configured for localhost:3000, 3001, 8000
+- Redis configured for session/cache layer (currently in .env but not actively used)
 
-## 📦 Project Overview
+### Frontends (Next.js App Router)
+- Both portals use Next.js 16 with App Router (`app/` directory)
+- Layout structure: `app/layout.tsx` (root) + `app/page.tsx` (home)
+- Currently using default create-next-app templates (minimal customization)
+- Styling: TailwindCSS v4 with PostCSS
+- TypeScript with strict mode enabled
+- Both portals are identical templates currently - differentiation needed
 
-**NextGenTra LMS** - Full-stack Learning Management System with:
+## Development Setup
 
-- **Teacher Portal** (Next.js 15, port 3000) - Course management, grading, assignments
-- **Student Portal** (Next.js 15, port 3001) - Course enrollment, lessons, submissions
-- **Backend API** (Python FastAPI, port 8000) - REST API with JWT auth, PostgreSQL
-- **Monorepo** - NPM workspaces with Turborepo
+### Quick Start
+Use the PowerShell script to launch all services:
+```powershell
+.\start-dev.ps1
+```
+This will:
+1. Start backend on http://localhost:8000 with auto-reload
+2. Start teacher portal on http://localhost:3000
+3. Start student portal on http://localhost:3001
 
-**Tech Stack:**
+### Manual Setup
 
-- Frontend: Next.js 15, TypeScript 5.4, Tailwind CSS, React 18
-- Backend: Python 3.11, FastAPI 0.110, Prisma ORM, PostgreSQL 17
-- DevOps: Docker Compose, GitHub Actions, Dependabot
+**Backend (Python):**
+```bash
+cd backend-python
+python -m venv venv
+# Windows: venv\Scripts\Activate.ps1
+# Unix: source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+- API docs: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
 
----
+**Frontends (Node.js):**
+```bash
+# Teacher Portal
+cd teacher-portal
+npm install
+npm run dev
 
-## 🏗️ Architecture Rules
+# Student Portal (separate terminal)
+cd student-portal
+npm install
+npm run dev
+```
 
-### 1. Monorepo Structure
+## Common Commands
+
+### Backend
+- `uvicorn app.main:app --reload` - Start dev server with hot reload
+- `pytest` / `python -m pytest` - Run tests
+- `pytest --cov=app` - Run tests with coverage
+- `black .` - Auto-format code
+- `black --check .` - Check formatting without changes
+- `ruff check .` - Lint code
+- `ruff check . --fix` - Auto-fix lint errors
+- `mypy app/` - Type checking
+- `npm run dev` - (inside student/teacher portal)
+
+### Frontends (both portals)
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint (max warnings = 0)
+- `npm run lint:fix` - Auto-fix ESLint errors
+- `npm run format` - Auto-format with Prettier
+- `npm run format:check` - Check Prettier formatting
+- `npm run type-check` - TypeScript type checking
+- `npm test` - Run Jest tests
+- `npm run test:coverage` - Run tests with coverage
+- `npm run test:watch` - Watch mode for tests
+
+### Database/Migrations
+- Prisma is listed in dependencies but schema not yet defined
+- Redis is configured but not integrated into auth flow
+
+## Key Configuration Files
+
+### Backend
+- `backend-python/pyproject.toml` - Project metadata & tool configs (Black, Ruff, MyPy, pytest)
+- `backend-python/requirements.txt` - Python dependencies (with dev group)
+- `backend-python/.env` - Environment variables (JWT secrets, Redis URL)
+- `backend-python/.env.example` - Template for environment variables
+- `backend-python/backend-python/.gitignore` - Git ignore patterns
+
+### Student Portal
+- `student-portal/package.json` - Dependencies & npm scripts
+- `student-portal/tsconfig.json` - TypeScript configuration (strict mode)
+- `student-portal/next.config.ts` - Next.js configuration
+- `student-portal/tailwind.config.ts` - TailwindCSS configuration
+- `student-portal/eslint.config.mjs` - ESLint config with Next.js + Prettier
+- `student-portal/.prettierrc` - Prettier formatting rules
+- `student-portal/.prettierignore` - Prettier ignore patterns
+- `student-portal/lint-staged.config.js` - Git hooks pre-commit runner
+- `student-portal/jest.config.ts` - Jest test configuration
+- `student-portal/jest.setup.ts` - Jest test setup
+- `student-portal/.husky/pre-commit` - Pre-commit git hook
+
+### Teacher Portal
+- Similar to Student Portal (mirrored structure)
+- `teacher-portal/package.json` (different name)
+
+### CI/CD
+- `.github/workflows/ci.yml` - GitHub Actions CI pipeline
+- `.github/CODEOWNERS` - Auto-request code reviewers
+
+## Important Notes
+
+### Security
+- JWT secret key is hardcoded in `backend-python/app/core/auth.py` - should be moved to environment variables
+- In-memory user storage is temporary - need persistent database
+- CORS is configured for development only - restrict for production
+- Redis connection string contains credentials in .env - ensure .env is gitignored
+
+### Code Quality
+- TypeScript strict mode enabled
+- ESLint configured with Next.js recommended rules
+- TailwindCSS v4 with PostCSS
+- No custom lint scripts found yet (only `eslint` base command)
+
+### Testing
+- Backend has `backend-python/tests/` directory but no tests implemented yet
+- Frontends have `__tests__/` directories with example test files
+- Test framework: Jest (Next.js default)
+- Need to configure pytest for backend
+
+### Database
+- Currently no database integration (users stored in memory)
+- Prisma is available but schema not defined
+- Redis configured for potential session/cache layer
+- Need to design and implement database schema for production
+
+## Code Quality Standards
+
+### Backend (Python)
+**Linting & Formatting:**
+- **Ruff** - Fast Python linter (replaces flake8, isort, pyflakes, etc.)
+- **Black** - Code formatter (line length: 88)
+- **MyPy** - Static type checking (strict mode enabled)
+
+**Testing:**
+- **pytest** - Test framework with async support
+- Coverage reporting with pytest-cov
+- Test files: `backend-python/tests/test_*.py`
+- Markers: `unit`, `integration`, `slow`
+
+**Pre-commit checks:** Run manually before push (or set up husky):
+```bash
+cd backend-python
+black .           # Format
+ruff check .      # Lint
+mypy app/         # Type check
+pytest            # Test
+```
+
+### Frontends (Next.js)
+**Linting & Formatting:**
+- **ESLint** - Linter with Next.js + TypeScript config + Prettier integration
+- **Prettier** - Code formatter (single quotes, trailing commas, line length 80)
+- Rules: 0 warnings threshold (strict)
+
+**Git Hooks (Husky + lint-staged):**
+- Pre-commit: Auto-run ESLint fix + Prettier on staged files
+- Files affected: `.ts`, `.tsx`, `.js`, `.jsx`, `.json`, `.md`, `.html`, `.css`
+- Ensures all committed code meets quality standards
+
+**Testing:**
+- **Jest** + React Testing Library
+- Next.js test environment with jsdom
+- Coverage collection enabled
+- Test files: `__tests__/*.test.{ts,tsx}`
+
+**Pre-commit checks:** Automatic via Husky when you commit.
+
+### CI/CD Pipeline (GitHub Actions)
+The `.github/workflows/ci.yml` runs on every push/PR:
+
+**Backend Job:**
+1. Install dependencies
+2. Ruff linter
+3. Black formatter check
+4. MyPy type checking
+5. pytest with coverage
+6. Upload coverage to Codecov
+
+**Frontend Jobs (Student & Teacher):**
+1. Install dependencies (npm ci)
+2. ESLint
+3. Prettier check
+4. TypeScript type check
+5. Jest tests with coverage
+6. Build verification (next build)
+7. Upload coverage to Codecov
+
+All jobs must pass for PR to merge.
+
+## Architecture Decisions Needed
+
+1. **Database**: Choose SQL (PostgreSQL/MySQL) or NoSQL (MongoDB) and implement Prisma schema
+2. **Authentication**: Move from in-memory to persistent user storage; consider refresh tokens
+3. **Frontend Differentiation**: Student and Teacher portals need distinct features/UI
+4. **API Structure**: Expand beyond auth - courses, assignments, submissions, grading
+5. **Testing**: Implement unit and integration tests for both backend and frontend
+6. **Deployment**: Configure production builds and deployment pipeline
+
+## Working with This Codebase
+
+- Ports: Backend (8000), Teacher (3000), Student (3001)
+- API base URL: `http://localhost:8000`
+- All services use hot reload in development
+- Windows environment (PowerShell scripts provided)
+- Python 3.x required, Node.js 18+ recommended
+- Use `start-dev.ps1` for one-command startup
+
+## File Organization
 
 ```
-nextgentra-lms/
-├── apps/                    # Application entry points
-│   ├── teacher-portal/     # Teacher Next.js app
-│   │   └── app/(teacher)/  # Teacher routes (route groups)
-│   └── student-portal/     # Student Next.js app
-│       └── app/(student)/  # Student routes
-├── packages/               # Shared libraries (workspaces)
-│   ├── ui/                 # @nextgentra/ui - Reusable components
-│   │   ├── components/     # Button, Card, Input, etc.
-│   │   ├── utils/         # cn, formatting helpers
-│   │   └── index.ts       # Public exports
-│   ├── utils/             # @nextgentra/utils - Utilities & types
-│   │   ├── helpers/       # Date, validation, string utils
-│   │   ├── types/         # TypeScript interfaces
-│   │   └── index.ts
-│   └── config/            # @nextgentra/config - Constants & configs
-│       ├── constants/     # API URLs, app constants
-│       ├── tailwind/      # Shared tailwind config
-│       └── index.ts
-├── backend/               # Python FastAPI service
+lms/
+├── backend-python/           # FastAPI backend
 │   ├── app/
-│   │   ├── api/          # REST endpoints (versioned: /api/v1)
-│   │   ├── core/         # Config, security, database
-│   │   ├── models/       # Prisma client wrapper
-│   │   ├── schemas/      # Pydantic request/response models
-│   │   └── services/     # Business logic layer
-│   ├── prisma/schema.prisma
-│   └── tests/
-├── .github/workflows/     # CI/CD pipelines
-├── docs/adrs/            # Architecture Decision Records
-└── turbo.json           # Turborepo build pipeline
+│   │   ├── api/             # API routers
+│   │   ├── core/            # Auth, config, utilities
+│   │   ├── schemas/         # Pydantic models
+│   │   ├── main.py          # Application entry
+│   │   └── __init__.py
+│   ├── tests/               # Backend tests (empty)
+│   ├── .env                 # Environment variables
+│   ├── requirements.txt     # Python dependencies
+│   └── .prisma/             # Prisma (not configured)
+│
+├── student-portal/          # Next.js student app
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── public/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── tailwind.config.ts
+│   └── __tests__/           # Frontend tests
+│
+├── teacher-portal/          # Next.js teacher app (mirrors student)
+│   ├── app/
+│   ├── public/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── tailwind.config.ts
+│   └── __tests__/
+│
+└── start-dev.ps1            # Dev environment launcher
 ```
 
-### 2. Shared Package Rules
+## Getting Started with Code Quality
 
-**packages/ui** - shadcn/ui style components:
+### First-Time Setup
 
-- Export default component + types from index.ts
-- Use `class-variance-authority` for variants
-- Use `tailwind-merge` + `clsx` for conditional classes
-- Example: `export { Button, type ButtonProps } from "./components/button"`
-
-**packages/utils** - Pure utilities:
-
-- No React dependencies (keep framework-agnostic)
-- Export types from `types/` subfolder
-- Example: `export { formatDate, formatCurrency } from "./helpers/format"`
-- Example: `export type { User, Course, Lesson } from "./types"`
-
-**packages/config** - Configuration only:
-
-- Tailwind shared config
-- API endpoints constants
-- Environment-based configs
-- No business logic
-
-### 3. Import Path Conventions
-
-```typescript
-// ✅ CORRECT - Use workspace package names
-import { Button } from '@nextgentra/ui';
-import { formatDate } from '@nextgentra/utils';
-import { API_BASE_URL } from '@nextgentra/config';
-
-// ✅ Use path aliases within app
-import { cn } from '@ui';
-import { User } from '@utils/types';
-import { sharedTailwindConfig } from '@config/tailwind/shared';
-
-// ❌ NEVER - Direct relative paths to packages
-import { Button } from '../../packages/ui/components/button';
-```
-
-**tsconfig.json paths mapping:**
-
-```json
-{
-  "paths": {
-    "@ui/*": ["packages/ui/*"],
-    "@utils/*": ["packages/utils/*"],
-    "@config/*": ["packages/config/*"],
-    "@nextgentra/config/*": ["packages/config/*"]
-  }
-}
-```
-
----
-
-## 🎨 Frontend Standards (Next.js 15)
-
-### 1. Server Components by Default
-
-```typescript
-// ✅ Default - Server Component (no "use client")
-export default async function CoursePage({ params }: { params: { id: string } }) {
-  const course = await fetchCourse(params.id); // Direct DB access
-  return <div>{course.title}</div>;
-}
-
-// ❌ Only use "use client" when you need:
-// - useState, useEffect, useRouter
-// - Event handlers (onClick, onChange)
-// - Browser APIs
-"use client";
-export default function InteractiveForm() {
-  const [state, setState] = useState();
-  // ...
-}
-```
-
-### 2. Route Groups for Role Separation
-
-```
-app/
-├── (teacher)/          # /teacher/* routes
-│   ├── dashboard/
-│   ├── courses/
-│   └── layout.tsx      # Teacher layout with sidebar
-├── (student)/          # /student/* routes
-│   ├── courses/
-│   ├── assignments/
-│   └── layout.tsx      # Student layout
-└── page.tsx            # Home (redirects based on role)
-```
-
-### 3. Data Fetching Patterns
-
-```typescript
-// ✅ Server Component - Fetch directly
-export async function generateMetadata() {
-  return { title: "Courses" };
-}
-
-export default async function CoursesPage() {
-  const courses = await prisma.course.findMany(); // Direct
-  return <CourseList courses={courses} />;
-}
-
-// ❌ DON'T - Use useEffect for data fetching in Server Components
-// ✅ Client Component if you need fetching on client
-"use client";
-export default function ClientCourses() {
-  const [courses, setCourses] = useState([]);
-  useEffect(() => {
-    fetch("/api/courses").then(r => r.json()).then(setCourses);
-  }, []);
-}
-```
-
-### 4. Component Structure
-
-```typescript
-// components/CourseCard.tsx
-"use client";
-
-import { cn } from "@nextgentra/ui";
-import type { Course } from "@nextgentra/utils/types";
-
-interface CourseCardProps {
-  course: Course;
-  onEnroll?: (courseId: string) => void;
-}
-
-export function CourseCard({ course, onEnroll }: CourseCardProps) {
-  return (
-    <Card className="group hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <CardTitle>{course.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>{course.description}</p>
-        {onEnroll && (
-          <Button onClick={() => onEnroll(course.id)}>
-            Enroll
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-```
-
----
-
-## 🔧 Backend Standards (FastAPI)
-
-### 1. Layered Architecture
-
-```
-backend/app/
-├── api/
-│   ├── auth.py           # /api/v1/auth/*
-│   ├── courses.py        # /api/v1/courses/*
-│   ├── lessons.py
-│   ├── assignments.py
-│   └── __init__.py       # Include all routers
-├── core/
-│   ├── config.py         # Settings from env
-│   ├── security.py       # JWT, hashing
-│   └── database.py       # Prisma client setup
-├── models/
-│   └── prisma.py         # Prisma client singleton
-├── schemas/
-│   ├── auth.py           # Pydantic: Login, Register, Token
-│   ├── course.py
-│   ├── lesson.py
-│   └── assignment.py
-└── services/
-    ├── course_service.py # Business logic
-    ├── user_service.py
-    └── enrollment_service.py
-```
-
-### 2. API Endpoint Pattern
-
-```python
-# backend/app/api/courses.py
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List
-from ...schemas.course import CourseResponse, CourseCreate
-from ...services.course_service import CourseService
-from ...core.security import get_current_user
-
-router = APIRouter(prefix="/courses", tags=["courses"])
-
-@router.get("/", response_model=List[CourseResponse])
-async def list_courses(
-    skip: int = 0,
-    limit: int = 20,
-    user=Depends(get_current_user)
-):
-    """List courses with pagination"""
-    return await CourseService.list_courses(skip, limit, user)
-
-@router.post("/", response_model=CourseResponse, status_code=201)
-async def create_course(
-    data: CourseCreate,
-    user=Depends(get_current_user)
-):
-    """Create new course (teachers only)"""
-    if user.role != "TEACHER":
-        raise HTTPException(403, "Only teachers can create courses")
-    return await CourseService.create_course(data, user.id)
-```
-
-### 3. Pydantic Schemas
-
-```python
-# backend/app/schemas/course.py
-from pydantic import BaseModel, Field
-from typing import Optional
-
-class CourseBase(BaseModel):
-    title: str = Field(..., min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
-    status: str = Field("draft", pattern="^(draft|published|archived)$")
-
-class CourseCreate(CourseBase):
-    pass
-
-class CourseResponse(CourseBase):
-    id: str
-    teacher_id: str
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True  # Enable ORM mode
-```
-
-### 4. Service Layer Pattern
-
-```python
-# backend/app/services/course_service.py
-from prisma import Prisma
-from ...schemas.course import CourseCreate, CourseResponse
-
-class CourseService:
-    @staticmethod
-    async def list_courses(skip: int, limit: int, user):
-        db = Prisma()
-        await db.connect()
-        try:
-            courses = await db.course.find_many(
-                where={"status": "published"} if user.role == "STUDENT" else {},
-                skip=skip,
-                take=limit,
-                order={"created_at": "desc"}
-            )
-            return courses
-        finally:
-            await db.disconnect()
-
-    @staticmethod
-    async def create_course(data: CourseCreate, teacher_id: str):
-        db = Prisma()
-        await db.connect()
-        try:
-            return await db.course.create(
-                data={
-                    **data.model_dump(),
-                    "teacher_id": teacher_id
-                }
-            )
-        finally:
-            await db.disconnect()
-```
-
----
-
-## 🧪 Testing Standards
-
-### Frontend Tests (Jest + Testing Library)
-
-```typescript
-// __tests__/components/Button.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from '@nextgentra/ui';
-
-describe('Button', () => {
-  it('renders correctly', () => {
-    render(<Button>Click me</Button>);
-    expect(screen.getByRole('button')).toHaveTextContent('Click me');
-  });
-
-  it('handles click events', () => {
-    const handleClick = jest.fn();
-    render(<Button onClick={handleClick}>Submit</Button>);
-    fireEvent.click(screen.getByRole('button'));
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  it('applies variant styles', () => {
-    render(<Button variant="destructive">Delete</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-destructive');
-  });
-});
-```
-
-### Backend Tests (Pytest)
-
-```python
-# backend/tests/test_courses.py
-import pytest
-from httpx import AsyncClient
-from app.main import app
-
-@pytest.mark.asyncio
-async def test_list_courses(client: AsyncClient):
-    response = await client.get("/api/v1/courses")
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-
-@pytest.mark.asyncio
-async def test_create_course_unauthorized(client: AsyncClient):
-    response = await client.post("/api/v1/courses", json={
-        "title": "Test Course",
-        "description": "Test"
-    })
-    assert response.status_code == 401
-```
-
----
-
-## 🔒 Security Standards
-
-### 1. Authentication Flow
-
-```python
-# JWT Token Structure
-{
-  "sub": "user_id",
-  "email": "user@example.com",
-  "role": "TEACHER|STUDENT|ADMIN",
-  "iat": 1234567890,
-  "exp": 1234567890
-}
-```
-
-- Access token: 15 minutes
-- Refresh token: 7 days (stored in Redis)
-- Use `@require_role("TEACHER")` decorator for protected endpoints
-
-### 2. Never Commit Secrets
-
+**Backend:**
 ```bash
-# ✅ Use .env files (already in .gitignore)
-DATABASE_URL="postgresql://..."
-JWT_SECRET_KEY="generate-with-openssl-rand-base64-32"
-
-# ❌ NEVER hardcode
-SECRET_KEY = "my-secret-key"  # WRONG!
+cd backend-python
+python -m venv venv
+# Activate venv (see Manual Setup above)
+pip install -r requirements.txt
 ```
 
-### 3. Input Validation
-
-```python
-# Always validate with Pydantic
-class CourseCreate(BaseModel):
-    title: str = Field(..., min_length=1, max_length=200)
-    # Pydantic validates automatically
-
-# Sanitize outputs
-from markupsafe import escape
-safe_html = escape(user_input)
-```
-
----
-
-## 📝 Git Workflow
-
-### 1. Branch Strategy
-
-```
-main          - Production ready
-develop       - Integration branch
-feature/xxx   - New features
-fix/xxx       - Bug fixes
-hotfix/xxx    - Critical production fixes
-```
-
-### 2. Conventional Commits
-
+**Frontends (Student & Teacher):**
 ```bash
-git commit -m "feat(auth): implement JWT refresh flow"
-git commit -m "fix(courses): correct enrollment validation"
-git commit -m "docs(readme): update deployment guide"
-git commit -m "refactor(services): extract course service layer"
+cd student-portal  # or teacher-portal
+npm install
+# Husky hooks will auto-install on first commit
 ```
 
-**Types:** feat, fix, docs, style, refactor, perf, test, chore, build, ci, revert
+### Daily Development Workflow
 
-### 3. Pull Request Template
+1. **Make code changes** in any project
+2. **Run pre-commit checks** (automatic via Husky for frontend, manual for backend)
+3. **Commit** - Husky will auto-lint/stage-fix frontend code
+4. **Push** - CI will run full quality checks
+5. **PR** - All CI checks must pass before merge
 
-```markdown
-## Changes
-
-- [ ] Describe what changed
-
-## Related Issues
-
-- Closes #123
-
-## Testing
-
-- [ ] How to test?
-- [ ] Manual steps?
-- [ ] Automated tests added?
-
-## Screenshots (UI changes)
-
-- [ ] Add screenshots
-
-## Checklist
-
-- [ ] Lint passed (`npm run lint`)
-- [ ] Type-check passed (`npm run type-check`)
-- [ ] Tests passed (`npm run test`)
-- [ ] No hardcoded secrets
-- [ ] Documentation updated
-```
-
----
-
-## 🚀 Common Tasks - Templates
-
-### Task: Add New API Endpoint
-
-```markdown
-## Plan: Add [Feature] API
-
-1. **Backend**
-   - Create `backend/app/schemas/feature.py` (Pydantic models)
-   - Create `backend/app/services/feature_service.py` (business logic)
-   - Create `backend/app/api/feature.py` (REST endpoints)
-   - Import router in `backend/main.py`
-   - Add tests in `backend/tests/test_feature.py`
-
-2. **Frontend**
-   - Add API client method in `apps/*/lib/api/client.ts`
-   - Create TypeScript types in `packages/utils/types/feature.ts`
-   - Build UI component in `apps/*/components/FeatureComponent.tsx`
-   - Add page in `apps/*/app/(role)/feature/page.tsx`
-   - Add tests
-
-3. **Database**
-   - Update `backend/prisma/schema.prisma`
-   - Run `npx prisma migrate dev --name add_feature`
-   - Update seed data if needed
-```
-
-### Task: Add Shared Component
-
-```markdown
-## Plan: Add [Component] to UI Package
-
-1. Create `packages/ui/components/[Component].tsx`
-2. Export from `packages/ui/index.ts`
-3. Add Storybook story (optional)
-4. Add tests in `packages/ui/__tests__/`
-5. Update `packages/ui/README.md` if needed
-6. Usage: `import { Component } from "@nextgentra/ui"`
-```
-
-### Task: Refactor Existing Code
-
-```markdown
-## Plan: Refactor [Module]
-
-1. **Analysis**
-   - Current structure
-   - Dependencies
-   - Coupling/cohesion
-
-2. **Changes**
-   - Extract interfaces/abstract classes
-   - Move logic to appropriate layer
-   - Update imports
-
-3. **Testing**
-   - Ensure existing tests pass
-   - Add tests for new structure
-   - Run full CI locally: `make ci-check`
-```
-
----
-
-## 🔍 Debugging Checklist
-
-### Frontend Issues
-
-- [ ] Check browser console (F12)
-- [ ] Verify API URL in `.env.local`
-- [ ] Check network tab for failed requests
-- [ ] Run `npm run lint` - fix warnings
-- [ ] Run `npm run type-check` - fix type errors
-- [ ] Clear `.next` cache: `rm -rf .next`
-
-### Backend Issues
-
-- [ ] Check logs: `docker-compose logs -f backend`
-- [ ] Verify DB connection: `docker-compose exec db psql -U postgres`
-- [ ] Test API directly: `curl http://localhost:8000/health`
-- [ ] Check Redis: `docker-compose exec redis redis-cli ping`
-- [ ] View DB: `npm run db:studio`
-
-### CI/CD Failures
-
-- [ ] Replicate locally: `make ci-check`
-- [ ] Check dependency versions
-- [ ] Verify environment variables in GitHub Secrets
-- [ ] Review workflow logs in GitHub Actions
-
----
-
-## 📚 Quick References
-
-### Key Commands
-
+### Manual Quality Checks (Backend)
+Before pushing backend changes, run:
 ```bash
-make help              # All commands
-make dev               # Start everything
-make lint              # Lint all
-make type-check        # TypeScript check
-make test              # Run tests
-make build             # Production build
-make docker-up         # Start services
-make db:migrate        # Run migrations
+cd backend-python
+black .           # Auto-format
+ruff check .      # Lint (use --fix to auto-fix)
+mypy app/         # Type check
+pytest            # Test
 ```
 
-### File Locations
+### Overriding Pre-commit Hooks (if needed)
+Skip Husky temporarily:
+```bash
+git commit --no-verify
+```
+Use sparingly - only for emergencies like typo fixes.
 
-- **UI Components**: `packages/ui/components/`
-- **API Client**: `apps/*/lib/api/`
-- **Types**: `packages/utils/types/`
-- **Env Vars**: `backend/.env`, `apps/*/.env.local`
-- **DB Schema**: `backend/prisma/schema.prisma`
-- **API Docs**: `http://localhost:8000/docs` (when running)
+## Next Steps for Development
 
-### Ports
-
-- Teacher Portal: `http://localhost:3000`
-- Student Portal: `http://localhost:3001`
-- Backend API: `http://localhost:8000`
-- API Docs: `http://localhost:8000/docs`
-- Prisma Studio: `http://localhost:5555` (`npm run db:studio`)
-
----
-
-## 🤖 AI Assistant Guidelines
-
-### When Starting a Task
-
-1. **Read this file first** - Understand project structure
-2. **Check related files** - See existing patterns
-3. **Create a plan** - Use TodoWrite for complex tasks
-4. **Ask questions** - If requirements unclear
-
-### Code Generation Rules
-
-- **Strict TypeScript** - No `any`, define interfaces
-- **Follow conventions** - Check existing code for patterns
-- **Add tests** - Every new feature needs tests
-- **Update docs** - Keep documentation current
-- **Run checks** - Ensure lint/type-check pass
-
-### What to Avoid
-
-- ❌ Don't modify shared packages without testing both apps
-- ❌ Don't skip type definitions
-- ❌ Don't hardcode values (use env vars or constants)
-- ❌ Don't add console.log in production code
-- ❌ Don't create circular dependencies between packages
-
----
-
-## 📖 Additional Resources
-
-- [README.md](README.md) - Project overview
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Complete dev guide
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
-- [DEPLOYMENT.md](DEPEPLOYMENT.md) - Production deployment
-- [docs/adrs/](docs/adrs/) - Architecture decisions
-
----
-
-**Last Updated**: 2025-04-25
-**Maintainer**: NextGenTra Team
-**Claude Code Version**: Compatible with Claude Code v1.0+
+1. Implement database schema with Prisma
+2. Create database models and migrate from in-memory storage
+3. Add more API endpoints (courses, assignments, etc.)
+4. Build out frontend pages and components beyond home page
+5. Set up proper authentication flow with refresh tokens
+6. Implement role-based access control (student vs teacher)
+7. Add comprehensive test coverage (use test templates provided)
+8. Configure production environment variables
+9. Update CODEOWNERS with actual team members
+10. Consider implementing monorepo tools (Turborepo/NX) if scaling up
