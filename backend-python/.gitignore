@@ -23,6 +23,8 @@ coverage.xml
 .mypy_cache/
 .pytest_cache/
 .hypothesis/
+*.egg-info/
+.eggs/
 
 # IDE
 .vscode/
