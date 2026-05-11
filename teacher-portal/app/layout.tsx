@@ -34,28 +34,34 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ErrorBoundary fallback={
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            padding: '2rem'
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              textAlign: 'center'
-            }}>
-              <h2 style={{ color: '#dc2626', marginBottom: '1rem' }}>
-                Không thể tải trang
-              </h2>
-              <p>Vui lòng tải lại trang hoặc liên hệ hỗ trợ.</p>
+        <ErrorBoundary
+          fallback={
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                padding: '2rem',
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  padding: '2rem',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  textAlign: 'center',
+                }}
+              >
+                <h2 style={{ color: '#dc2626', marginBottom: '1rem' }}>
+                  Không thể tải trang
+                </h2>
+                <p>Vui lòng tải lại trang hoặc liên hệ hỗ trợ.</p>
+              </div>
             </div>
-          </div>
-        }>
+          }
+        >
           {children}
         </ErrorBoundary>
       </body>

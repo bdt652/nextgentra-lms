@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 
 /**
  * Sentry Configuration for Teacher Portal
@@ -10,13 +10,13 @@ import { BrowserTracing } from "@sentry/tracing";
 
 export function initSentry() {
   const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
-  const environment = process.env.NODE_ENV || "development";
-  const version = process.env.npm_package_version || "0.1.0";
+  const environment = process.env.NODE_ENV || 'development';
+  const version = process.env.npm_package_version || '0.1.0';
 
   if (!sentryDsn) {
-    if (environment !== "test") {
+    if (environment !== 'test') {
       console.warn(
-        "[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled"
+        '[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled'
       );
     }
     return;
@@ -26,25 +26,23 @@ export function initSentry() {
     dsn: sentryDsn,
     environment,
     release: `teacher-portal@${version}`,
-    tracesSampleRate:
-      environment === "development" ? 1.0 : 0.1,
-    profilesSampleRate:
-      environment === "development" ? 1.0 : 0.1,
+    tracesSampleRate: environment === 'development' ? 1.0 : 0.1,
+    profilesSampleRate: environment === 'development' ? 1.0 : 0.1,
     integrations: [
       new BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(history => history),
+        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+          (history) => history
+        ),
       }),
     ],
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    debug: environment === "development",
+    debug: environment === 'development',
   });
 
-  console.log(
-    `[Sentry] Initialized for ${environment} (version: ${version})`
-  );
+  console.log(`[Sentry] Initialized for ${environment} (version: ${version})`);
 }
 
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   initSentry();
 }

@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 
 /**
  * Sentry Configuration for Student Portal
@@ -16,13 +16,13 @@ import { BrowserTracing } from "@sentry/tracing";
 
 export function initSentry() {
   const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
-  const environment = process.env.NODE_ENV || "development";
-  const version = process.env.npm_package_version || "0.1.0";
+  const environment = process.env.NODE_ENV || 'development';
+  const version = process.env.npm_package_version || '0.1.0';
 
   if (!sentryDsn) {
-    if (environment !== "test") {
+    if (environment !== 'test') {
       console.warn(
-        "[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled"
+        '[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled'
       );
     }
     return;
@@ -33,11 +33,9 @@ export function initSentry() {
     environment,
     release: `student-portal@${version}`,
     // Sample rate for transactions (performance monitoring)
-    tracesSampleRate:
-      environment === "development" ? 1.0 : 0.1, // 100% in dev, 10% in prod
+    tracesSampleRate: environment === 'development' ? 1.0 : 0.1, // 100% in dev, 10% in prod
     // Sample rate for error profiling
-    profilesSampleRate:
-      environment === "development" ? 1.0 : 0.1,
+    profilesSampleRate: environment === 'development' ? 1.0 : 0.1,
     integrations: [
       new BrowserTracing({
         // Configure tracing for Next.js App Router
@@ -53,18 +51,16 @@ export function initSentry() {
     replaysSessionSampleRate: 0.1, // 10% of sessions
     replaysOnErrorSampleRate: 1.0, // 100% of error sessions
     // Debug mode (development only)
-    debug: environment === "development",
+    debug: environment === 'development',
   });
 
-  console.log(
-    `[Sentry] Initialized for ${environment} (version: ${version})`
-  );
+  console.log(`[Sentry] Initialized for ${environment} (version: ${version})`);
 }
 
 /**
  * Initialize Sentry on client-side
  * This is called in the client entry point (app/layout.tsx)
  */
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   initSentry();
 }
