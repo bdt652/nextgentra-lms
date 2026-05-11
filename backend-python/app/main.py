@@ -80,7 +80,7 @@ app = FastAPI(
 
 # Add Sentry middleware if available
 if sentry_dsn and SENTRY_AVAILABLE:
-    app.add_middleware(SentryAsgiMiddleware)
+    app.add_middleware(SentryAsgiMiddleware)  # type: ignore[arg-type]
 
 
 # Logging middleware
