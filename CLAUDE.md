@@ -157,6 +157,43 @@ npm run dev
 
 ## Code Quality Standards
 
+### Naming Conventions
+
+**Python (Backend):**
+- ✅ **snake_case** for variables, functions, methods, and module names
+- ✅ **PascalCase** for classes and exceptions
+- ✅ **UPPER_SNAKE_CASE** for constants
+- Database fields follow Prisma schema (all snake_case)
+
+Examples:
+```python
+# Good
+user_id = "123"
+def get_user_by_email():
+class UserResponse:
+MAX_RETRIES = 3
+
+# Avoid
+userId = "123"  # camelCase
+def GetUser():  # PascalCase for function
+```
+
+**TypeScript (Frontend):**
+- Follow JavaScript conventions: **camelCase** for variables, functions, methods
+- **PascalCase** for React components and classes
+- API payload keys should use snake_case to match backend
+
+```typescript
+// Good
+const userId = "123";
+function getUserData() {}
+interface UserResponse {}
+// API payload: { user_id: "...", created_at: "..." }
+
+// Avoid
+const UserId = "123";  // PascalCase for variable
+```
+
 ### Backend (Python)
 **Linting & Formatting:**
 - **Ruff** - Fast Python linter (replaces flake8, isort, pyflakes, etc.)

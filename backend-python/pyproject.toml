@@ -44,6 +44,7 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
+  | venv
   | _build
   | buck-out
   | build
@@ -54,6 +55,7 @@ exclude = '''
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+extend-exclude = ["venv"]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings

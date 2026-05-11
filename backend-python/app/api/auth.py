@@ -58,7 +58,7 @@ async def register(
         email=user.email,
         name=user.name,
         role=user.role,
-        created_at=user.createdAt,  # type: ignore[attr-defined]
+        created_at=user.created_at,
     )
 
 
@@ -116,5 +116,5 @@ async def get_current_user(
         email=user.email,
         name=user.name,
         role=user.role,
-        created_at=user.createdAt,  # type: ignore[attr-defined]
+        created_at=user.created_at,
     )
