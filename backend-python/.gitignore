@@ -44,3 +44,4 @@ Thumbs.db
 # Project specific
 data/
 logs/
+node_modules/
