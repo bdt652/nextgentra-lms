@@ -1,7 +1,8 @@
 """Tests for authentication utilities."""
 
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
+
+from jose import jwt
 
 from app.core.auth import (
     get_password_hash,
@@ -10,6 +11,8 @@ from app.core.auth import (
     decode_token,
     create_refresh_token,
     decode_refresh_token,
+    SECRET_KEY,
+    ALGORITHM,
 )
 
 
@@ -74,8 +77,6 @@ def test_refresh_token_has_type():
     token = create_refresh_token(data={"sub": email})
 
     # Decode without verification to check type
-    from jose import jwt
-    from app.core.auth import SECRET_KEY, ALGORITHM
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert payload.get("type") == "refresh"
 
@@ -85,7 +86,5 @@ def test_access_token_has_no_type():
     email = "test@example.com"
     token = create_access_token(data={"sub": email})
 
-    from jose import jwt
-    from app.core.auth import SECRET_KEY, ALGORITHM
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert "type" not in payload
