@@ -1,21 +1,21 @@
 """Student authentication API endpoints."""
 
 from datetime import datetime, timedelta, timezone
+from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
-from prisma import Prisma
-from typing import Annotated
 
 from app.core.auth import (
     create_access_token,
     create_refresh_token,
     decode_refresh_token,
-    verify_password,
     get_password_hash,
+    verify_password,
 )
 from app.core.database import get_prisma, settings
 from app.dependencies.auth import CurrentUser, get_current_student
-from app.schemas.student import StudentCreate, StudentResponse, StudentLogin, TokenResponse
+from app.schemas.student import StudentCreate, StudentLogin, StudentResponse, TokenResponse
+from prisma import Prisma
 
 router = APIRouter(prefix="/auth/student", tags=["student-auth"])
 
@@ -41,7 +41,7 @@ async def register_student(
         }
     )
 
-    return StudentResponse(
+    return StudentResponse(  # type: ignore[call-arg]
         id=student.id,
         email=student.email,
         name=student.name,
@@ -99,7 +99,7 @@ async def get_current_student_profile(
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
 
-    return StudentResponse(
+    return StudentResponse(  # type: ignore[call-arg]
         id=student.id,
         email=student.email,
         name=student.name,

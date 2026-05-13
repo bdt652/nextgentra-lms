@@ -1,8 +1,7 @@
 """Integration tests for authentication API endpoints."""
 
-import pytest
-from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 client = TestClient(app)

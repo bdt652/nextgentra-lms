@@ -1,6 +1,7 @@
 """Authentication and authorization dependencies."""
 
-from typing import Annotated, Awaitable, Callable, Literal
+from collections.abc import Awaitable
+from typing import Annotated, Callable, Literal
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -81,8 +82,8 @@ def require_permission(permission: str) -> Callable[[], Awaitable[CurrentUser]]:
     """Dependency that requires the teacher to have a specific permission."""
 
     async def permission_checker(
-        current_teacher: CurrentUser = Depends(get_current_teacher),  # noqa: B008
-        prisma: Prisma = Depends(get_prisma),  # noqa: B008
+        current_teacher: CurrentUser = Depends(get_current_teacher),
+        prisma: Prisma = Depends(get_prisma),
     ) -> CurrentUser:
         if current_teacher.user_type != "teacher":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Teachers only")

@@ -3,14 +3,14 @@
 from jose import jwt
 
 from app.core.auth import (
+    ALGORITHM,
+    SECRET_KEY,
     create_access_token,
     create_refresh_token,
     decode_refresh_token,
     decode_token,
     get_password_hash,
     verify_password,
-    ALGORITHM,
-    SECRET_KEY,
 )
 
 

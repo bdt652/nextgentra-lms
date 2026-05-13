@@ -6,11 +6,11 @@ from typing import Optional
 
 from fastapi import status
 from fastapi.responses import JSONResponse
-from prisma import Prisma  # type: ignore
 import redis
 
 from app.core.database import get_prisma, settings
 from app.core.logging import get_logger
+from prisma import Prisma  # type: ignore
 
 logger = get_logger(__name__)
 

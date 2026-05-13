@@ -1,6 +1,6 @@
 """Database connection management."""
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from prisma import Prisma  # type: ignore
 
@@ -8,16 +8,14 @@ from prisma import Prisma  # type: ignore
 class Settings(BaseSettings):
     """Application settings with environment variables."""
 
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
     database_url: str = ""
     redis_url: str = ""  # Redis connection URL
     jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7
-
-    class Config:
-        env_file = ".env"
-        extra = "ignore"  # Ignore other environment variables
 
 
 settings = Settings()
