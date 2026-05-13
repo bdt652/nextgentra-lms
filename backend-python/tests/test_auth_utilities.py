@@ -1,18 +1,16 @@
 """Tests for authentication utilities."""
 
-from datetime import timedelta
-
 from jose import jwt
 
 from app.core.auth import (
-    get_password_hash,
-    verify_password,
     create_access_token,
-    decode_token,
     create_refresh_token,
     decode_refresh_token,
-    SECRET_KEY,
+    decode_token,
+    get_password_hash,
+    verify_password,
     ALGORITHM,
+    SECRET_KEY,
 )
 
 
@@ -41,6 +39,8 @@ def test_create_access_token():
 
 def test_create_access_token_with_expiry():
     """Test access token with custom expiry."""
+    from datetime import timedelta
+
     email = "test@example.com"
     custom_minutes = 60
     token = create_access_token(
