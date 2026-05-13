@@ -47,12 +47,12 @@ jobs:
       - name: Generate Prisma client
         run: |
           cd backend-python
-          npx prisma@5.18.0 generate --schema prisma/schema.prisma
+          python -m prisma generate --schema prisma/schema.prisma
 
       - name: Apply database schema
         run: |
           cd backend-python
-          npx prisma@5.18.0 db push --schema prisma/schema.prisma
+          python -m prisma db push --schema prisma/schema.prisma
 
       - name: Run Ruff linter
         run: |
