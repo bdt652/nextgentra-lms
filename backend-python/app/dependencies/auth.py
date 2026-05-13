@@ -1,6 +1,6 @@
 """Authentication and authorization dependencies."""
 
-from typing import Annotated, Literal
+from typing import Annotated, Awaitable, Callable, Literal
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -77,7 +77,7 @@ async def get_current_teacher(
     )
 
 
-def require_permission(permission: str):
+def require_permission(permission: str) -> Callable[[], Awaitable[CurrentUser]]:
     """Dependency that requires the teacher to have a specific permission."""
 
     async def permission_checker(
@@ -94,7 +94,10 @@ def require_permission(permission: str):
         if not teacher_with_role or not teacher_with_role.role:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No role assigned")
 
-        perm_names = {p.name for p in teacher_with_role.role.permissions}
+        if not teacher_with_role.role.permissions:
+            perm_names = set()
+        else:
+            perm_names = {p.name for p in teacher_with_role.role.permissions}
         if permission not in perm_names:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -106,6 +109,6 @@ def require_permission(permission: str):
     return permission_checker
 
 
-def require_admin():
+def require_admin() -> Callable[[], Awaitable[CurrentUser]]:
     """Require admin role."""
     return require_permission("admin:access")

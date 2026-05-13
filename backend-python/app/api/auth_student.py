@@ -14,7 +14,7 @@ from app.core.auth import (
     get_password_hash,
 )
 from app.core.database import get_prisma, settings
-from app.dependencies.auth import get_current_student
+from app.dependencies.auth import CurrentUser, get_current_student
 from app.schemas.student import StudentCreate, StudentResponse, StudentLogin, TokenResponse
 
 router = APIRouter(prefix="/auth/student", tags=["student-auth"])
@@ -36,7 +36,7 @@ async def register_student(
             "email": data.email,
             "name": data.name,
             "student_code": data.student_code,
-            "class": data.class_,
+            "class_": data.class_,
             "hashed_password": get_password_hash(data.password),
         }
     )
@@ -92,7 +92,7 @@ async def login_student(
 @router.get("/me", response_model=StudentResponse)
 async def get_current_student_profile(
     prisma: Annotated[Prisma, Depends(get_prisma)],
-    current: Annotated = Depends(get_current_student),
+    current: Annotated[CurrentUser, Depends(get_current_student)],
 ) -> StudentResponse:
     """Get current student profile."""
     student = await prisma.student.find_unique(where={"id": current.id})
@@ -163,7 +163,7 @@ async def refresh_student_token(
 @router.post("/logout")
 async def logout_student(
     prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
-):
+) -> dict:
     """Revoke a refresh token (logout)."""
     result = await prisma.refreshtoken.update(
         where={"token": refresh_token}, data={"revoked": True}

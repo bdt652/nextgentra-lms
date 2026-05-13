@@ -25,7 +25,7 @@ class StudentResponse(StudentBase):
     created_at: datetime
     is_active: bool
 
-    class Config:
+    class Config(StudentBase.Config):
         from_attributes = True
 
 
