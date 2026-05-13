@@ -44,8 +44,7 @@ def test_create_access_token_with_expiry():
     email = "test@example.com"
     custom_minutes = 60
     token = create_access_token(
-        data={"sub": email},
-        expires_delta=timedelta(minutes=custom_minutes)
+        data={"sub": email}, expires_delta=timedelta(minutes=custom_minutes)
     )
 
     token_data = decode_token(token)

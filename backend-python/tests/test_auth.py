@@ -60,9 +60,7 @@ class TestAccessToken:
     def test_create_access_token_with_expiry(self):
         """Should create token with custom expiry."""
         custom_delta = timedelta(minutes=30)
-        token = create_access_token(
-            data={"sub": "test@example.com"}, expires_delta=custom_delta
-        )
+        token = create_access_token(data={"sub": "test@example.com"}, expires_delta=custom_delta)
         assert isinstance(token, str)
 
     def test_decode_valid_token_returns_token_data(self):
