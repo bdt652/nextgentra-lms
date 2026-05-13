@@ -171,7 +171,7 @@ async def refresh_teacher_token(
 @router.post("/logout")
 async def logout_teacher(
     prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
-):
+) -> dict:
     """Revoke a refresh token (logout)."""
     result = await prisma.refreshtoken.update(
         where={"token": refresh_token}, data={"revoked": True}
