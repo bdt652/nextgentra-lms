@@ -36,7 +36,7 @@ async def seed_database():
                 },
             )
             created_permissions[permission.name] = permission
-            print(f"  ✓ Permission: {permission.name}")
+            print(f"  [OK] Permission: {permission.name}")
 
         # Seed roles
         roles_data = [

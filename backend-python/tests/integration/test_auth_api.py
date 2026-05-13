@@ -1,16 +1,10 @@
 """Integration tests for authentication API endpoints."""
 
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
 
 class TestStudentAuth:
     """Test student authentication endpoints."""
 
-    def test_student_registration(self):
+    def test_student_registration(self, client):
         """Test student registration succeeds with valid data."""
         response = client.post(
             "/auth/student/register",
@@ -18,7 +12,7 @@ class TestStudentAuth:
                 "email": "student@example.com",
                 "name": "Test Student",
                 "student_code": "STU001",
-                "class_": "12A1",
+                "class": "12A1",
                 "password": "password123",
             },
         )
@@ -31,7 +25,7 @@ class TestStudentAuth:
         assert "created_at" in data
         assert data["is_active"] is True
 
-    def test_student_registration_duplicate_email(self):
+    def test_student_registration_duplicate_email(self, client):
         """Test student registration fails with duplicate email."""
         # First registration
         client.post(
@@ -57,7 +51,7 @@ class TestStudentAuth:
         assert response.status_code == 400
         assert "Email already registered" in response.json()["detail"]
 
-    def test_student_login_success(self):
+    def test_student_login_success(self, client):
         """Test student login with valid credentials."""
         # Register first
         client.post(
@@ -84,7 +78,7 @@ class TestStudentAuth:
         assert "refresh_token" in data
         assert data["token_type"] == "bearer"
 
-    def test_student_login_invalid_password(self):
+    def test_student_login_invalid_password(self, client):
         """Test student login fails with wrong password."""
         # Register
         client.post(
@@ -108,7 +102,7 @@ class TestStudentAuth:
         assert response.status_code == 401
         assert "Invalid email or password" in response.json()["detail"]
 
-    def test_student_get_profile(self):
+    def test_student_get_profile(self, client):
         """Test getting student profile with valid token."""
         # Register and login
         client.post(
@@ -140,7 +134,7 @@ class TestStudentAuth:
         assert data["email"] == "profile@example.com"
         assert data["name"] == "Profile Test"
 
-    def test_student_get_profile_invalid_token(self):
+    def test_student_get_profile_invalid_token(self, client):
         """Test getting profile with invalid token."""
         response = client.get(
             "/auth/student/me",
@@ -148,7 +142,7 @@ class TestStudentAuth:
         )
         assert response.status_code == 401
 
-    def test_student_refresh_token(self):
+    def test_student_refresh_token(self, client):
         """Test refresh token flow."""
         # Register and login
         client.post(
@@ -188,7 +182,7 @@ class TestStudentAuth:
         )
         assert refresh_response2.status_code == 401
 
-    def test_student_logout(self):
+    def test_student_logout(self, client):
         """Test logout revokes refresh token."""
         # Register and login
         client.post(
@@ -229,7 +223,7 @@ class TestStudentAuth:
 class TestTeacherAuth:
     """Test teacher authentication endpoints."""
 
-    def test_teacher_registration(self):
+    def test_teacher_registration(self, client):
         """Test teacher registration succeeds with valid data."""
         response = client.post(
             "/auth/teacher/register",
@@ -249,7 +243,7 @@ class TestTeacherAuth:
         assert "created_at" in data
         assert data["is_active"] is True
 
-    def test_teacher_registration_with_admin_role(self):
+    def test_teacher_registration_with_admin_role(self, client):
         """Test teacher registration with admin role."""
         response = client.post(
             "/auth/teacher/register",
@@ -264,7 +258,7 @@ class TestTeacherAuth:
         data = response.json()
         assert data["role"] == "admin"
 
-    def test_teacher_registration_nonexistent_role(self):
+    def test_teacher_registration_nonexistent_role(self, client):
         """Test teacher registration fails with invalid role."""
         response = client.post(
             "/auth/teacher/register",
@@ -278,7 +272,7 @@ class TestTeacherAuth:
         assert response.status_code == 400
         assert "does not exist" in response.json()["detail"]
 
-    def test_teacher_registration_duplicate_email(self):
+    def test_teacher_registration_duplicate_email(self, client):
         """Test teacher registration fails with duplicate email."""
         # First registration
         client.post(
@@ -304,7 +298,7 @@ class TestTeacherAuth:
         assert response.status_code == 400
         assert "Email already registered" in response.json()["detail"]
 
-    def test_teacher_login_success(self):
+    def test_teacher_login_success(self, client):
         """Test teacher login with valid credentials."""
         # Register
         client.post(
@@ -331,7 +325,7 @@ class TestTeacherAuth:
         assert "refresh_token" in data
         assert data["token_type"] == "bearer"
 
-    def test_teacher_login_invalid_password(self):
+    def test_teacher_login_invalid_password(self, client):
         """Test teacher login fails with wrong password."""
         # Register
         client.post(
@@ -355,7 +349,7 @@ class TestTeacherAuth:
         assert response.status_code == 401
         assert "Invalid email or password" in response.json()["detail"]
 
-    def test_teacher_get_profile(self):
+    def test_teacher_get_profile(self, client):
         """Test getting teacher profile with valid token."""
         # Register and login
         client.post(
@@ -388,7 +382,7 @@ class TestTeacherAuth:
         assert data["name"] == "Teacher Profile"
         assert data["role"] == "admin"
 
-    def test_teacher_refresh_token(self):
+    def test_teacher_refresh_token(self, client):
         """Test refresh token flow for teacher."""
         # Register and login
         client.post(
@@ -420,7 +414,7 @@ class TestTeacherAuth:
         assert "access_token" in data
         assert "refresh_token" in data
 
-    def test_teacher_logout(self):
+    def test_teacher_logout(self, client):
         """Test logout revokes refresh token for teacher."""
         # Register and login
         client.post(
@@ -460,7 +454,7 @@ class TestTeacherAuth:
 class TestTokenSeparation:
     """Test that student and teacher tokens are not interchangeable."""
 
-    def test_student_token_cannot_access_teacher_endpoints(self):
+    def test_student_token_cannot_access_teacher_endpoints(self, client):
         """Test student token is rejected by teacher endpoints."""
         # Register and login as student
         client.post(
@@ -489,7 +483,7 @@ class TestTokenSeparation:
         )
         assert response.status_code == 401  # Unauthorized
 
-    def test_teacher_token_cannot_access_student_endpoints(self):
+    def test_teacher_token_cannot_access_student_endpoints(self, client):
         """Test teacher token is rejected by student endpoints."""
         # Register and login as teacher
         client.post(
@@ -522,7 +516,7 @@ class TestTokenSeparation:
 class TestPermissionAuthorization:
     """Test permission-based authorization for teachers."""
 
-    def test_permission_endpoint_requires_permission(self):
+    def test_permission_endpoint_requires_permission(self, client):
         """Test that protected endpoints require specific permissions."""
         # Create a teacher with no permissions (if possible) or minimal permissions
         # For now, we'll test with the seeded teacher role which has permissions

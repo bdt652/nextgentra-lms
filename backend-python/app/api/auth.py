@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.auth import (
     create_access_token,
@@ -14,6 +14,7 @@ from app.core.auth import (
 )
 from app.core.database import get_prisma, settings
 from app.dependencies.auth import CurrentUser, get_current_teacher
+from app.schemas.auth import LogoutRequest, RefreshTokenRequest
 from app.schemas.student import TokenResponse
 from app.schemas.teacher import TeacherCreate, TeacherLogin, TeacherResponse
 from prisma import Prisma
@@ -120,9 +121,10 @@ async def get_current_teacher_profile(
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_teacher_token(
-    prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
+    prisma: Annotated[Prisma, Depends(get_prisma)], data: RefreshTokenRequest
 ) -> TokenResponse:
     """Exchange a valid refresh token for a new access token."""
+    refresh_token = data.refresh_token
     token_data = decode_refresh_token(refresh_token)
     if not token_data or not token_data.email:
         raise HTTPException(
@@ -170,9 +172,10 @@ async def refresh_teacher_token(
 
 @router.post("/logout")
 async def logout_teacher(
-    prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
+    prisma: Annotated[Prisma, Depends(get_prisma)], data: LogoutRequest
 ) -> dict:
     """Revoke a refresh token (logout)."""
+    refresh_token = data.refresh_token
     result = await prisma.refreshtoken.update(
         where={"token": refresh_token}, data={"revoked": True}
     )
