@@ -4,15 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-
-class PermissionBase(BaseModel):
-    name: str
-
-
-class PermissionResponse(PermissionBase):
-    id: str
-
-    model_config = ConfigDict(from_attributes=True)
+from app.schemas.permission import PermissionResponse
 
 
 class PermissionCreate(BaseModel):
@@ -39,3 +31,7 @@ class RoleResponse(RoleBase):
     permissions: list[PermissionResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class RolePermissionsRequest(BaseModel):
+    permission_ids: list[str]

@@ -40,6 +40,7 @@ async def main() -> None:
         {"name": "role:create"},
         {"name": "role:update"},
         {"name": "role:delete"},
+        {"name": "admin:access"},  # grants access to admin panel
     ]
 
     print("Creating permissions...")

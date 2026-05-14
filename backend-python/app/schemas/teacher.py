@@ -21,6 +21,7 @@ class TeacherResponse(TeacherBase):
     created_at: datetime
     is_active: bool
     role: Optional[str] = None  # Role name from related Role table
+    permissions: list[str] = []  # Permission names from role
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -28,3 +29,22 @@ class TeacherResponse(TeacherBase):
 class TeacherLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class TeacherAdminResponse(BaseModel):
+    """Teacher info for admin listing — includes role_id for form binding."""
+
+    id: str
+    email: EmailStr
+    name: str
+    is_active: bool
+    created_at: datetime
+    role_id: Optional[str] = None
+    role: Optional[str] = None
+    permissions: list[str] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AssignRoleRequest(BaseModel):
+    role_id: Optional[str] = None  # None = remove role from teacher

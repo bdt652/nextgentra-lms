@@ -49,6 +49,11 @@ async def register_teacher(
         }
     )
 
+    role_with_perms = await prisma.role.find_unique(
+        where={"id": role.id}, include={"permissions": True}
+    )
+    permissions = [p.name for p in (role_with_perms.permissions if role_with_perms else [])]
+
     return TeacherResponse(
         id=teacher.id,
         email=teacher.email,
@@ -56,6 +61,7 @@ async def register_teacher(
         created_at=teacher.created_at,
         is_active=teacher.is_active,
         role=role.name,
+        permissions=permissions,
     )
 
 
@@ -104,11 +110,15 @@ async def get_current_teacher_profile(
     current: CurrentUser = Depends(get_current_teacher),
 ) -> TeacherResponse:
     """Get current teacher profile with role information."""
-    teacher = await prisma.teacher.find_unique(where={"id": current.id}, include={"role": True})
+    teacher = await prisma.teacher.find_unique(
+        where={"id": current.id},
+        include={"role": {"include": {"permissions": True}}},
+    )
     if not teacher:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found")
 
     role_name = teacher.role.name if teacher.role else None
+    permissions = [p.name for p in (teacher.role.permissions or [])] if teacher.role else []
     return TeacherResponse(
         id=teacher.id,
         email=teacher.email,
@@ -116,6 +126,7 @@ async def get_current_teacher_profile(
         created_at=teacher.created_at,
         is_active=teacher.is_active,
         role=role_name,
+        permissions=permissions,
     )
 
 
