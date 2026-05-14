@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { assignTeacherRole, listRoles, listTeachers } from '@/lib/api/admin';
@@ -126,8 +126,8 @@ export default function TeachersPage() {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {teachers.map((teacher) => (
-                <>
-                  <tr key={teacher.id}>
+                <Fragment key={teacher.id}>
+                  <tr>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                       {teacher.name}
                     </td>
@@ -180,7 +180,7 @@ export default function TeachersPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
               {teachers.length === 0 && (
                 <tr>
