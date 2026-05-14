@@ -18,6 +18,8 @@ export const registerSchema = z
       .string()
       .min(1, 'Email là bắt buộc')
       .email('Địa chỉ email không hợp lệ'),
+    student_code: z.string().min(1, 'Mã học sinh là bắt buộc'),
+    class_: z.string().optional(),
     password: z
       .string()
       .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')

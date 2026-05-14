@@ -32,6 +32,12 @@ async def register_student(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
 
+    existing_code = await prisma.student.find_unique(where={"student_code": data.student_code})
+    if existing_code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Student code already registered"
+        )
+
     student = await prisma.student.create(
         data={
             "email": data.email,

@@ -3,21 +3,22 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useAuthStore, useHasHydrated } from '@/lib/store/authStore';
 import type { AuthState } from '@/lib/store/authStore';
 
 export default function Home() {
   const router = useRouter();
-  const token = useAuthStore((state: AuthState) => state.token);
+  const hasHydrated = useHasHydrated();
+  const access_token = useAuthStore((state: AuthState) => state.access_token);
 
   useEffect(() => {
-    if (token) {
-      // Redirect to dashboard (to be implemented)
+    if (!hasHydrated) return;
+    if (access_token) {
       router.push('/dashboard');
     } else {
       router.push('/login');
     }
-  }, [token, router]);
+  }, [hasHydrated, access_token, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">

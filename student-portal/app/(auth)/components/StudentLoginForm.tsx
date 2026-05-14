@@ -9,7 +9,7 @@ import { AuthInput } from './ui/AuthInput';
 import { PasswordField } from './ui/PasswordField';
 import { AuthButton } from './ui/AuthButton';
 import { loginSchema, type LoginFormData } from '@/lib/validations/authSchemas';
-import { login } from '@/lib/api/auth';
+import { loginStudent, getStudentProfile } from '@/lib/api/auth';
 import { useAuthStore } from '@/lib/store/authStore';
 
 interface LoginFormProps {
@@ -19,7 +19,7 @@ interface LoginFormProps {
 export function StudentLoginForm({ onSuccess }: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const { setToken } = useAuthStore();
+  const { setTokens, setStudent } = useAuthStore();
 
   const {
     register,
@@ -32,18 +32,16 @@ export function StudentLoginForm({ onSuccess }: LoginFormProps) {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
-      const response = await login(data.email, data.password);
+      const tokens = await loginStudent(data.email, data.password);
+      setTokens(tokens.access_token, tokens.refresh_token);
 
-      // Store token
-      localStorage.setItem('access_token', response.access_token);
-      setToken(response.access_token);
+      const profile = await getStudentProfile(tokens.access_token);
+      setStudent(profile);
 
-      // Redirect to home or dashboard
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push('/');
-        router.refresh();
+        router.push('/dashboard');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');

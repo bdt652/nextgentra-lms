@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -12,16 +12,38 @@ import {
   registerSchema,
   type RegisterFormData,
 } from '@/lib/validations/authSchemas';
-import { register as registerAPI } from '@/lib/api/auth';
+import { registerStudent } from '@/lib/api/auth';
+
+const API_ERROR_MAP: Record<
+  string,
+  { field: keyof RegisterFormData; message: string }
+> = {
+  'Email already registered': {
+    field: 'email',
+    message:
+      'Email này đã được đăng ký. Vui lòng dùng email khác hoặc đăng nhập.',
+  },
+  'Student code already registered': {
+    field: 'student_code',
+    message:
+      'Mã học sinh này đã được sử dụng. Vui lòng kiểm tra lại mã học sinh.',
+  },
+};
 
 export function StudentRegisterForm() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => router.push('/login'), 2000);
+    return () => clearTimeout(timer);
+  }, [success, router]);
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -29,15 +51,23 @@ export function StudentRegisterForm() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      setError(null);
-      await registerAPI(data.name, data.email, data.password, 'student');
+      setGeneralError(null);
+      await registerStudent(
+        data.name,
+        data.email,
+        data.password,
+        data.student_code,
+        data.class_
+      );
       setSuccess(true);
-      // Optionally auto-login after registration or redirect to login
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Đăng ký thất bại');
+      const message = err instanceof Error ? err.message : 'Đăng ký thất bại';
+      const mapped = API_ERROR_MAP[message];
+      if (mapped) {
+        setError(mapped.field, { type: 'server', message: mapped.message });
+      } else {
+        setGeneralError(message);
+      }
     }
   };
 
@@ -77,9 +107,11 @@ export function StudentRegisterForm() {
       description="Tạo tài khoản học sinh mới để bắt đầu học tập."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {error && (
+        {generalError && (
           <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {generalError}
+            </p>
           </div>
         )}
 
@@ -99,6 +131,24 @@ export function StudentRegisterForm() {
           placeholder="hocsinh@example.com"
           error={errors.email?.message}
           {...register('email')}
+        />
+
+        <AuthInput
+          id="student_code"
+          label="Mã học sinh"
+          type="text"
+          placeholder="HS001"
+          error={errors.student_code?.message}
+          {...register('student_code')}
+        />
+
+        <AuthInput
+          id="class_"
+          label="Lớp (tùy chọn)"
+          type="text"
+          placeholder="10A1"
+          error={errors.class_?.message}
+          {...register('class_')}
         />
 
         <PasswordField

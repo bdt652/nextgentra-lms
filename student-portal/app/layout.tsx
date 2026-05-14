@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { initSentry } from '@/sentry.client.config';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -23,11 +22,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Initialize Sentry on client-side (only runs in browser)
-  if (typeof window !== 'undefined') {
-    initSentry();
-  }
-
   return (
     <html
       lang="vi"

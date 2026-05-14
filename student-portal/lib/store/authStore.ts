@@ -1,26 +1,48 @@
+import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User } from '../types';
+import type { Student } from '../types';
 
 export interface AuthState {
-  token: string | null;
-  user: User | null;
-  setToken: (token: string | null) => void;
-  setUser: (user: User | null) => void;
+  access_token: string | null;
+  refresh_token: string | null;
+  student: Student | null;
+  setTokens: (access_token: string, refresh_token: string) => void;
+  setStudent: (student: Student | null) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      token: null,
-      user: null,
-      setToken: (token) => set({ token }),
-      setUser: (user) => set({ user }),
-      logout: () => set({ token: null, user: null }),
+      access_token: null,
+      refresh_token: null,
+      student: null,
+      setTokens: (access_token, refresh_token) =>
+        set({ access_token, refresh_token }),
+      setStudent: (student) => set({ student }),
+      logout: () =>
+        set({ access_token: null, refresh_token: null, student: null }),
     }),
     {
-      name: 'auth-storage',
+      name: 'student-auth',
     }
   )
 );
+
+export function useHasHydrated() {
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    // persist is undefined during SSR — only access in browser
+    const store = useAuthStore.persist;
+    if (!store) return;
+    if (store.hasHydrated()) {
+      setHasHydrated(true);
+      return;
+    }
+    return store.onFinishHydration(() => setHasHydrated(true));
+  }, []);
+
+  return hasHydrated;
+}
