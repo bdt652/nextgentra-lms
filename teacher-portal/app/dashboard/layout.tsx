@@ -14,24 +14,7 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
   permission: string | null;
-}
-
-function BookIcon() {
-  return (
-    <svg
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      />
-    </svg>
-  );
+  sublevel?: boolean;
 }
 
 function PlusIcon() {
@@ -114,28 +97,24 @@ const NAV_ITEMS: NavItem[] = [
     permission: null,
   },
   {
-    href: '/dashboard/courses',
-    label: 'Khóa học',
-    icon: <BookIcon />,
-    permission: null,
-  },
-  {
-    href: '/dashboard/courses/create',
-    label: 'Tạo khóa học',
-    icon: <PlusIcon />,
-    permission: 'course:create',
-  },
-  {
-    href: '/dashboard/assignments',
-    label: 'Bài tập',
-    icon: <ClipboardIcon />,
-    permission: 'assignment:grade',
-  },
-  {
     href: '/dashboard/admin',
     label: 'Quản trị',
     icon: <ShieldIcon />,
     permission: 'admin:access',
+  },
+  {
+    href: '/dashboard/admin/teachers',
+    label: 'Giáo viên',
+    icon: <ClipboardIcon />,
+    permission: 'admin:access',
+    sublevel: true,
+  },
+  {
+    href: '/dashboard/admin/roles',
+    label: 'Roles & Permissions',
+    icon: <PlusIcon />,
+    permission: 'admin:access',
+    sublevel: true,
   },
 ];
 
@@ -156,7 +135,9 @@ function NavLink({
   return (
     <Link
       href={item.href}
-      className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+      className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
+        item.sublevel ? 'ml-4 text-xs' : 'text-sm font-medium'
+      } ${
         isActive
           ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
