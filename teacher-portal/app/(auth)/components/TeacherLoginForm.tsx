@@ -9,8 +9,9 @@ import { AuthInput } from './ui/AuthInput';
 import { PasswordField } from './ui/PasswordField';
 import { AuthButton } from './ui/AuthButton';
 import { loginSchema, type LoginFormData } from '@/lib/validations/authSchemas';
-import { login } from '@/lib/api/auth';
+import { loginTeacher, getTeacherProfile } from '@/lib/api/auth';
 import { useAuthStore } from '@/lib/store/authStore';
+import { setAuthCookies } from '@/lib/utils/authCookies';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -19,7 +20,7 @@ interface LoginFormProps {
 export function TeacherLoginForm({ onSuccess }: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const { setToken } = useAuthStore();
+  const { setTokens, setTeacher } = useAuthStore();
 
   const {
     register,
@@ -32,16 +33,17 @@ export function TeacherLoginForm({ onSuccess }: LoginFormProps) {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
-      const response = await login(data.email, data.password);
+      const tokens = await loginTeacher(data.email, data.password);
+      setTokens(tokens.access_token, tokens.refresh_token);
+      const profile = await getTeacherProfile(tokens.access_token);
+      setTeacher(profile);
 
-      localStorage.setItem('access_token', response.access_token);
-      setToken(response.access_token);
+      setAuthCookies(profile.permissions ?? []);
 
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push('/');
-        router.refresh();
+        router.push('/dashboard');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');

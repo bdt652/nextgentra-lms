@@ -8,15 +8,15 @@ import type { AuthState } from '@/lib/store/authStore';
 
 export default function Home() {
   const router = useRouter();
-  const token = useAuthStore((state: AuthState) => state.token);
+  const access_token = useAuthStore((state: AuthState) => state.access_token);
 
   useEffect(() => {
-    if (token) {
+    if (access_token) {
       router.push('/dashboard');
     } else {
       router.push('/login');
     }
-  }, [token, router]);
+  }, [access_token, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">

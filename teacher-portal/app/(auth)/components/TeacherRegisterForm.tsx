@@ -12,7 +12,7 @@ import {
   registerSchema,
   type RegisterFormData,
 } from '@/lib/validations/authSchemas';
-import { register as registerAPI } from '@/lib/api/auth';
+import { registerTeacher } from '@/lib/api/auth';
 
 export function TeacherRegisterForm() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export function TeacherRegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setError(null);
-      await registerAPI(data.name, data.email, data.password, 'teacher');
+      await registerTeacher(data.name, data.email, data.password);
       setSuccess(true);
       setTimeout(() => {
         router.push('/login');
