@@ -3,17 +3,15 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class StudentBase(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     email: EmailStr
     name: str
     student_code: str
     class_: Optional[str] = Field(default=None, alias="class")
-
-    class Config:
-        populate_by_name = True  # Cho phép cả "class_" và "class"
 
 
 class StudentCreate(StudentBase):
@@ -25,8 +23,7 @@ class StudentResponse(StudentBase):
     created_at: datetime
     is_active: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class StudentLogin(BaseModel):

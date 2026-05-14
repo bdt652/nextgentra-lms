@@ -6,11 +6,11 @@ from typing import Optional
 
 from fastapi import status
 from fastapi.responses import JSONResponse
-from prisma import Prisma  # type: ignore
 import redis
 
 from app.core.database import get_prisma, settings
 from app.core.logging import get_logger
+from prisma import Prisma  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -41,8 +41,8 @@ async def check_database() -> HealthCheckResult:
         # Test connection with simple query
         await prisma.execute_raw("SELECT 1")
 
-        # Check if we can query the User table
-        user_count = await prisma.user.count()
+        # Check if we can query the Student table
+        student_count = await prisma.student.count()
 
         return HealthCheckResult(
             name="database",
@@ -50,7 +50,7 @@ async def check_database() -> HealthCheckResult:
             details={
                 "connection": "ok",
                 "query_test": "passed",
-                "user_count": user_count,
+                "student_count": student_count,
             },
         )
     except Exception as e:

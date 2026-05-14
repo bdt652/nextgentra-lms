@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class TeacherBase(BaseModel):
@@ -22,8 +22,7 @@ class TeacherResponse(TeacherBase):
     is_active: bool
     role: Optional[str] = None  # Role name from related Role table
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TeacherLogin(BaseModel):

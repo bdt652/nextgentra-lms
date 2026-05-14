@@ -1,15 +1,16 @@
 """Tests for authentication utilities."""
 
-import pytest
-from datetime import datetime, timedelta, timezone
+from jose import jwt
 
 from app.core.auth import (
-    get_password_hash,
-    verify_password,
+    ALGORITHM,
+    SECRET_KEY,
     create_access_token,
-    decode_token,
     create_refresh_token,
     decode_refresh_token,
+    decode_token,
+    get_password_hash,
+    verify_password,
 )
 
 
@@ -38,11 +39,12 @@ def test_create_access_token():
 
 def test_create_access_token_with_expiry():
     """Test access token with custom expiry."""
+    from datetime import timedelta
+
     email = "test@example.com"
     custom_minutes = 60
     token = create_access_token(
-        data={"sub": email},
-        expires_delta=timedelta(minutes=custom_minutes)
+        data={"sub": email}, expires_delta=timedelta(minutes=custom_minutes)
     )
 
     token_data = decode_token(token)
@@ -74,8 +76,6 @@ def test_refresh_token_has_type():
     token = create_refresh_token(data={"sub": email})
 
     # Decode without verification to check type
-    from jose import jwt
-    from app.core.auth import SECRET_KEY, ALGORITHM
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert payload.get("type") == "refresh"
 
@@ -85,7 +85,5 @@ def test_access_token_has_no_type():
     email = "test@example.com"
     token = create_access_token(data={"sub": email})
 
-    from jose import jwt
-    from app.core.auth import SECRET_KEY, ALGORITHM
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert "type" not in payload

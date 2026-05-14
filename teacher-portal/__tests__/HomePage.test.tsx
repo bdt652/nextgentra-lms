@@ -10,13 +10,17 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('HomePage', () => {
-  it('renders the homepage with default Next.js content', () => {
+  it('renders the homepage with LMS branding', () => {
     render(<HomePage />);
-    // Check for the default Next.js template text
-    const titleElement = screen.getByText(
-      /To get started, edit the page.tsx file/i
-    );
+    // Check for the LMS title
+    const titleElement = screen.getByText(/NextGenTra LMS/i);
     expect(titleElement).toBeInTheDocument();
+  });
+
+  it('renders login and register buttons', () => {
+    render(<HomePage />);
+    expect(screen.getByText(/Đăng nhập/i)).toBeInTheDocument();
+    expect(screen.getByText(/Đăng ký/i)).toBeInTheDocument();
   });
 
   it('renders without crashing', () => {

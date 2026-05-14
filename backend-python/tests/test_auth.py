@@ -2,7 +2,11 @@
 
 from datetime import timedelta
 
+from jose import jwt
+
 from app.core.auth import (
+    ALGORITHM,
+    SECRET_KEY,
     create_access_token,
     decode_token,
     get_password_hash,
@@ -56,9 +60,7 @@ class TestAccessToken:
     def test_create_access_token_with_expiry(self):
         """Should create token with custom expiry."""
         custom_delta = timedelta(minutes=30)
-        token = create_access_token(
-            data={"sub": "test@example.com"}, expires_delta=custom_delta
-        )
+        token = create_access_token(data={"sub": "test@example.com"}, expires_delta=custom_delta)
         assert isinstance(token, str)
 
     def test_decode_valid_token_returns_token_data(self):
@@ -77,10 +79,6 @@ class TestAccessToken:
     def test_decode_token_without_sub_returns_none(self):
         """Should return None if token has no 'sub' claim."""
         # Create token without 'sub' by directly encoding
-        from jose import jwt
-
-        from app.core.auth import ALGORITHM, SECRET_KEY
-
         token = jwt.encode({"data": "no_sub"}, SECRET_KEY, algorithm=ALGORITHM)
         token_data = decode_token(token)
         assert token_data is None
@@ -89,10 +87,6 @@ class TestAccessToken:
         """Should have expiration set correctly."""
         token = create_access_token(data={"sub": "test@example.com"})
         # Decode without verification to check exp
-        from jose import jwt
-
-        from app.core.auth import ALGORITHM, SECRET_KEY
-
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         assert "exp" in payload
         assert isinstance(payload["exp"], (int, float))

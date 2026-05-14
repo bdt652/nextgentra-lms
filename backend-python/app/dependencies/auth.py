@@ -1,6 +1,7 @@
 """Authentication and authorization dependencies."""
 
-from typing import Annotated, Literal
+from collections.abc import Awaitable
+from typing import Annotated, Callable, Literal
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -77,12 +78,12 @@ async def get_current_teacher(
     )
 
 
-def require_permission(permission: str):
+def require_permission(permission: str) -> Callable[[], Awaitable[CurrentUser]]:
     """Dependency that requires the teacher to have a specific permission."""
 
     async def permission_checker(
-        current_teacher: CurrentUser = Depends(get_current_teacher),  # noqa: B008
-        prisma: Prisma = Depends(get_prisma),  # noqa: B008
+        current_teacher: CurrentUser = Depends(get_current_teacher),
+        prisma: Prisma = Depends(get_prisma),
     ) -> CurrentUser:
         if current_teacher.user_type != "teacher":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Teachers only")
@@ -94,7 +95,10 @@ def require_permission(permission: str):
         if not teacher_with_role or not teacher_with_role.role:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No role assigned")
 
-        perm_names = {p.name for p in teacher_with_role.role.permissions}
+        if not teacher_with_role.role.permissions:
+            perm_names = set()
+        else:
+            perm_names = {p.name for p in teacher_with_role.role.permissions}
         if permission not in perm_names:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -106,6 +110,6 @@ def require_permission(permission: str):
     return permission_checker
 
 
-def require_admin():
+def require_admin() -> Callable[[], Awaitable[CurrentUser]]:
     """Require admin role."""
     return require_permission("admin:access")

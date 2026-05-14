@@ -1,21 +1,22 @@
 """Student authentication API endpoints."""
 
 from datetime import datetime, timedelta, timezone
-
-from fastapi import APIRouter, Body, Depends, HTTPException, status
-from prisma import Prisma
 from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.auth import (
     create_access_token,
     create_refresh_token,
     decode_refresh_token,
-    verify_password,
     get_password_hash,
+    verify_password,
 )
 from app.core.database import get_prisma, settings
-from app.dependencies.auth import get_current_student
-from app.schemas.student import StudentCreate, StudentResponse, StudentLogin, TokenResponse
+from app.dependencies.auth import CurrentUser, get_current_student
+from app.schemas.auth import LogoutRequest, RefreshTokenRequest
+from app.schemas.student import StudentCreate, StudentLogin, StudentResponse, TokenResponse
+from prisma import Prisma
 
 router = APIRouter(prefix="/auth/student", tags=["student-auth"])
 
@@ -36,12 +37,12 @@ async def register_student(
             "email": data.email,
             "name": data.name,
             "student_code": data.student_code,
-            "class": data.class_,
+            "class_": data.class_,
             "hashed_password": get_password_hash(data.password),
         }
     )
 
-    return StudentResponse(
+    return StudentResponse(  # type: ignore[call-arg]
         id=student.id,
         email=student.email,
         name=student.name,
@@ -92,14 +93,14 @@ async def login_student(
 @router.get("/me", response_model=StudentResponse)
 async def get_current_student_profile(
     prisma: Annotated[Prisma, Depends(get_prisma)],
-    current: Annotated = Depends(get_current_student),
+    current: Annotated[CurrentUser, Depends(get_current_student)],
 ) -> StudentResponse:
     """Get current student profile."""
     student = await prisma.student.find_unique(where={"id": current.id})
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
 
-    return StudentResponse(
+    return StudentResponse(  # type: ignore[call-arg]
         id=student.id,
         email=student.email,
         name=student.name,
@@ -112,9 +113,10 @@ async def get_current_student_profile(
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_student_token(
-    prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
+    prisma: Annotated[Prisma, Depends(get_prisma)], data: RefreshTokenRequest
 ) -> TokenResponse:
     """Exchange a valid refresh token for a new access token."""
+    refresh_token = data.refresh_token
     token_data = decode_refresh_token(refresh_token)
     if not token_data or not token_data.email:
         raise HTTPException(
@@ -162,9 +164,10 @@ async def refresh_student_token(
 
 @router.post("/logout")
 async def logout_student(
-    prisma: Annotated[Prisma, Depends(get_prisma)], refresh_token: str = Body(...)
-):
+    prisma: Annotated[Prisma, Depends(get_prisma)], data: LogoutRequest
+) -> dict:
     """Revoke a refresh token (logout)."""
+    refresh_token = data.refresh_token
     result = await prisma.refreshtoken.update(
         where={"token": refresh_token}, data={"revoked": True}
     )

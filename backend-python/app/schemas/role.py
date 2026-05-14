@@ -1,8 +1,8 @@
 """Role schemas."""
 
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class PermissionBase(BaseModel):
@@ -12,8 +12,7 @@ class PermissionBase(BaseModel):
 class PermissionResponse(PermissionBase):
     id: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PermissionCreate(BaseModel):
@@ -26,18 +25,17 @@ class RoleBase(BaseModel):
 
 
 class RoleCreate(RoleBase):
-    permission_ids: List[str] = []
+    permission_ids: list[str] = []
 
 
 class RoleUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    permission_ids: Optional[List[str]] = None
+    permission_ids: Optional[list[str]] = None
 
 
 class RoleResponse(RoleBase):
     id: str
-    permissions: List[PermissionResponse] = []
+    permissions: list[PermissionResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

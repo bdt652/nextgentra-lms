@@ -10,6 +10,19 @@ jobs:
   backend:
     name: Backend (Python FastAPI)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nextgentra
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -25,11 +38,21 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend-python
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
-          echo "DATABASE_URL=postgresql://postgres:password@localhost:5432/nextgentra" > .env
-          python -m prisma generate --schema .prisma/schema.prisma
+          python -m venv venv
+          ./venv/bin/pip install --upgrade pip
+          ./venv/bin/pip install -r requirements.txt
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/nextgentra" > .env
+          echo "${{ github.workspace }}/backend-python/venv/bin" >> $GITHUB_PATH
+
+      - name: Generate Prisma client
+        run: |
+          cd backend-python
+          python -m prisma generate --schema prisma/schema.prisma
+
+      - name: Apply database schema
+        run: |
+          cd backend-python
+          python -m prisma db push --schema prisma/schema.prisma
 
       - name: Run Ruff linter
         run: |
