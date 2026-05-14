@@ -52,7 +52,7 @@ async def register_teacher(
     role_with_perms = await prisma.role.find_unique(
         where={"id": role.id}, include={"permissions": True}
     )
-    permissions = [p.name for p in (role_with_perms.permissions if role_with_perms else [])]
+    permissions = [p.name for p in (role_with_perms.permissions or [])] if role_with_perms else []
 
     return TeacherResponse(
         id=teacher.id,
