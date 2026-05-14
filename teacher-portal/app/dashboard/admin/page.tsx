@@ -1,37 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useIsAdmin } from '@/lib/hooks/usePermission';
 import { useHasHydrated } from '@/lib/store/authStore';
 import { PermissionGuard } from '@/components/PermissionGuard';
 
 function AdminContent() {
-  const sections = [
-    {
-      title: 'Quản lý giáo viên',
-      description:
-        'Xem danh sách, kích hoạt hoặc vô hiệu hóa tài khoản giáo viên.',
-      badge: 'Sắp ra mắt',
-    },
-    {
-      title: 'Quản lý roles & permissions',
-      description: 'Gán roles và cấu hình permissions cho từng giáo viên.',
-      badge: 'Sắp ra mắt',
-    },
-    {
-      title: 'Báo cáo hệ thống',
-      description: 'Xem thống kê tổng hợp toàn bộ khóa học và học sinh.',
-      badge: 'Sắp ra mắt',
-    },
-    {
-      title: 'Quản lý tất cả khóa học',
-      description:
-        'Xem và quản lý khóa học của tất cả giáo viên trong hệ thống.',
-      badge: 'Sắp ra mắt',
-    },
-  ];
-
   return (
     <div>
       <div className="mb-6">
@@ -44,24 +20,41 @@ function AdminContent() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {sections.map((section) => (
-          <div
-            key={section.title}
-            className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800"
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {section.title}
-              </h3>
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                {section.badge}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {section.description}
-            </p>
+        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-xl">👥</span>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Quản lý giáo viên
+            </h3>
           </div>
-        ))}
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Xem danh sách giáo viên và gán role cho từng người.
+          </p>
+          <Link
+            href="/dashboard/admin/teachers"
+            className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+          >
+            Xem danh sách →
+          </Link>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-xl">🔑</span>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Roles &amp; Permissions
+            </h3>
+          </div>
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Tạo, sửa roles và cấu hình permissions cho từng role.
+          </p>
+          <Link
+            href="/dashboard/admin/roles"
+            className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+          >
+            Quản lý →
+          </Link>
+        </div>
       </div>
     </div>
   );
