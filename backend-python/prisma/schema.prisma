@@ -64,7 +64,6 @@ model RefreshToken {
   revoked    Boolean  @default(false)
   created_at DateTime @default(now())
 
-  @@unique([user_type, user_id])
   @@index([token])
   @@index([user_type, user_id])
 }
