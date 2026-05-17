@@ -4,13 +4,20 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.core.auth import get_password_hash
 from app.core.database import get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.permission import PermissionResponse
 from app.schemas.role import RoleCreate, RolePermissionsRequest, RoleResponse, RoleUpdate
-from app.schemas.teacher import AssignRoleRequest, TeacherAdminResponse
+from app.schemas.teacher import (
+    AssignRoleRequest,
+    ResetPasswordRequest,
+    TeacherAdminResponse,
+    TeacherUpdate,
+)
 from prisma import Prisma
 from prisma.models import Permission, Role, Teacher
+from prisma.types import TeacherUpdateInput
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -97,6 +104,64 @@ async def assign_teacher_role(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Update failed"
         )
     return _teacher_to_admin_response(updated)
+
+
+@router.patch("/teachers/{teacher_id}", response_model=TeacherAdminResponse)
+async def update_teacher(
+    teacher_id: str,
+    data: TeacherUpdate,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> TeacherAdminResponse:
+    """Update teacher info (name, email, is_active). Email must remain unique."""
+    teacher = await prisma.teacher.find_unique(where={"id": teacher_id})
+    if not teacher:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found")
+
+    if data.email is not None and data.email != teacher.email:
+        existing = await prisma.teacher.find_unique(where={"email": data.email})
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already in use by another teacher",
+            )
+
+    update_data: TeacherUpdateInput = {}
+    if data.name is not None:
+        update_data["name"] = data.name
+    if data.email is not None:
+        update_data["email"] = data.email
+    if data.is_active is not None:
+        update_data["is_active"] = data.is_active
+
+    updated = await prisma.teacher.update(
+        where={"id": teacher_id},
+        data=update_data,
+        include={"role": {"include": {"permissions": True}}},
+    )
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Update failed"
+        )
+    return _teacher_to_admin_response(updated)
+
+
+@router.post("/teachers/{teacher_id}/reset-password", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_teacher_password(
+    teacher_id: str,
+    data: ResetPasswordRequest,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> None:
+    """Admin resets a teacher's password. Returns 204 on success."""
+    teacher = await prisma.teacher.find_unique(where={"id": teacher_id})
+    if not teacher:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found")
+
+    await prisma.teacher.update(
+        where={"id": teacher_id},
+        data={"hashed_password": get_password_hash(data.new_password)},
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -48,3 +48,13 @@ class TeacherAdminResponse(BaseModel):
 
 class AssignRoleRequest(BaseModel):
     role_id: Optional[str] = None  # None = remove role from teacher
+
+
+class TeacherUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+
+
+class ResetPasswordRequest(BaseModel):
+    new_password: str = Field(..., min_length=8)

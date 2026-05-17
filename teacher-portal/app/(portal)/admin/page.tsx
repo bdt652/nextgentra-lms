@@ -31,7 +31,7 @@ function AdminContent() {
             Xem danh sách giáo viên và gán role cho từng người.
           </p>
           <Link
-            href="/dashboard/admin/teachers"
+            href="/admin/teachers"
             className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
           >
             Xem danh sách →
@@ -49,7 +49,7 @@ function AdminContent() {
             Tạo, sửa roles và cấu hình permissions cho từng role.
           </p>
           <Link
-            href="/dashboard/admin/roles"
+            href="/admin/roles"
             className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
           >
             Quản lý →

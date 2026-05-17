@@ -20,7 +20,16 @@ try:
 except ImportError:
     SENTRY_AVAILABLE = False
 
-from app.api import admin_router, auth_student_router, auth_teacher_router
+from app.api import (
+    admin_router,
+    auth_student_router,
+    auth_teacher_router,
+    categories_router,
+    classes_router,
+    courses_router,
+    exams_router,
+    student_portal_router,
+)
 from app.core.database import connect_db, disconnect_db
 from app.core.health import health_check_endpoint
 from app.core.logging import (
@@ -129,6 +138,11 @@ app.add_middleware(
 app.include_router(auth_student_router)
 app.include_router(auth_teacher_router)
 app.include_router(admin_router)
+app.include_router(categories_router)
+app.include_router(courses_router)
+app.include_router(exams_router)
+app.include_router(classes_router)
+app.include_router(student_portal_router)
 
 
 @app.get("/")

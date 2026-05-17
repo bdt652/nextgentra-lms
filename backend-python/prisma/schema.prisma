@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-py"
-  interface = "asyncio"
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  output               = "../venv/Lib/site-packages/prisma"
 }
 
 datasource db {
@@ -10,28 +11,32 @@ datasource db {
 
 // Student authentication (separate table)
 model Student {
-  id             String   @id @default(uuid())
-  student_code   String   @unique
-  email          String   @unique
-  name           String
-  class_         String?  @map("class")
+  id              String            @id @default(uuid())
+  student_code    String            @unique
+  email           String            @unique
+  name            String
+  class_          String?           @map("class")
   hashed_password String
-  created_at     DateTime @default(now())
-  is_active      Boolean  @default(true)
+  created_at      DateTime          @default(now())
+  is_active       Boolean           @default(true)
+  enrollments     ClassEnrollment[]
 
   @@index([email])
 }
 
 // Teacher & Admin authentication (with role-based permissions)
 model Teacher {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  name           String
+  id              String         @id @default(uuid())
+  email           String         @unique
+  name            String
   hashed_password String
-  created_at     DateTime @default(now())
-  is_active      Boolean  @default(true)
-  role_id        String?
-  role           Role?     @relation(fields: [role_id], references: [id])
+  created_at      DateTime       @default(now())
+  is_active       Boolean        @default(true)
+  role_id         String?
+  role            Role?          @relation(fields: [role_id], references: [id])
+  courses         Course[]
+  exams           Exam[]
+  class_teachers  ClassTeacher[]
 
   @@index([email])
   @@index([role_id])
@@ -53,6 +58,192 @@ model Role {
 
   @@index([name])
 }
+
+// ─── Category ────────────────────────────────────────────────────────────────
+
+model Category {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  color       String?     // Hex color code for UI display (e.g. "#3B82F6")
+  icon        String?     // Icon name or URL
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  courses     Course[]
+  exams       Exam[]
+  classrooms  Classroom[]
+
+  @@index([name])
+}
+
+// ─── LMS Core Domain ────────────────────────────────────────────────────────
+
+enum QuestionType {
+  multiple_choice
+  true_false
+  essay
+  code
+  fill_blank
+  matching
+}
+
+model Course {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  cover_image  String?
+  teacher_id   String
+  teacher      Teacher       @relation(fields: [teacher_id], references: [id])
+  category_id  String?
+  category     Category?     @relation(fields: [category_id], references: [id])
+  is_published Boolean       @default(false)
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  lessons      Lesson[]
+  class_courses ClassCourse[]
+
+  @@index([teacher_id])
+  @@index([category_id])
+}
+
+model Lesson {
+  id           String             @id @default(uuid())
+  title        String
+  content      String?
+  video_url    String?
+  order        Int                @default(0)
+  course_id    String
+  course       Course             @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  is_published Boolean            @default(false)
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+  attachments  LessonAttachment[]
+
+  @@index([course_id])
+}
+
+model LessonAttachment {
+  id         String   @id @default(uuid())
+  lesson_id  String
+  lesson     Lesson   @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  name       String
+  file_url   String
+  file_type  String
+  created_at DateTime @default(now())
+
+  @@index([lesson_id])
+}
+
+model Exam {
+  id           String      @id @default(uuid())
+  title        String
+  description  String?
+  teacher_id   String
+  teacher      Teacher     @relation(fields: [teacher_id], references: [id])
+  category_id  String?
+  category     Category?   @relation(fields: [category_id], references: [id])
+  duration     Int?
+  pass_score   Float?
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  questions    Question[]
+  class_exams  ClassExam[]
+
+  @@index([teacher_id])
+  @@index([category_id])
+}
+
+model Question {
+  id             String       @id @default(uuid())
+  exam_id        String
+  exam           Exam         @relation(fields: [exam_id], references: [id], onDelete: Cascade)
+  content        String
+  type           QuestionType
+  options        Json?
+  correct_answer String?
+  code_template  String?
+  test_cases     Json?
+  points         Float        @default(1)
+  order          Int          @default(0)
+
+  @@index([exam_id])
+}
+
+model Classroom {
+  id            String            @id @default(uuid())
+  name          String
+  description   String?
+  code          String            @unique
+  category_id   String?
+  category      Category?         @relation(fields: [category_id], references: [id])
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+  teachers      ClassTeacher[]
+  enrollments   ClassEnrollment[]
+  class_courses ClassCourse[]
+  class_exams   ClassExam[]
+
+  @@map("Class")
+  @@index([code])
+  @@index([category_id])
+}
+
+model ClassTeacher {
+  id         String    @id @default(uuid())
+  class_id   String
+  classroom  Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  teacher_id String
+  teacher    Teacher   @relation(fields: [teacher_id], references: [id])
+  role       String    @default("assistant")
+  joined_at  DateTime  @default(now())
+
+  @@unique([class_id, teacher_id])
+  @@index([class_id])
+  @@index([teacher_id])
+}
+
+model ClassEnrollment {
+  id          String    @id @default(uuid())
+  class_id    String
+  classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  student_id  String
+  student     Student   @relation(fields: [student_id], references: [id])
+  enrolled_at DateTime  @default(now())
+
+  @@unique([class_id, student_id])
+  @@index([class_id])
+  @@index([student_id])
+}
+
+model ClassCourse {
+  id          String    @id @default(uuid())
+  class_id    String
+  classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  course_id   String
+  course      Course    @relation(fields: [course_id], references: [id])
+  assigned_at DateTime  @default(now())
+
+  @@unique([class_id, course_id])
+  @@index([class_id])
+  @@index([course_id])
+}
+
+model ClassExam {
+  id          String    @id @default(uuid())
+  class_id    String
+  classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  exam_id     String
+  exam        Exam      @relation(fields: [exam_id], references: [id])
+  start_time  DateTime?
+  end_time    DateTime?
+  assigned_at DateTime  @default(now())
+
+  @@unique([class_id, exam_id])
+  @@index([class_id])
+  @@index([exam_id])
+}
+
+// ─── Auth ───────────────────────────────────────────────────────────────────
 
 // Unified refresh token storage for both Student and Teacher
 model RefreshToken {

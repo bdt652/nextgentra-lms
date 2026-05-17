@@ -7,6 +7,8 @@ import { assignTeacherRole, listRoles, listTeachers } from '@/lib/api/admin';
 import { useIsAdmin } from '@/lib/hooks/usePermission';
 import { useHasHydrated } from '@/lib/store/authStore';
 import type { Role, TeacherAdmin } from '@/lib/types';
+import { Toast } from '@/components/Toast';
+import { EditTeacherModal, ResetPasswordModal } from './TeacherModals';
 
 export default function TeachersPage() {
   const router = useRouter();
@@ -18,7 +20,15 @@ export default function TeachersPage() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
+
+  const [editingTeacher, setEditingTeacher] = useState<TeacherAdmin | null>(
+    null
+  );
+  const [resetTeacher, setResetTeacher] = useState<TeacherAdmin | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -55,21 +65,24 @@ export default function TeachersPage() {
       list.map((t) => (t.id === teacher.id ? { ...t, role_id: roleId } : t))
     );
     setUpdatingId(teacher.id);
-    setRowErrors((e) => ({ ...e, [teacher.id]: '' }));
 
     try {
       const updated = await assignTeacherRole(teacher.id, roleId);
       setTeachers((list) =>
         list.map((t) => (t.id === teacher.id ? updated : t))
       );
+      setToast({
+        message: `Đã cập nhật role cho ${teacher.name}`,
+        type: 'success',
+      });
     } catch (err) {
       setTeachers((list) =>
         list.map((t) => (t.id === teacher.id ? { ...t, role_id: prev } : t))
       );
-      setRowErrors((e) => ({
-        ...e,
-        [teacher.id]: err instanceof Error ? err.message : 'Cập nhật thất bại',
-      }));
+      setToast({
+        message: err instanceof Error ? err.message : 'Cập nhật thất bại',
+        type: 'error',
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -79,7 +92,7 @@ export default function TeachersPage() {
     <div>
       <div className="mb-6 flex items-center gap-2">
         <Link
-          href="/dashboard/admin"
+          href="/admin"
           className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
           Quản trị
@@ -121,6 +134,9 @@ export default function TeachersPage() {
                 </th>
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
                   Trạng thái
+                </th>
+                <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                  Thao tác
                 </th>
               </tr>
             </thead>
@@ -169,23 +185,29 @@ export default function TeachersPage() {
                         {teacher.is_active ? 'Hoạt động' : 'Vô hiệu'}
                       </span>
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setEditingTeacher(teacher)}
+                          className="rounded px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => setResetTeacher(teacher)}
+                          className="rounded px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          Đặt lại MK
+                        </button>
+                      </div>
+                    </td>
                   </tr>
-                  {rowErrors[teacher.id] && (
-                    <tr key={`${teacher.id}-err`}>
-                      <td
-                        colSpan={4}
-                        className="px-4 pb-2 text-xs text-red-600 dark:text-red-400"
-                      >
-                        {rowErrors[teacher.id]}
-                      </td>
-                    </tr>
-                  )}
                 </Fragment>
               ))}
               {teachers.length === 0 && (
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     className="px-4 py-8 text-center text-sm text-gray-400"
                   >
                     Chưa có giáo viên nào.
@@ -195,6 +217,45 @@ export default function TeachersPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {editingTeacher && (
+        <EditTeacherModal
+          teacher={editingTeacher}
+          onClose={() => setEditingTeacher(null)}
+          onSaved={(updated) => {
+            setTeachers((list) =>
+              list.map((t) => (t.id === updated.id ? updated : t))
+            );
+            setEditingTeacher(null);
+            setToast({
+              message: `Đã cập nhật thông tin ${updated.name}`,
+              type: 'success',
+            });
+          }}
+        />
+      )}
+
+      {resetTeacher && (
+        <ResetPasswordModal
+          teacher={resetTeacher}
+          onClose={() => setResetTeacher(null)}
+          onDone={() => {
+            setToast({
+              message: `Đã đặt lại mật khẩu cho ${resetTeacher.name}`,
+              type: 'success',
+            });
+            setResetTeacher(null);
+          }}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

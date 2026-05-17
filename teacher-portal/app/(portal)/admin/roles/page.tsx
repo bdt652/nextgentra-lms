@@ -94,7 +94,7 @@ export default function RolesPage() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link
-            href="/dashboard/admin"
+            href="/admin"
             className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
             Quản trị

@@ -92,3 +92,27 @@ export async function removeRolePermissions(
   });
   return handleResponse<Role>(res);
 }
+
+export async function updateTeacher(
+  teacherId: string,
+  data: { name?: string; email?: string; is_active?: boolean }
+): Promise<TeacherAdmin> {
+  const res = await apiFetch(`/admin/teachers/${teacherId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<TeacherAdmin>(res);
+}
+
+export async function resetTeacherPassword(
+  teacherId: string,
+  newPassword: string
+): Promise<void> {
+  const res = await apiFetch(`/admin/teachers/${teacherId}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ new_password: newPassword }),
+  });
+  return handleResponse<void>(res);
+}
