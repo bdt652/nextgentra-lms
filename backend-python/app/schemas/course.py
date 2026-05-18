@@ -1,14 +1,9 @@
-from __future__ import annotations
-
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
 from app.schemas.category import CategorySummary
-
-if TYPE_CHECKING:
-    from app.schemas.lesson import LessonResponse
+from app.schemas.lesson import LessonResponse
 
 
 class CourseCreate(BaseModel):
