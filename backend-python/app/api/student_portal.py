@@ -4,12 +4,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, get_current_student
 from app.schemas.class_ import ClassDetailResponse, ClassExamResponse, ClassResponse
 from app.schemas.course import CourseDetailResponse, CourseResponse
 from app.schemas.lesson import LessonAttachmentResponse, LessonResponse
-from prisma import Prisma
 
 router = APIRouter(prefix="/student", tags=["student-portal"])
 
