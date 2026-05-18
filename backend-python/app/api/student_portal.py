@@ -135,6 +135,7 @@ async def get_class(
                     cover_image=cc.course.cover_image,
                     teacher_id=cc.course.teacher_id,
                     is_published=cc.course.is_published,
+                    category_id=cc.course.category_id,
                     created_at=cc.course.created_at,
                     updated_at=cc.course.updated_at,
                     lesson_count=len(cc.course.lessons or []),
@@ -188,6 +189,7 @@ async def get_class_courses(
             cover_image=cc.course.cover_image,
             teacher_id=cc.course.teacher_id,
             is_published=cc.course.is_published,
+            category_id=cc.course.category_id,
             created_at=cc.course.created_at,
             updated_at=cc.course.updated_at,
             lesson_count=len(cc.course.lessons or []),
@@ -206,7 +208,9 @@ async def get_course(
     class_course = await prisma.classcourse.find_first(
         where={
             "course_id": course_id,
-            "classroom": {"enrollments": {"some": {"student_id": current_student.id}}},
+            "classroom": {
+                "is": {"enrollments": {"some": {"student_id": current_student.id}}}
+            },
         }
     )
     if not class_course:
@@ -236,6 +240,7 @@ async def get_course(
         cover_image=course.cover_image,
         teacher_id=course.teacher_id,
         is_published=course.is_published,
+        category_id=course.category_id,
         created_at=course.created_at,
         updated_at=course.updated_at,
         lesson_count=len(lessons),
@@ -253,7 +258,9 @@ async def get_lesson(
     class_course = await prisma.classcourse.find_first(
         where={
             "course_id": course_id,
-            "classroom": {"enrollments": {"some": {"student_id": current_student.id}}},
+            "classroom": {
+                "is": {"enrollments": {"some": {"student_id": current_student.id}}}
+            },
         }
     )
     if not class_course:

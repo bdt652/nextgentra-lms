@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.auth import get_password_hash
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.permission import PermissionResponse
 from app.schemas.role import RoleCreate, RolePermissionsRequest, RoleResponse, RoleUpdate
@@ -15,7 +15,6 @@ from app.schemas.teacher import (
     TeacherAdminResponse,
     TeacherUpdate,
 )
-from prisma import Prisma
 from prisma.models import Permission, Role, Teacher
 from prisma.types import TeacherUpdateInput
 

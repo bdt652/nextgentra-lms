@@ -4,10 +4,10 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.category import CategoryCreate, CategoryResponse, CategoryUpdate
-from prisma import Prisma
+from prisma.types import CategoryUpdateInput, CategoryWhereInput
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -51,7 +51,7 @@ async def list_categories(
     prisma: Annotated[Prisma, Depends(get_prisma)],
     search: Optional[str] = None,
 ) -> list[CategoryResponse]:
-    where: dict = {}
+    where: CategoryWhereInput = {}
     if search:
         where["name"] = {"contains": search, "mode": "insensitive"}
     categories = await prisma.category.find_many(
@@ -106,7 +106,7 @@ async def update_category(
     if not cat:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
 
-    update_data: dict = {}
+    update_data: CategoryUpdateInput = {}
     if data.name is not None:
         update_data["name"] = data.name
     if data.description is not None:

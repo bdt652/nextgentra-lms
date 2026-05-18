@@ -110,7 +110,7 @@ async def list_courses(
     mine: bool = False,
     category_id: Optional[str] = None,
 ) -> list[CourseResponse]:
-    where: dict = {}  # type: ignore[type-arg]
+    where: dict = {}
     if mine:
         where["teacher_id"] = current_user.id
     if category_id:
@@ -187,7 +187,7 @@ async def update_course(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
     _require_owner(course.teacher_id, current_user.id)
 
-    update_data: dict = {}  # type: ignore[type-arg]
+    update_data: dict = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.description is not None:
@@ -327,7 +327,7 @@ async def update_lesson(
     if course:
         _require_owner(course.teacher_id, current_user.id)
 
-    update_data: dict = {}  # type: ignore[type-arg]
+    update_data: dict = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.content is not None:
@@ -378,7 +378,7 @@ async def reorder_lessons(
     for item in data.items:
         await prisma.lesson.update(
             where={"id": item.id},
-            data={"order": item.order},  # type: ignore[arg-type]
+            data={"order": item.order},
         )
 
     lessons = await prisma.lesson.find_many(

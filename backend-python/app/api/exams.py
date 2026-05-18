@@ -98,7 +98,7 @@ async def list_exams(
     mine: bool = False,
     category_id: Optional[str] = None,
 ) -> list[ExamResponse]:
-    where: dict = {}  # type: ignore[type-arg]
+    where: dict = {}
     if mine:
         where["teacher_id"] = current_user.id
     if category_id:
@@ -173,7 +173,7 @@ async def update_exam(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
     _require_owner(exam.teacher_id, current_user.id)
 
-    update_data: dict = {}  # type: ignore[type-arg]
+    update_data: dict = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.description is not None:
@@ -265,7 +265,7 @@ async def update_question(
     if exam:
         _require_owner(exam.teacher_id, current_user.id)
 
-    update_data: dict = {}  # type: ignore[type-arg]
+    update_data: dict = {}
     if data.content is not None:
         update_data["content"] = data.content
     if data.type is not None:
@@ -321,7 +321,7 @@ async def reorder_questions(
     for item in data.items:
         await prisma.question.update(
             where={"id": item.id},
-            data={"order": item.order},  # type: ignore[arg-type]
+            data={"order": item.order},
         )
 
     questions = await prisma.question.find_many(

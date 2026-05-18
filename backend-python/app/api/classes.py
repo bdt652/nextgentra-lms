@@ -6,7 +6,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.category import CategorySummary
 from app.schemas.class_ import (
@@ -23,7 +23,7 @@ from app.schemas.class_ import (
     ClassUpdate,
 )
 from app.schemas.course import CourseResponse
-from prisma import Prisma
+from prisma.types import ClassroomUpdateInput
 
 router = APIRouter(prefix="/classes", tags=["classes"])
 
@@ -229,17 +229,17 @@ async def update_class(
     cls = await _get_class_or_404(class_id, prisma)
     _require_class_member(cls, current_user.id)
 
-    update_data: dict = {}  # type: ignore[type-arg]
+    update_data: ClassroomUpdateInput = {}
     if data.name is not None:
         update_data["name"] = data.name
     if data.description is not None:
         update_data["description"] = data.description
     if data.category_id is not None:
-        update_data["category_id"] = data.category_id
+        update_data["category"] = {"connect": {"id": data.category_id}}
 
     updated = await prisma.classroom.update(
         where={"id": class_id},
-        data=update_data,  # type: ignore[arg-type]
+        data=update_data,
         include={"teachers": True, "enrollments": True, "category": True},
     )
     return _class_to_response(updated)

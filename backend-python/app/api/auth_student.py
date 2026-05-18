@@ -12,11 +12,10 @@ from app.core.auth import (
     get_password_hash,
     verify_password,
 )
-from app.core.database import get_prisma, settings
+from app.core.database import Prisma, get_prisma, settings
 from app.dependencies.auth import CurrentUser, get_current_student
 from app.schemas.auth import LogoutRequest, RefreshTokenRequest
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse, TokenResponse
-from prisma import Prisma
 
 router = APIRouter(prefix="/auth/student", tags=["student-auth"])
 
