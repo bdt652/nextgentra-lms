@@ -13,6 +13,9 @@ from prisma import Prisma
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Exclude smoke test that requires a live server on localhost:8000
+collect_ignore = ["test_api_full.py"]
+
 
 @pytest.fixture(scope="session", autouse=True)
 def seed_db():
