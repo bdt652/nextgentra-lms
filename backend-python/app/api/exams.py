@@ -234,21 +234,20 @@ async def add_question(
     else:
         order = data.order
 
-    question = await prisma.question.create(
-        data={
-            "exam_id": exam_id,
-            "content": data.content,
-            "type": QuestionType(data.type),
-            "options": prisma_fields.Json(data.options) if data.options is not None else None,
-            "correct_answer": data.correct_answer,
-            "code_template": data.code_template,
-            "test_cases": (
-                prisma_fields.Json(data.test_cases) if data.test_cases is not None else None
-            ),
-            "points": data.points if data.points is not None else 1.0,
-            "order": order,
-        }
-    )
+    create_data: dict = {
+        "exam_id": exam_id,
+        "content": data.content,
+        "type": QuestionType(data.type),
+        "correct_answer": data.correct_answer,
+        "code_template": data.code_template,
+        "points": data.points if data.points is not None else 1.0,
+        "order": order,
+    }
+    if data.options is not None:
+        create_data["options"] = prisma_fields.Json(data.options)
+    if data.test_cases is not None:
+        create_data["test_cases"] = prisma_fields.Json(data.test_cases)
+    question = await prisma.question.create(data=create_data)  # type: ignore[arg-type]
     return _question_to_response(question)
 
 
