@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.category import CategorySummary
 from app.schemas.exam import (
@@ -17,8 +17,8 @@ from app.schemas.exam import (
     QuestionResponse,
     QuestionUpdate,
 )
-from prisma import Prisma
 from prisma.enums import QuestionType
+from prisma.types import ExamInclude, ExamUpdateInput, ExamWhereInput, QuestionUpdateInput
 
 router = APIRouter(prefix="/exams", tags=["exams"])
 
@@ -32,7 +32,7 @@ ExamDeleter = Annotated[CurrentUser, Depends(require_permission("exam:delete"))]
 # Helpers
 # ---------------------------------------------------------------------------
 
-_EXAM_INCLUDE = {"questions": True, "category": True}
+_EXAM_INCLUDE: ExamInclude = {"questions": True, "category": True}
 
 
 def _build_category(cat: object) -> Optional[CategorySummary]:
@@ -98,14 +98,14 @@ async def list_exams(
     mine: bool = False,
     category_id: Optional[str] = None,
 ) -> list[ExamResponse]:
-    where: dict = {}
+    where: ExamWhereInput = {}
     if mine:
         where["teacher_id"] = current_user.id
     if category_id:
         where["category_id"] = category_id
     exams = await prisma.exam.find_many(
-        where=where,  # type: ignore[arg-type]
-        include=_EXAM_INCLUDE,  # type: ignore[arg-type]
+        where=where,
+        include=_EXAM_INCLUDE,
         order={"created_at": "desc"},
     )
     return [_exam_to_response(e) for e in exams]
@@ -126,7 +126,7 @@ async def create_exam(
             "pass_score": data.pass_score,
             "category_id": data.category_id,
         },
-        include=_EXAM_INCLUDE,  # type: ignore[arg-type]
+        include=_EXAM_INCLUDE,
     )
     return _exam_to_response(exam)
 
@@ -173,7 +173,7 @@ async def update_exam(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
     _require_owner(exam.teacher_id, current_user.id)
 
-    update_data: dict = {}
+    update_data: ExamUpdateInput = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.description is not None:
@@ -183,12 +183,12 @@ async def update_exam(
     if data.pass_score is not None:
         update_data["pass_score"] = data.pass_score
     if data.category_id is not None:
-        update_data["category_id"] = data.category_id
+        update_data["category"] = {"connect": {"id": data.category_id}}
 
     updated = await prisma.exam.update(
         where={"id": exam_id},
-        data=update_data,  # type: ignore[arg-type]
-        include=_EXAM_INCLUDE,  # type: ignore[arg-type]
+        data=update_data,
+        include=_EXAM_INCLUDE,
     )
     return _exam_to_response(updated)
 
@@ -265,11 +265,11 @@ async def update_question(
     if exam:
         _require_owner(exam.teacher_id, current_user.id)
 
-    update_data: dict = {}
+    update_data: QuestionUpdateInput = {}
     if data.content is not None:
         update_data["content"] = data.content
     if data.type is not None:
-        update_data["type"] = data.type
+        update_data["type"] = QuestionType(data.type)
     if data.options is not None:
         update_data["options"] = data.options
     if data.correct_answer is not None:
@@ -285,7 +285,7 @@ async def update_question(
 
     updated = await prisma.question.update(
         where={"id": question_id},
-        data=update_data,  # type: ignore[arg-type]
+        data=update_data,
     )
     return _question_to_response(updated)
 

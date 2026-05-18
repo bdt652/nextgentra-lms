@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.database import get_prisma
+from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.category import CategorySummary
 from app.schemas.course import CourseCreate, CourseDetailResponse, CourseResponse, CourseUpdate
@@ -16,7 +16,7 @@ from app.schemas.lesson import (
     LessonResponse,
     LessonUpdate,
 )
-from prisma import Prisma
+from prisma.types import CourseInclude, CourseUpdateInput, CourseWhereInput, LessonUpdateInput
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 
@@ -34,7 +34,7 @@ LessonDeleter = Annotated[CurrentUser, Depends(require_permission("lesson:delete
 # Helpers
 # ---------------------------------------------------------------------------
 
-_COURSE_INCLUDE = {"lessons": True, "category": True}
+_COURSE_INCLUDE: CourseInclude = {"lessons": True, "category": True}
 
 
 def _build_category(cat: object) -> Optional[CategorySummary]:
@@ -110,14 +110,14 @@ async def list_courses(
     mine: bool = False,
     category_id: Optional[str] = None,
 ) -> list[CourseResponse]:
-    where: dict = {}
+    where: CourseWhereInput = {}
     if mine:
         where["teacher_id"] = current_user.id
     if category_id:
         where["category_id"] = category_id
     courses = await prisma.course.find_many(
-        where=where,  # type: ignore[arg-type]
-        include=_COURSE_INCLUDE,  # type: ignore[arg-type]
+        where=where,
+        include=_COURSE_INCLUDE,
         order={"created_at": "desc"},
     )
     return [_course_to_response(c) for c in courses]
@@ -137,7 +137,7 @@ async def create_course(
             "teacher_id": current_user.id,
             "category_id": data.category_id,
         },
-        include=_COURSE_INCLUDE,  # type: ignore[arg-type]
+        include=_COURSE_INCLUDE,
     )
     return _course_to_response(course)
 
@@ -187,7 +187,7 @@ async def update_course(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
     _require_owner(course.teacher_id, current_user.id)
 
-    update_data: dict = {}
+    update_data: CourseUpdateInput = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.description is not None:
@@ -197,12 +197,12 @@ async def update_course(
     if data.is_published is not None:
         update_data["is_published"] = data.is_published
     if data.category_id is not None:
-        update_data["category_id"] = data.category_id
+        update_data["category"] = {"connect": {"id": data.category_id}}
 
     updated = await prisma.course.update(
         where={"id": course_id},
-        data=update_data,  # type: ignore[arg-type]
-        include=_COURSE_INCLUDE,  # type: ignore[arg-type]
+        data=update_data,
+        include=_COURSE_INCLUDE,
     )
     return _course_to_response(updated)
 
@@ -233,7 +233,7 @@ async def toggle_publish(
     updated = await prisma.course.update(
         where={"id": course_id},
         data={"is_published": not course.is_published},
-        include=_COURSE_INCLUDE,  # type: ignore[arg-type]
+        include=_COURSE_INCLUDE,
     )
     return _course_to_response(updated)
 
@@ -327,7 +327,7 @@ async def update_lesson(
     if course:
         _require_owner(course.teacher_id, current_user.id)
 
-    update_data: dict = {}
+    update_data: LessonUpdateInput = {}
     if data.title is not None:
         update_data["title"] = data.title
     if data.content is not None:
@@ -341,7 +341,7 @@ async def update_lesson(
 
     updated = await prisma.lesson.update(
         where={"id": lesson_id},
-        data=update_data,  # type: ignore[arg-type]
+        data=update_data,
         include={"attachments": True},
     )
     return _lesson_to_response(updated)

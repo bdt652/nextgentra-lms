@@ -7,8 +7,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core.auth import decode_token
-from app.core.database import get_prisma
-from prisma import Prisma
+from app.core.database import Prisma, get_prisma
 
 # Separate OAuth2 schemes for student and teacher
 oauth2_student = OAuth2PasswordBearer(tokenUrl="/auth/student/login")
