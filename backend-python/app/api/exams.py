@@ -17,6 +17,7 @@ from app.schemas.exam import (
     QuestionResponse,
     QuestionUpdate,
 )
+from prisma import fields as prisma_fields
 from prisma.enums import QuestionType
 from prisma.types import ExamInclude, ExamUpdateInput, ExamWhereInput, QuestionUpdateInput
 
@@ -238,10 +239,12 @@ async def add_question(
             "exam_id": exam_id,
             "content": data.content,
             "type": QuestionType(data.type),
-            "options": data.options,
+            "options": prisma_fields.Json(data.options) if data.options is not None else None,
             "correct_answer": data.correct_answer,
             "code_template": data.code_template,
-            "test_cases": data.test_cases,
+            "test_cases": (
+                prisma_fields.Json(data.test_cases) if data.test_cases is not None else None
+            ),
             "points": data.points if data.points is not None else 1.0,
             "order": order,
         }
@@ -271,13 +274,13 @@ async def update_question(
     if data.type is not None:
         update_data["type"] = QuestionType(data.type)
     if data.options is not None:
-        update_data["options"] = data.options
+        update_data["options"] = prisma_fields.Json(data.options)
     if data.correct_answer is not None:
         update_data["correct_answer"] = data.correct_answer
     if data.code_template is not None:
         update_data["code_template"] = data.code_template
     if data.test_cases is not None:
-        update_data["test_cases"] = data.test_cases
+        update_data["test_cases"] = prisma_fields.Json(data.test_cases)
     if data.points is not None:
         update_data["points"] = data.points
     if data.order is not None:
