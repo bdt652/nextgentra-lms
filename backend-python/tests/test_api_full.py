@@ -488,15 +488,15 @@ if class_id:
         )
         check("GET /classes/{id}/exams", c.get(f"/classes/{class_id}/exams", headers=th), 200)
 
-    # Add teacher to class
-    if admin_teacher_id:
+    # Add a different teacher to class (admin is already auto-added as owner on create)
+    if teacher2_id:
         check(
             "POST /classes/{id}/teachers",
             c.post(
                 f"/classes/{class_id}/teachers",
                 headers=th,
                 json={
-                    "teacher_id": admin_teacher_id,
+                    "teacher_id": teacher2_id,
                     "role": "primary",
                 },
             ),
