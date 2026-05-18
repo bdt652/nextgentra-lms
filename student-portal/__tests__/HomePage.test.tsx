@@ -5,6 +5,7 @@ import HomePage from '../app/page';
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
+    replace: jest.fn(),
   }),
   usePathname: () => '/',
 }));
