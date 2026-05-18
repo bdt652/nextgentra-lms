@@ -208,9 +208,7 @@ async def get_course(
     class_course = await prisma.classcourse.find_first(
         where={
             "course_id": course_id,
-            "classroom": {
-                "is": {"enrollments": {"some": {"student_id": current_student.id}}}
-            },
+            "classroom": {"is": {"enrollments": {"some": {"student_id": current_student.id}}}},
         }
     )
     if not class_course:
@@ -258,9 +256,7 @@ async def get_lesson(
     class_course = await prisma.classcourse.find_first(
         where={
             "course_id": course_id,
-            "classroom": {
-                "is": {"enrollments": {"some": {"student_id": current_student.id}}}
-            },
+            "classroom": {"is": {"enrollments": {"some": {"student_id": current_student.id}}}},
         }
     )
     if not class_course:
