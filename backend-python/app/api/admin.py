@@ -1,22 +1,23 @@
 """Admin API — role & permission management (requires admin:access)."""
 
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.auth import get_password_hash
 from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.permission import PermissionResponse
 from app.schemas.role import RoleCreate, RolePermissionsRequest, RoleResponse, RoleUpdate
+from app.schemas.student import StudentAdminResponse, StudentCreate, StudentUpdate
 from app.schemas.teacher import (
     AssignRoleRequest,
     ResetPasswordRequest,
     TeacherAdminResponse,
     TeacherUpdate,
 )
-from prisma.models import Permission, Role, Teacher
-from prisma.types import TeacherUpdateInput
+from prisma.models import Permission, Role, Student, Teacher
+from prisma.types import StudentUpdateInput, TeacherUpdateInput
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -358,3 +359,137 @@ async def remove_role_permissions(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Update failed"
         )
     return _role_to_response(updated)
+
+
+# ---------------------------------------------------------------------------
+# Students
+# ---------------------------------------------------------------------------
+
+
+def _student_to_admin_response(s: Student) -> StudentAdminResponse:
+    return StudentAdminResponse(
+        id=s.id,
+        email=s.email,
+        name=s.name,
+        student_code=s.student_code,
+        is_active=s.is_active,
+        created_at=s.created_at,
+    )
+
+
+@router.get("/students", response_model=list[StudentAdminResponse])
+async def list_students(
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+    search: Optional[str] = Query(default=None),
+) -> list[StudentAdminResponse]:
+    """List all students, optionally filtered by name/email/student_code."""
+    where = (
+        {
+            "OR": [
+                {"email": {"contains": search}},
+                {"name": {"contains": search}},
+                {"student_code": {"contains": search}},
+            ]
+        }
+        if search
+        else {}
+    )
+    students = await prisma.student.find_many(
+        where=where,  # type: ignore[arg-type]
+        order={"created_at": "desc"},
+    )
+    return [_student_to_admin_response(s) for s in students]
+
+
+@router.post("/students", response_model=StudentAdminResponse, status_code=status.HTTP_201_CREATED)
+async def create_student(
+    data: StudentCreate,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> StudentAdminResponse:
+    """Create a new student account."""
+    if await prisma.student.find_unique(where={"email": data.email}):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+    if await prisma.student.find_unique(where={"student_code": data.student_code}):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Student code already registered"
+        )
+
+    student = await prisma.student.create(
+        data={
+            "email": data.email,
+            "name": data.name,
+            "student_code": data.student_code,
+            "hashed_password": get_password_hash(data.password),
+        }
+    )
+    return _student_to_admin_response(student)
+
+
+@router.patch("/students/{student_id}", response_model=StudentAdminResponse)
+async def update_student(
+    student_id: str,
+    data: StudentUpdate,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> StudentAdminResponse:
+    """Update student info (name, email, student_code, is_active)."""
+    student = await prisma.student.find_unique(where={"id": student_id})
+    if not student:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+
+    if data.email is not None and data.email != student.email:
+        if await prisma.student.find_unique(where={"email": data.email}):
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already in use")
+    if data.student_code is not None and data.student_code != student.student_code:
+        if await prisma.student.find_unique(where={"student_code": data.student_code}):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Student code already in use"
+            )
+
+    update_data: StudentUpdateInput = {}
+    if data.name is not None:
+        update_data["name"] = data.name
+    if data.email is not None:
+        update_data["email"] = data.email
+    if data.student_code is not None:
+        update_data["student_code"] = data.student_code
+    if data.is_active is not None:
+        update_data["is_active"] = data.is_active
+
+    updated = await prisma.student.update(where={"id": student_id}, data=update_data)
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Update failed"
+        )
+    return _student_to_admin_response(updated)
+
+
+@router.post("/students/{student_id}/reset-password", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_student_password(
+    student_id: str,
+    data: ResetPasswordRequest,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> None:
+    """Admin resets a student's password."""
+    if not await prisma.student.find_unique(where={"id": student_id}):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+    await prisma.student.update(
+        where={"id": student_id},
+        data={"hashed_password": get_password_hash(data.new_password)},
+    )
+
+
+@router.delete("/students/{student_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_student(
+    student_id: str,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> None:
+    """Delete a student and remove them from all class enrollments."""
+    if not await prisma.student.find_unique(where={"id": student_id}):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+    await prisma.classenrollment.delete_many(where={"student_id": student_id})
+    await prisma.student.delete(where={"id": student_id})

@@ -163,3 +163,14 @@ export interface ClassDetail extends ClassItem {
   courses: Course[];
   exams: ClassExam[];
 }
+
+// ─── Students ─────────────────────────────────────────────────────────────────
+
+export interface StudentAdmin {
+  id: string;
+  email: string;
+  name: string;
+  student_code: string;
+  is_active: boolean;
+  created_at: string;
+}

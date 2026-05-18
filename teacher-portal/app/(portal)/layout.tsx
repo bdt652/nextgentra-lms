@@ -182,6 +182,13 @@ const NAV_ITEMS: NavItem[] = [
     sublevel: true,
   },
   {
+    href: '/admin/students',
+    label: 'Học sinh',
+    icon: <ClipboardIcon />,
+    permission: 'admin:access',
+    sublevel: true,
+  },
+  {
     href: '/admin/roles',
     label: 'Roles & Permissions',
     icon: <PlusIcon />,

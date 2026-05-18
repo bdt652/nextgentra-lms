@@ -26,6 +26,21 @@ class StudentResponse(StudentBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class StudentAdminResponse(StudentBase):
+    id: str
+    created_at: datetime
+    is_active: bool
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class StudentUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    student_code: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
 class StudentLogin(BaseModel):
     email: EmailStr
     password: str

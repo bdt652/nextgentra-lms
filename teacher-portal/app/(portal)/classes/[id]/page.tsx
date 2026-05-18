@@ -7,7 +7,6 @@ import { usePermission } from '@/lib/hooks/usePermission';
 import {
   getClass,
   updateClass,
-  enrollStudent,
   removeStudent,
   assignCourse,
   unassignCourse,
@@ -43,10 +42,6 @@ export default function ClassDetailPage() {
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
-
-  // Enroll student
-  const [enrollStudentId, setEnrollStudentId] = useState('');
-  const [enrolling, setEnrolling] = useState(false);
 
   // Assign course picker
   const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
@@ -100,30 +95,6 @@ export default function ClassDetailPage() {
       showToast((err as Error).message, 'error');
     } finally {
       setSavingEdit(false);
-    }
-  };
-
-  const handleEnrollStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cls || !enrollStudentId.trim()) return;
-    setEnrolling(true);
-    try {
-      const enrollment = await enrollStudent(cls.id, enrollStudentId.trim());
-      setCls((prev) =>
-        prev
-          ? {
-              ...prev,
-              student_count: prev.student_count + 1,
-              // ClassDetail doesn't have enrollments array but we show via API refresh
-            }
-          : prev
-      );
-      setEnrollStudentId('');
-      showToast(`Đã thêm học sinh ${enrollment.name}`, 'success');
-    } catch (err) {
-      showToast((err as Error).message, 'error');
-    } finally {
-      setEnrolling(false);
     }
   };
 
@@ -353,10 +324,11 @@ export default function ClassDetailPage() {
           <StudentsTab
             classId={cls.id}
             canManage={canManageStudents}
-            enrollStudentId={enrollStudentId}
-            setEnrollStudentId={setEnrollStudentId}
-            enrolling={enrolling}
-            onEnroll={handleEnrollStudent}
+            onEnrolled={() =>
+              setCls((prev) =>
+                prev ? { ...prev, student_count: prev.student_count + 1 } : prev
+              )
+            }
             onRemove={(sid, name) => {
               if (!confirm(`Xóa ${name} khỏi lớp?`)) return;
               removeStudent(cls.id, sid)
@@ -655,22 +627,29 @@ export default function ClassDetailPage() {
 function StudentsTab({
   classId,
   canManage,
-  enrollStudentId,
-  setEnrollStudentId,
-  enrolling,
-  onEnroll,
   onRemove,
+  onEnrolled,
 }: {
   classId: string;
   canManage: boolean;
-  enrollStudentId: string;
-  setEnrollStudentId: (v: string) => void;
-  enrolling: boolean;
-  onEnroll: (e: React.FormEvent) => void;
   onRemove: (sid: string, name: string) => void;
+  onEnrolled: () => void;
 }) {
   const [students, setStudents] = useState<ClassEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Enroll search state
+  const [query, setQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<
+    { id: string; name: string; email: string; student_code: string }[]
+  >([]);
+  const [selectedStudent, setSelectedStudent] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
     import('@/lib/api/classes')
@@ -678,6 +657,48 @@ function StudentsTab({
       .then(setStudents)
       .finally(() => setLoading(false));
   }, [classId]);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setSearching(true);
+    setSearchError(null);
+    setSearchResults([]);
+    setSelectedStudent(null);
+    try {
+      const { listStudents: searchStudents } = await import('@/lib/api/admin');
+      const results = await searchStudents(query.trim());
+      if (results.length === 0) {
+        setSearchError('Không tìm thấy học sinh nào');
+      } else if (results.length === 1) {
+        setSelectedStudent({ id: results[0].id, name: results[0].name });
+      } else {
+        setSearchResults(results);
+      }
+    } catch {
+      setSearchError('Tìm kiếm thất bại');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleEnroll = async () => {
+    if (!selectedStudent) return;
+    setEnrolling(true);
+    try {
+      const { enrollStudent } = await import('@/lib/api/classes');
+      const enrollment = await enrollStudent(classId, selectedStudent.id);
+      setStudents((prev) => [...prev, enrollment]);
+      setQuery('');
+      setSelectedStudent(null);
+      setSearchResults([]);
+      onEnrolled();
+    } catch (err) {
+      setSearchError(err instanceof Error ? err.message : 'Thêm thất bại');
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   if (loading)
     return (
@@ -696,7 +717,7 @@ function StudentsTab({
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
                 {s.name.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
                   {s.name}
                 </p>
@@ -723,25 +744,77 @@ function StudentsTab({
       )}
 
       {canManage && (
-        <form
-          onSubmit={onEnroll}
-          className="flex items-center gap-2 border-t border-gray-100 p-4 dark:border-gray-700"
-        >
-          <input
-            type="text"
-            value={enrollStudentId}
-            onChange={(e) => setEnrollStudentId(e.target.value)}
-            placeholder="Student ID..."
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-          />
-          <button
-            type="submit"
-            disabled={enrolling || !enrollStudentId.trim()}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-          >
-            {enrolling ? '...' : 'Thêm'}
-          </button>
-        </form>
+        <div className="border-t border-gray-100 p-4 dark:border-gray-700">
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSearchResults([]);
+                setSelectedStudent(null);
+                setSearchError(null);
+              }}
+              placeholder="Tìm theo email hoặc mã học sinh..."
+              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              type="submit"
+              disabled={searching || !query.trim()}
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300"
+            >
+              {searching ? '...' : 'Tìm'}
+            </button>
+          </form>
+
+          {searchError && (
+            <p className="mt-2 text-xs text-red-500">{searchError}</p>
+          )}
+
+          {searchResults.length > 1 && (
+            <div className="mt-2 rounded-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
+              {searchResults.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    setSelectedStudent({ id: r.id, name: r.name });
+                    setSearchResults([]);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  <span className="font-medium text-gray-800 dark:text-gray-200">
+                    {r.name}
+                  </span>
+                  <span className="text-gray-400">{r.email}</span>
+                  <span className="ml-auto font-mono text-xs text-gray-400">
+                    {r.student_code}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {selectedStudent && (
+            <div className="mt-2 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 dark:bg-emerald-900/20">
+              <span className="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-300">
+                {selectedStudent.name}
+              </span>
+              <button
+                onClick={handleEnroll}
+                disabled={enrolling}
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {enrolling ? '...' : 'Thêm vào lớp'}
+              </button>
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import type { PermissionDef, Role, TeacherAdmin } from '../types';
+import type { PermissionDef, Role, StudentAdmin, TeacherAdmin } from '../types';
 import { apiFetch } from './client';
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -114,5 +114,61 @@ export async function resetTeacherPassword(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ new_password: newPassword }),
   });
+  return handleResponse<void>(res);
+}
+
+export async function listStudents(search?: string): Promise<StudentAdmin[]> {
+  const url = search
+    ? `/admin/students?search=${encodeURIComponent(search)}`
+    : '/admin/students';
+  const res = await apiFetch(url);
+  return handleResponse<StudentAdmin[]>(res);
+}
+
+export async function createStudent(data: {
+  name: string;
+  email: string;
+  student_code: string;
+  password: string;
+}): Promise<StudentAdmin> {
+  const res = await apiFetch('/admin/students', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<StudentAdmin>(res);
+}
+
+export async function updateStudent(
+  id: string,
+  data: {
+    name?: string;
+    email?: string;
+    student_code?: string;
+    is_active?: boolean;
+  }
+): Promise<StudentAdmin> {
+  const res = await apiFetch(`/admin/students/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<StudentAdmin>(res);
+}
+
+export async function resetStudentPassword(
+  id: string,
+  newPassword: string
+): Promise<void> {
+  const res = await apiFetch(`/admin/students/${id}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ new_password: newPassword }),
+  });
+  return handleResponse<void>(res);
+}
+
+export async function deleteStudent(id: string): Promise<void> {
+  const res = await apiFetch(`/admin/students/${id}`, { method: 'DELETE' });
   return handleResponse<void>(res);
 }
