@@ -19,7 +19,7 @@ export async function listTeachers(): Promise<TeacherAdmin[]> {
 
 export async function assignTeacherRole(
   teacherId: string,
-  roleId: string | null
+  roleId: string | null,
 ): Promise<TeacherAdmin> {
   const res = await apiFetch(`/admin/teachers/${teacherId}/role`, {
     method: 'PATCH',
@@ -49,7 +49,7 @@ export async function createRole(data: {
 
 export async function updateRole(
   roleId: string,
-  data: { name?: string; description?: string; permission_ids?: string[] }
+  data: { name?: string; description?: string; permission_ids?: string[] },
 ): Promise<Role> {
   const res = await apiFetch(`/admin/roles/${roleId}`, {
     method: 'PATCH',
@@ -71,7 +71,7 @@ export async function listPermissions(): Promise<PermissionDef[]> {
 
 export async function addRolePermissions(
   roleId: string,
-  permissionIds: string[]
+  permissionIds: string[],
 ): Promise<Role> {
   const res = await apiFetch(`/admin/roles/${roleId}/permissions`, {
     method: 'POST',
@@ -83,7 +83,7 @@ export async function addRolePermissions(
 
 export async function removeRolePermissions(
   roleId: string,
-  permissionIds: string[]
+  permissionIds: string[],
 ): Promise<Role> {
   const res = await apiFetch(`/admin/roles/${roleId}/permissions`, {
     method: 'DELETE',
@@ -95,7 +95,7 @@ export async function removeRolePermissions(
 
 export async function updateTeacher(
   teacherId: string,
-  data: { name?: string; email?: string; is_active?: boolean }
+  data: { name?: string; email?: string; is_active?: boolean },
 ): Promise<TeacherAdmin> {
   const res = await apiFetch(`/admin/teachers/${teacherId}`, {
     method: 'PATCH',
@@ -107,7 +107,7 @@ export async function updateTeacher(
 
 export async function resetTeacherPassword(
   teacherId: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> {
   const res = await apiFetch(`/admin/teachers/${teacherId}/reset-password`, {
     method: 'POST',
@@ -146,7 +146,7 @@ export async function updateStudent(
     email?: string;
     student_code?: string;
     is_active?: boolean;
-  }
+  },
 ): Promise<StudentAdmin> {
   const res = await apiFetch(`/admin/students/${id}`, {
     method: 'PATCH',
@@ -158,7 +158,7 @@ export async function updateStudent(
 
 export async function resetStudentPassword(
   id: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> {
   const res = await apiFetch(`/admin/students/${id}/reset-password`, {
     method: 'POST',

@@ -47,7 +47,7 @@ export async function getClass(id: string): Promise<ClassDetail> {
 
 export async function updateClass(
   id: string,
-  data: { name?: string; description?: string }
+  data: { name?: string; description?: string },
 ): Promise<ClassItem> {
   const res = await apiFetch(`/classes/${id}`, {
     method: 'PATCH',
@@ -65,7 +65,7 @@ export async function deleteClass(id: string): Promise<void> {
 // ─── Teachers ────────────────────────────────────────────────────────────────
 
 export async function listClassTeachers(
-  classId: string
+  classId: string,
 ): Promise<ClassTeacher[]> {
   const res = await apiFetch(`/classes/${classId}/teachers`);
   return handleResponse<ClassTeacher[]>(res);
@@ -74,7 +74,7 @@ export async function listClassTeachers(
 export async function addTeacher(
   classId: string,
   teacherId: string,
-  role = 'assistant'
+  role = 'assistant',
 ): Promise<ClassTeacher> {
   const res = await apiFetch(`/classes/${classId}/teachers`, {
     method: 'POST',
@@ -86,7 +86,7 @@ export async function addTeacher(
 
 export async function removeTeacher(
   classId: string,
-  teacherId: string
+  teacherId: string,
 ): Promise<void> {
   const res = await apiFetch(`/classes/${classId}/teachers/${teacherId}`, {
     method: 'DELETE',
@@ -97,7 +97,7 @@ export async function removeTeacher(
 // ─── Students ────────────────────────────────────────────────────────────────
 
 export async function listStudents(
-  classId: string
+  classId: string,
 ): Promise<ClassEnrollment[]> {
   const res = await apiFetch(`/classes/${classId}/students`);
   return handleResponse<ClassEnrollment[]>(res);
@@ -105,7 +105,7 @@ export async function listStudents(
 
 export async function enrollStudent(
   classId: string,
-  studentId: string
+  studentId: string,
 ): Promise<ClassEnrollment> {
   const res = await apiFetch(`/classes/${classId}/students`, {
     method: 'POST',
@@ -117,7 +117,7 @@ export async function enrollStudent(
 
 export async function removeStudent(
   classId: string,
-  studentId: string
+  studentId: string,
 ): Promise<void> {
   const res = await apiFetch(`/classes/${classId}/students/${studentId}`, {
     method: 'DELETE',
@@ -134,7 +134,7 @@ export async function listClassCourses(classId: string): Promise<Course[]> {
 
 export async function assignCourse(
   classId: string,
-  courseId: string
+  courseId: string,
 ): Promise<Course> {
   const res = await apiFetch(`/classes/${classId}/courses`, {
     method: 'POST',
@@ -146,7 +146,7 @@ export async function assignCourse(
 
 export async function unassignCourse(
   classId: string,
-  courseId: string
+  courseId: string,
 ): Promise<void> {
   const res = await apiFetch(`/classes/${classId}/courses/${courseId}`, {
     method: 'DELETE',
@@ -163,7 +163,7 @@ export async function listClassExams(classId: string): Promise<ClassExam[]> {
 
 export async function assignExam(
   classId: string,
-  data: { exam_id: string; start_time?: string; end_time?: string }
+  data: { exam_id: string; start_time?: string; end_time?: string },
 ): Promise<ClassExam> {
   const res = await apiFetch(`/classes/${classId}/exams`, {
     method: 'POST',
@@ -175,7 +175,7 @@ export async function assignExam(
 
 export async function unassignExam(
   classId: string,
-  examId: string
+  examId: string,
 ): Promise<void> {
   const res = await apiFetch(`/classes/${classId}/exams/${examId}`, {
     method: 'DELETE',

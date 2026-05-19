@@ -104,7 +104,7 @@ export default function ClassDetailPage() {
     try {
       const course = await assignCourse(cls.id, selectedCourseId);
       setCls((prev) =>
-        prev ? { ...prev, courses: [...prev.courses, course] } : prev
+        prev ? { ...prev, courses: [...prev.courses, course] } : prev,
       );
       setSelectedCourseId('');
       showToast('Đã gán khóa học', 'success');
@@ -122,7 +122,7 @@ export default function ClassDetailPage() {
       setCls((prev) =>
         prev
           ? { ...prev, courses: prev.courses.filter((c) => c.id !== courseId) }
-          : prev
+          : prev,
       );
       showToast('Đã gỡ khóa học', 'success');
     } catch (err) {
@@ -152,7 +152,7 @@ export default function ClassDetailPage() {
       setCls((prev) =>
         prev
           ? { ...prev, exams: prev.exams.filter((e) => e.exam_id !== examId) }
-          : prev
+          : prev,
       );
       showToast('Đã gỡ đề thi', 'success');
     } catch (err) {
@@ -173,7 +173,7 @@ export default function ClassDetailPage() {
               teachers: [...prev.teachers, ct],
               teacher_count: prev.teacher_count + 1,
             }
-          : prev
+          : prev,
       );
       setAddTeacherId('');
       showToast(`Đã thêm giáo viên ${ct.name}`, 'success');
@@ -186,7 +186,7 @@ export default function ClassDetailPage() {
 
   const handleRemoveTeacher = async (
     teacherId: string,
-    teacherName: string
+    teacherName: string,
   ) => {
     if (!cls || !confirm(`Xóa ${teacherName} khỏi lớp?`)) return;
     try {
@@ -198,7 +198,7 @@ export default function ClassDetailPage() {
               teachers: prev.teachers.filter((t) => t.teacher_id !== teacherId),
               teacher_count: prev.teacher_count - 1,
             }
-          : prev
+          : prev,
       );
       showToast('Đã xóa giáo viên', 'success');
     } catch (err) {
@@ -228,10 +228,10 @@ export default function ClassDetailPage() {
   const assignedCourseIds = new Set(cls.courses.map((c) => c.id));
   const assignedExamIds = new Set(cls.exams.map((e) => e.exam_id));
   const unassignedCourses = availableCourses.filter(
-    (c) => !assignedCourseIds.has(c.id)
+    (c) => !assignedCourseIds.has(c.id),
   );
   const unassignedExams = availableExams.filter(
-    (e) => !assignedExamIds.has(e.id)
+    (e) => !assignedExamIds.has(e.id),
   );
 
   return (
@@ -326,7 +326,9 @@ export default function ClassDetailPage() {
             canManage={canManageStudents}
             onEnrolled={() =>
               setCls((prev) =>
-                prev ? { ...prev, student_count: prev.student_count + 1 } : prev
+                prev
+                  ? { ...prev, student_count: prev.student_count + 1 }
+                  : prev,
               )
             }
             onRemove={(sid, name) => {
@@ -339,7 +341,7 @@ export default function ClassDetailPage() {
                           ...prev,
                           student_count: Math.max(0, prev.student_count - 1),
                         }
-                      : prev
+                      : prev,
                   );
                   showToast('Đã xóa học sinh', 'success');
                 })
@@ -432,7 +434,7 @@ export default function ClassDetailPage() {
                           <span>
                             Từ{' '}
                             {new Date(ce.start_time).toLocaleDateString(
-                              'vi-VN'
+                              'vi-VN',
                             )}
                           </span>
                         )}

@@ -29,5 +29,5 @@ export const getCourseDetail = (id: string) =>
 
 export const getLesson = (courseId: string, lessonId: string) =>
   apiFetch(`/student/courses/${courseId}/lessons/${lessonId}`).then(
-    handleJson<LessonResponse>
+    handleJson<LessonResponse>,
   );

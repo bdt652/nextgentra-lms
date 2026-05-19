@@ -62,17 +62,22 @@ extend-exclude = ["venv"]
 
 [tool.ruff.lint]
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "UP", # pyupgrade
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
     "ARG", # flake8-unused-arguments
     "RUF", # Ruff-specific rules
+    "PLR", # pylint refactoring — catches overly large functions/files
 ]
-ignore = ["B008"]  # B008: function call in argument defaults - allowed for FastAPI Depends()
+ignore = [
+    "B008",    # function call in argument defaults — allowed for FastAPI Depends()
+    "PLR0913", # too-many-arguments — FastAPI route functions legitimately have many deps
+    "PLR2004", # magic-value-comparison — common in test assertions and HTTP status checks
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]

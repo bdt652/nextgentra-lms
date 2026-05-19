@@ -92,7 +92,7 @@ export default function CoursesPage() {
       setCourses((prev) => prev.map((c) => (c.id === course.id ? updated : c)));
       showToast(
         updated.is_published ? 'Đã xuất bản khóa học' : 'Đã ẩn khóa học',
-        'success'
+        'success',
       );
     } catch (e) {
       showToast((e as Error).message, 'error');

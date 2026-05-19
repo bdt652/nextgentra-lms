@@ -12,7 +12,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 export async function loginStudent(
   email: string,
-  password: string
+  password: string,
 ): Promise<TokenResponse> {
   const res = await fetch(`${API_BASE_URL}/auth/student/login`, {
     method: 'POST',
@@ -27,7 +27,7 @@ export async function registerStudent(
   email: string,
   password: string,
   student_code: string,
-  class_?: string
+  class_?: string,
 ): Promise<Student> {
   const body: Record<string, string> = { name, email, password, student_code };
   if (class_) body['class'] = class_;
@@ -41,7 +41,7 @@ export async function registerStudent(
 }
 
 export async function getStudentProfile(
-  access_token: string
+  access_token: string,
 ): Promise<Student> {
   const res = await fetch(`${API_BASE_URL}/auth/student/me`, {
     headers: { Authorization: `Bearer ${access_token}` },
@@ -50,7 +50,7 @@ export async function getStudentProfile(
 }
 
 export async function refreshStudentToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<TokenResponse> {
   const res = await fetch(`${API_BASE_URL}/auth/student/refresh`, {
     method: 'POST',

@@ -15,7 +15,7 @@ export function initSentry() {
   if (!sentryDsn) {
     if (environment !== 'test') {
       console.warn(
-        '[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled'
+        '[Sentry] NEXT_PUBLIC_SENTRY_DSN not set - error tracking disabled',
       );
     }
     return;

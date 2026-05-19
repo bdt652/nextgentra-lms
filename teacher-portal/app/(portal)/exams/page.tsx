@@ -38,7 +38,7 @@ export default function ExamsPage() {
     listExams(filter === 'mine')
       .then(setExams)
       .catch(() =>
-        setToast({ message: 'Không thể tải danh sách đề thi', type: 'error' })
+        setToast({ message: 'Không thể tải danh sách đề thi', type: 'error' }),
       )
       .finally(() => setLoading(false));
   }, [filter]);

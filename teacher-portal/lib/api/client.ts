@@ -13,7 +13,7 @@ function notifyPending(newToken: string) {
 
 export async function apiFetch(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Response> {
   const { access_token } = useAuthStore.getState();
 

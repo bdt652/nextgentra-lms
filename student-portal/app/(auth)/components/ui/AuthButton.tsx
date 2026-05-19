@@ -19,7 +19,7 @@ const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
           'disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-indigo-600 disabled:hover:shadow-md disabled:active:scale-100',
           'dark:focus:ring-indigo-500/50 dark:focus:ring-offset-0 dark:focus:bg-indigo-700',
           isLoading && 'cursor-wait',
-          className
+          className,
         )}
         disabled={disabled || isLoading}
         {...props}
@@ -28,7 +28,7 @@ const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 AuthButton.displayName = 'AuthButton';

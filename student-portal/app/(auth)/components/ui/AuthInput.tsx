@@ -27,7 +27,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             'dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20',
             error &&
               'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-            className
+            className,
           )}
           {...props}
         />
@@ -36,7 +36,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 AuthInput.displayName = 'AuthInput';

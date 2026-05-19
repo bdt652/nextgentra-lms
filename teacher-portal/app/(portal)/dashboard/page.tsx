@@ -91,7 +91,7 @@ export default function DashboardPage() {
     listCourses(true)
       .then(setCourses)
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra'),
       )
       .finally(() => setLoading(false));
   }, []);

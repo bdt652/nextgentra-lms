@@ -53,7 +53,7 @@ export function LessonRow({
   }, []);
 
   const prereqLessons = allLessons.filter((l) =>
-    lesson.prerequisite_ids.includes(l.id)
+    lesson.prerequisite_ids.includes(l.id),
   );
   const candidatePrereqs = allLessons.filter((l) => l.id !== lesson.id);
 

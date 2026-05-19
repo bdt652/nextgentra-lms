@@ -34,7 +34,7 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
               'dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20',
               error &&
                 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-              className
+              className,
             )}
             {...props}
           />
@@ -56,7 +56,7 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 PasswordField.displayName = 'PasswordField';

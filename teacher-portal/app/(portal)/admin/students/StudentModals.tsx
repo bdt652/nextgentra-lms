@@ -345,7 +345,7 @@ export function ResetStudentPasswordModal({
       onDone();
     } catch (err) {
       setApiError(
-        err instanceof Error ? err.message : 'Đặt lại mật khẩu thất bại'
+        err instanceof Error ? err.message : 'Đặt lại mật khẩu thất bại',
       );
     }
   };

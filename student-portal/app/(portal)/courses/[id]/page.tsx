@@ -68,7 +68,7 @@ export default function CourseDetailPage({
     getCourseDetail(id)
       .then(setCourse)
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra'),
       )
       .finally(() => setLoading(false));
   }, [id]);

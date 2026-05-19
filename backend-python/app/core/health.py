@@ -117,7 +117,7 @@ async def run_all_checks() -> dict:
 
     # Determine overall status
     statuses = [c.status for c in checks]
-    if all(s == "healthy" or s == "skipped" for s in statuses):
+    if all(s in {"healthy", "skipped"} for s in statuses):
         overall_status = "healthy"
     elif any(s == "unhealthy" for s in statuses):
         overall_status = "unhealthy"

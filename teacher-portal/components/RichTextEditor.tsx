@@ -31,7 +31,7 @@ const useIsClient = () =>
   useSyncExternalStore(
     noopSubscribe,
     () => true,
-    () => false
+    () => false,
   );
 
 interface Props {

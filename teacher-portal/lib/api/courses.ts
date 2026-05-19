@@ -52,7 +52,7 @@ export async function updateCourse(
     description?: string;
     cover_image?: string;
     is_published?: boolean;
-  }
+  },
 ): Promise<Course> {
   const res = await apiFetch(`/courses/${id}`, {
     method: 'PATCH',
@@ -88,7 +88,7 @@ export async function createLesson(
     order?: number;
     section_id?: string | null;
     prerequisite_ids?: string[];
-  }
+  },
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons`, {
     method: 'POST',
@@ -100,7 +100,7 @@ export async function createLesson(
 
 export async function getLesson(
   courseId: string,
-  lessonId: string
+  lessonId: string,
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons/${lessonId}`);
   return handleResponse<Lesson>(res);
@@ -117,7 +117,7 @@ export async function updateLesson(
     is_published?: boolean;
     section_id?: string | null;
     prerequisite_ids?: string[];
-  }
+  },
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons/${lessonId}`, {
     method: 'PATCH',
@@ -129,7 +129,7 @@ export async function updateLesson(
 
 export async function deleteLesson(
   courseId: string,
-  lessonId: string
+  lessonId: string,
 ): Promise<void> {
   const res = await apiFetch(`/courses/${courseId}/lessons/${lessonId}`, {
     method: 'DELETE',
@@ -139,7 +139,7 @@ export async function deleteLesson(
 
 export async function reorderLessons(
   courseId: string,
-  items: { id: string; order: number }[]
+  items: { id: string; order: number }[],
 ): Promise<Lesson[]> {
   const res = await apiFetch(`/courses/${courseId}/lessons/reorder`, {
     method: 'POST',
@@ -152,7 +152,7 @@ export async function reorderLessons(
 export async function addAttachment(
   courseId: string,
   lessonId: string,
-  data: { name: string; file_url: string; file_type: string }
+  data: { name: string; file_url: string; file_type: string },
 ): Promise<LessonAttachment> {
   const res = await apiFetch(
     `/courses/${courseId}/lessons/${lessonId}/attachments`,
@@ -160,7 +160,7 @@ export async function addAttachment(
       method: 'POST',
       headers: JSON_HEADERS,
       body: JSON.stringify(data),
-    }
+    },
   );
   return handleResponse<LessonAttachment>(res);
 }
@@ -168,11 +168,11 @@ export async function addAttachment(
 export async function deleteAttachment(
   courseId: string,
   lessonId: string,
-  attachmentId: string
+  attachmentId: string,
 ): Promise<void> {
   const res = await apiFetch(
     `/courses/${courseId}/lessons/${lessonId}/attachments/${attachmentId}`,
-    { method: 'DELETE' }
+    { method: 'DELETE' },
   );
   return handleResponse<void>(res);
 }
@@ -181,7 +181,7 @@ export async function deleteAttachment(
 
 export async function createSection(
   courseId: string,
-  data: { title: string; description?: string; order?: number }
+  data: { title: string; description?: string; order?: number },
 ): Promise<Section> {
   const res = await apiFetch(`/courses/${courseId}/sections`, {
     method: 'POST',
@@ -199,7 +199,7 @@ export async function updateSection(
     description?: string;
     order?: number;
     is_published?: boolean;
-  }
+  },
 ): Promise<Section> {
   const res = await apiFetch(`/courses/${courseId}/sections/${sectionId}`, {
     method: 'PATCH',
@@ -211,7 +211,7 @@ export async function updateSection(
 
 export async function deleteSection(
   courseId: string,
-  sectionId: string
+  sectionId: string,
 ): Promise<void> {
   const res = await apiFetch(`/courses/${courseId}/sections/${sectionId}`, {
     method: 'DELETE',
@@ -221,7 +221,7 @@ export async function deleteSection(
 
 export async function reorderSections(
   courseId: string,
-  items: { id: string; order: number }[]
+  items: { id: string; order: number }[],
 ): Promise<Section[]> {
   const res = await apiFetch(`/courses/${courseId}/sections/reorder`, {
     method: 'POST',

@@ -22,7 +22,7 @@ export default function TeachersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const [editingTeacher, setEditingTeacher] = useState<TeacherAdmin | null>(
-    null
+    null,
   );
   const [resetTeacher, setResetTeacher] = useState<TeacherAdmin | null>(null);
   const [toast, setToast] = useState<{
@@ -46,7 +46,7 @@ export default function TeachersPage() {
         setRoles(roleList);
       } catch (err) {
         setFetchError(
-          err instanceof Error ? err.message : 'Không thể tải dữ liệu'
+          err instanceof Error ? err.message : 'Không thể tải dữ liệu',
         );
       } finally {
         setLoading(false);
@@ -62,14 +62,14 @@ export default function TeachersPage() {
     const prev = teacher.role_id;
 
     setTeachers((list) =>
-      list.map((t) => (t.id === teacher.id ? { ...t, role_id: roleId } : t))
+      list.map((t) => (t.id === teacher.id ? { ...t, role_id: roleId } : t)),
     );
     setUpdatingId(teacher.id);
 
     try {
       const updated = await assignTeacherRole(teacher.id, roleId);
       setTeachers((list) =>
-        list.map((t) => (t.id === teacher.id ? updated : t))
+        list.map((t) => (t.id === teacher.id ? updated : t)),
       );
       setToast({
         message: `Đã cập nhật role cho ${teacher.name}`,
@@ -77,7 +77,7 @@ export default function TeachersPage() {
       });
     } catch (err) {
       setTeachers((list) =>
-        list.map((t) => (t.id === teacher.id ? { ...t, role_id: prev } : t))
+        list.map((t) => (t.id === teacher.id ? { ...t, role_id: prev } : t)),
       );
       setToast({
         message: err instanceof Error ? err.message : 'Cập nhật thất bại',
@@ -225,7 +225,7 @@ export default function TeachersPage() {
           onClose={() => setEditingTeacher(null)}
           onSaved={(updated) => {
             setTeachers((list) =>
-              list.map((t) => (t.id === updated.id ? updated : t))
+              list.map((t) => (t.id === updated.id ? updated : t)),
             );
             setEditingTeacher(null);
             setToast({

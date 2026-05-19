@@ -31,7 +31,7 @@ export default function ClassesPage() {
     listClasses()
       .then(setClasses)
       .catch(() =>
-        setToast({ message: 'Không thể tải danh sách lớp học', type: 'error' })
+        setToast({ message: 'Không thể tải danh sách lớp học', type: 'error' }),
       )
       .finally(() => setLoading(false));
   }, []);

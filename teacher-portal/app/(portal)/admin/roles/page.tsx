@@ -42,7 +42,7 @@ export default function RolesPage() {
         setPermissions(permList);
       } catch (err) {
         setFetchError(
-          err instanceof Error ? err.message : 'Không thể tải dữ liệu'
+          err instanceof Error ? err.message : 'Không thể tải dữ liệu',
         );
       } finally {
         setLoading(false);

@@ -12,7 +12,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 export async function loginTeacher(
   email: string,
-  password: string
+  password: string,
 ): Promise<TokenResponse> {
   const res = await fetch(`${API_BASE_URL}/auth/teacher/login`, {
     method: 'POST',
@@ -26,7 +26,7 @@ export async function registerTeacher(
   name: string,
   email: string,
   password: string,
-  role: string = 'teacher'
+  role: string = 'teacher',
 ): Promise<Teacher> {
   const res = await fetch(`${API_BASE_URL}/auth/teacher/register`, {
     method: 'POST',
@@ -37,7 +37,7 @@ export async function registerTeacher(
 }
 
 export async function getTeacherProfile(
-  access_token: string
+  access_token: string,
 ): Promise<Teacher> {
   const res = await fetch(`${API_BASE_URL}/auth/teacher/me`, {
     headers: { Authorization: `Bearer ${access_token}` },
@@ -46,7 +46,7 @@ export async function getTeacherProfile(
 }
 
 export async function refreshTeacherToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<TokenResponse> {
   const res = await fetch(`${API_BASE_URL}/auth/teacher/refresh`, {
     method: 'POST',

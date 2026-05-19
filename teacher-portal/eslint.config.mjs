@@ -22,6 +22,7 @@ const eslintConfig = defineConfig([
     },
     rules: {
       'prettier/prettier': 'error',
+      'max-lines': ['error', 1000],
     },
   },
 ]);

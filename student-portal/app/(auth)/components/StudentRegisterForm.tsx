@@ -57,7 +57,7 @@ export function StudentRegisterForm() {
         data.email,
         data.password,
         data.student_code,
-        data.class_
+        data.class_,
       );
       setSuccess(true);
     } catch (err) {

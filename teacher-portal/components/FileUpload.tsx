@@ -54,7 +54,7 @@ export function FileUpload({
           .json()
           .catch(() => ({ detail: 'Upload thất bại' }));
         throw new Error(
-          (body as { detail: string }).detail || 'Upload thất bại'
+          (body as { detail: string }).detail || 'Upload thất bại',
         );
       }
 

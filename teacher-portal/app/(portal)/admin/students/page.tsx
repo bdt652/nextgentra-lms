@@ -26,7 +26,7 @@ export default function StudentsPage() {
 
   const [creating, setCreating] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentAdmin | null>(
-    null
+    null,
   );
   const [resetStudent, setResetStudent] = useState<StudentAdmin | null>(null);
   const [toast, setToast] = useState<{
@@ -49,7 +49,7 @@ export default function StudentsPage() {
         setStudents(await listStudents());
       } catch (err) {
         setFetchError(
-          err instanceof Error ? err.message : 'Không thể tải dữ liệu'
+          err instanceof Error ? err.message : 'Không thể tải dữ liệu',
         );
       } finally {
         setLoading(false);
@@ -68,7 +68,7 @@ export default function StudentsPage() {
         setStudents(await listStudents(value || undefined));
       } catch (err) {
         setFetchError(
-          err instanceof Error ? err.message : 'Không thể tải dữ liệu'
+          err instanceof Error ? err.message : 'Không thể tải dữ liệu',
         );
       } finally {
         setLoading(false);
@@ -79,7 +79,7 @@ export default function StudentsPage() {
   const handleDelete = async (student: StudentAdmin) => {
     if (
       !confirm(
-        `Xóa học sinh "${student.name}"? Hành động này không thể hoàn tác.`
+        `Xóa học sinh "${student.name}"? Hành động này không thể hoàn tác.`,
       )
     )
       return;
@@ -253,7 +253,7 @@ export default function StudentsPage() {
           onClose={() => setEditingStudent(null)}
           onSaved={(updated) => {
             setStudents((list) =>
-              list.map((s) => (s.id === updated.id ? updated : s))
+              list.map((s) => (s.id === updated.id ? updated : s)),
             );
             setEditingStudent(null);
             setToast({

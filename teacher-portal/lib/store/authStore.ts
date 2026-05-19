@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         state?._setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );
 
 export function useHasHydrated(): boolean {
@@ -47,7 +47,7 @@ export function useHasHydrated(): boolean {
 
 export function useHasPermission(permission: string): boolean {
   return useAuthStore(
-    (state) => state.teacher?.permissions?.includes(permission) ?? false
+    (state) => state.teacher?.permissions?.includes(permission) ?? false,
   );
 }
 

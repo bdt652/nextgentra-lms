@@ -42,18 +42,18 @@ function QuestionForm({
   initial?: Partial<Question>;
 }) {
   const [type, setType] = useState<QuestionType>(
-    initial?.type ?? 'multiple_choice'
+    initial?.type ?? 'multiple_choice',
   );
   const [content, setContent] = useState(initial?.content ?? '');
   const [points, setPoints] = useState(String(initial?.points ?? 1));
   const [correctAnswer, setCorrectAnswer] = useState(
-    initial?.correct_answer ?? ''
+    initial?.correct_answer ?? '',
   );
   const [codeTemplate, setCodeTemplate] = useState(
-    initial?.code_template ?? ''
+    initial?.code_template ?? '',
   );
   const [testCases, setTestCases] = useState(
-    initial?.test_cases ? JSON.stringify(initial.test_cases, null, 2) : ''
+    initial?.test_cases ? JSON.stringify(initial.test_cases, null, 2) : '',
   );
   const [mcOptions, setMcOptions] = useState<McOption[]>(
     Array.isArray(initial?.options as McOption[] | undefined)
@@ -63,7 +63,7 @@ function QuestionForm({
           { id: 'B', text: '', is_correct: false },
           { id: 'C', text: '', is_correct: false },
           { id: 'D', text: '', is_correct: false },
-        ]
+        ],
   );
   const [saving, setSaving] = useState(false);
 
@@ -171,7 +171,7 @@ function QuestionForm({
                 checked={opt.is_correct}
                 onChange={() =>
                   setMcOptions((prev) =>
-                    prev.map((o, j) => ({ ...o, is_correct: j === i }))
+                    prev.map((o, j) => ({ ...o, is_correct: j === i })),
                   )
                 }
                 className="mt-2 h-4 w-4 text-emerald-600"
@@ -185,7 +185,7 @@ function QuestionForm({
                   value={opt.text}
                   onChange={(v) =>
                     setMcOptions((prev) =>
-                      prev.map((o, j) => (j === i ? { ...o, text: v } : o))
+                      prev.map((o, j) => (j === i ? { ...o, text: v } : o)),
                     )
                   }
                   placeholder={`Đáp án ${opt.id}`}

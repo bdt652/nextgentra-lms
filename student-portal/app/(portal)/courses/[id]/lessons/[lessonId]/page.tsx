@@ -36,7 +36,7 @@ export default function LessonPage({
     getLesson(courseId, lessonId)
       .then(setLesson)
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra'),
       )
       .finally(() => setLoading(false));
   }, [courseId, lessonId]);

@@ -60,7 +60,7 @@ export default function CourseDetailPage() {
   const [addingLesson, setAddingLesson] = useState(false);
   const [newLessonTitle, setNewLessonTitle] = useState('');
   const [newLessonSectionId, setNewLessonSectionId] = useState<string | null>(
-    null
+    null,
   );
   const [savingLesson, setSavingLesson] = useState(false);
 
@@ -94,7 +94,7 @@ export default function CourseDetailPage() {
       setCourse({ ...course, ...updated });
       showToast(
         updated.is_published ? 'Đã xuất bản khóa học' : 'Đã ẩn khóa học',
-        'success'
+        'success',
       );
     } catch (e) {
       showToast((e as Error).message, 'error');
@@ -167,7 +167,7 @@ export default function CourseDetailPage() {
       setCourse({
         ...course,
         sections: course.sections.map((s) =>
-          s.id === result.id ? { ...s, ...result } : s
+          s.id === result.id ? { ...s, ...result } : s,
         ),
       });
       showToast('Đã cập nhật section', 'success');
@@ -187,7 +187,7 @@ export default function CourseDetailPage() {
     try {
       await reorderSections(
         course.id,
-        reordered.map((s) => ({ id: s.id, order: s.order }))
+        reordered.map((s) => ({ id: s.id, order: s.order })),
       );
     } catch {
       setCourse({ ...course });
@@ -238,7 +238,7 @@ export default function CourseDetailPage() {
           sections: course.sections.map((s) =>
             s.id === newLessonSectionId
               ? { ...s, lessons: [...s.lessons, lesson] }
-              : s
+              : s,
           ),
         });
       } else {
@@ -259,14 +259,14 @@ export default function CourseDetailPage() {
 
   const handleReorderLessons = async (
     sectionId: string | null,
-    lessons: Lesson[]
+    lessons: Lesson[],
   ) => {
     if (!course) return;
     if (sectionId !== null) {
       setCourse({
         ...course,
         sections: course.sections.map((s) =>
-          s.id === sectionId ? { ...s, lessons } : s
+          s.id === sectionId ? { ...s, lessons } : s,
         ),
       });
     } else {
@@ -275,7 +275,7 @@ export default function CourseDetailPage() {
     try {
       await reorderLessons(
         course.id,
-        lessons.map((l, i) => ({ id: l.id, order: i }))
+        lessons.map((l, i) => ({ id: l.id, order: i })),
       );
     } catch {
       getCourse(course.id)
@@ -288,7 +288,7 @@ export default function CourseDetailPage() {
   const handleLessonDragStart = (
     sectionId: string | null,
     idx: number,
-    lessonId: string
+    lessonId: string,
   ) => {
     setDragState({ lessonId, sectionId, idx });
   };
@@ -296,14 +296,14 @@ export default function CourseDetailPage() {
   const handleLessonDragOver = (
     e: React.DragEvent,
     sectionId: string | null,
-    idx: number
+    idx: number,
   ) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     setDropTarget((prev) =>
       prev?.sectionId === sectionId && prev?.idx === idx
         ? prev
-        : { sectionId, idx }
+        : { sectionId, idx },
     );
   };
 
@@ -315,7 +315,7 @@ export default function CourseDetailPage() {
   const handleLessonDrop = async (
     e: React.DragEvent,
     targetSectionId: string | null,
-    targetIdx: number
+    targetIdx: number,
   ) => {
     e.preventDefault();
     if (!dragState || !course) {
@@ -351,13 +351,13 @@ export default function CourseDetailPage() {
       const applyArr = (
         c: CourseDetail,
         secId: string | null,
-        arr: Lesson[]
+        arr: Lesson[],
       ): CourseDetail => {
         if (secId === null) return { ...c, unsectioned_lessons: arr };
         return {
           ...c,
           sections: c.sections.map((s) =>
-            s.id === secId ? { ...s, lessons: arr } : s
+            s.id === secId ? { ...s, lessons: arr } : s,
           ),
         };
       };
@@ -371,12 +371,12 @@ export default function CourseDetailPage() {
         });
         await reorderLessons(
           course.id,
-          tgtArr.map((l, i) => ({ id: l.id, order: i }))
+          tgtArr.map((l, i) => ({ id: l.id, order: i })),
         );
         if (srcArr.length > 0) {
           await reorderLessons(
             course.id,
-            srcArr.map((l, i) => ({ id: l.id, order: i }))
+            srcArr.map((l, i) => ({ id: l.id, order: i })),
           );
         }
       } catch (err) {
@@ -399,7 +399,7 @@ export default function CourseDetailPage() {
           lessons: s.lessons.filter((l) => l.id !== lesson.id),
         })),
         unsectioned_lessons: course.unsectioned_lessons.filter(
-          (l) => l.id !== lesson.id
+          (l) => l.id !== lesson.id,
         ),
       });
       showToast('Đã xóa bài học', 'success');
@@ -661,7 +661,7 @@ export default function CourseDetailPage() {
                   handleLessonDragOver(
                     e,
                     null,
-                    course.unsectioned_lessons.length
+                    course.unsectioned_lessons.length,
                   );
                 }}
                 onDrop={(e) =>

@@ -93,7 +93,7 @@ export default function ClassesPage() {
     getMyClasses()
       .then(setClasses)
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+        setError(e instanceof Error ? e.message : 'Có lỗi xảy ra'),
       )
       .finally(() => setLoading(false));
   }, []);

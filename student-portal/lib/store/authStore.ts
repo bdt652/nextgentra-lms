@@ -38,8 +38,8 @@ export const useAuthStore = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         state?._setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );
 
 // Reads directly from store — no useEffect, no setState-in-effect lint issue

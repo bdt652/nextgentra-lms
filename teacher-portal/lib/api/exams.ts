@@ -47,7 +47,7 @@ export async function updateExam(
     description?: string;
     duration?: number;
     pass_score?: number;
-  }
+  },
 ): Promise<Exam> {
   const res = await apiFetch(`/exams/${id}`, {
     method: 'PATCH',
@@ -75,7 +75,7 @@ export async function addQuestion(
     test_cases?: unknown;
     points?: number;
     order?: number;
-  }
+  },
 ): Promise<Question> {
   const res = await apiFetch(`/exams/${examId}/questions`, {
     method: 'POST',
@@ -97,7 +97,7 @@ export async function updateQuestion(
     test_cases?: unknown;
     points?: number;
     order?: number;
-  }
+  },
 ): Promise<Question> {
   const res = await apiFetch(`/exams/${examId}/questions/${questionId}`, {
     method: 'PATCH',
@@ -109,7 +109,7 @@ export async function updateQuestion(
 
 export async function deleteQuestion(
   examId: string,
-  questionId: string
+  questionId: string,
 ): Promise<void> {
   const res = await apiFetch(`/exams/${examId}/questions/${questionId}`, {
     method: 'DELETE',
@@ -119,7 +119,7 @@ export async function deleteQuestion(
 
 export async function reorderQuestions(
   examId: string,
-  items: { id: string; order: number }[]
+  items: { id: string; order: number }[],
 ): Promise<Question[]> {
   const res = await apiFetch(`/exams/${examId}/questions/reorder`, {
     method: 'POST',
