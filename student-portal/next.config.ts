@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
     root: path.resolve('.'),
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'react-hook-form', '@hookform/resolvers'],
+    optimizePackageImports: [
+      'lucide-react',
+      'react-hook-form',
+      '@hookform/resolvers',
+    ],
   },
   images: {
     remotePatterns: [

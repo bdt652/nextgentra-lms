@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const ADMIN_ROUTES = ['/admin'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Auth hint cookies set by the client after successful login.
