@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7
 
+    # MinIO object storage
+    minio_endpoint: str = "192.168.53.105:9000"
+    minio_access_key: str = "admin"
+    minio_secret_key: str = ""
+    minio_bucket: str = "lms-meimei"
+    minio_public_url: str = "http://media.nextgentra.com"
+
 
 settings = Settings()
 

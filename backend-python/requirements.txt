@@ -14,6 +14,7 @@ structlog==24.4.0
 sentry-sdk[fastapi]==2.17.0
 email-validator==2.2.0
 prisma>=0.11.0
+minio==7.2.15
 
 # Development dependencies
 ruff==0.11.6

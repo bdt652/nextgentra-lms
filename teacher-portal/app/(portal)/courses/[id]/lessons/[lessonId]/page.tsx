@@ -11,6 +11,8 @@ import {
 } from '@/lib/api/courses';
 import type { Lesson, LessonAttachment } from '@/lib/types';
 import { Toast } from '@/components/Toast';
+import { FileUpload } from '@/components/FileUpload';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 export default function LessonEditorPage() {
   const { id: courseId, lessonId } = useParams<{
@@ -191,14 +193,13 @@ export default function LessonEditorPage() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nội dung (Markdown)
+                Nội dung
               </label>
-              <textarea
+              <RichTextEditor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={12}
-                placeholder="# Nội dung bài học..."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                onChange={setContent}
+                placeholder="Nhập nội dung bài học... (**bold**, *italic*, `code`, $LaTeX$)"
+                minHeight="280px"
               />
             </div>
 
@@ -293,26 +294,16 @@ export default function LessonEditorPage() {
                 placeholder="Tên file"
                 className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
-              <input
-                type="url"
-                value={attUrl}
-                onChange={(e) => setAttUrl(e.target.value)}
-                placeholder="URL file"
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-              <select
-                value={attType}
-                onChange={(e) => setAttType(e.target.value)}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              >
-                {['pdf', 'doc', 'ppt', 'xlsx', 'image', 'video', 'other'].map(
-                  (t) => (
-                    <option key={t} value={t}>
-                      {t.toUpperCase()}
-                    </option>
-                  )
-                )}
-              </select>
+              <div className="flex-1">
+                <FileUpload
+                  folder="attachments"
+                  value={attUrl || undefined}
+                  onUpload={(url, fileType) => {
+                    setAttUrl(url);
+                    setAttType(fileType);
+                  }}
+                />
+              </div>
               <button
                 type="submit"
                 disabled={addingAtt || !attName.trim() || !attUrl.trim()}

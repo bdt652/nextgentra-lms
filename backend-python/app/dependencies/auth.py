@@ -24,12 +24,14 @@ class CurrentUser:
         name: str,
         user_type: Literal["student", "teacher"],
         role: str | None = None,
+        permissions: set[str] | None = None,
     ):
         self.id = id
         self.email = email
         self.name = name
         self.user_type = user_type
         self.role = role
+        self.permissions: set[str] = permissions or set()
 
 
 async def get_current_student(
@@ -104,6 +106,7 @@ def require_permission(permission: str) -> Callable[[], Awaitable[CurrentUser]]:
                 detail=f"Missing required permission: {permission}",
             )
 
+        current_teacher.permissions = perm_names
         return current_teacher
 
     return permission_checker

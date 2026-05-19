@@ -23,6 +23,8 @@ class LessonCreate(BaseModel):
     content: Optional[str] = None
     video_url: Optional[str] = None
     order: Optional[int] = None
+    section_id: Optional[str] = None
+    prerequisite_ids: list[str] = []
 
 
 class LessonUpdate(BaseModel):
@@ -31,6 +33,8 @@ class LessonUpdate(BaseModel):
     video_url: Optional[str] = None
     order: Optional[int] = None
     is_published: Optional[bool] = None
+    section_id: Optional[str] = None
+    prerequisite_ids: Optional[list[str]] = None
 
 
 class LessonReorderItem(BaseModel):
@@ -50,6 +54,8 @@ class LessonResponse(BaseModel):
     order: int
     is_published: bool
     course_id: str
+    section_id: Optional[str] = None
+    prerequisite_ids: list[str] = []
     created_at: datetime
     updated_at: datetime
     attachments: list[LessonAttachmentResponse] = []

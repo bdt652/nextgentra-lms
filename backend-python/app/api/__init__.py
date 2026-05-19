@@ -8,6 +8,7 @@ from app.api.classes import router as classes_router
 from app.api.courses import router as courses_router
 from app.api.exams import router as exams_router
 from app.api.student_portal import router as student_portal_router
+from app.api.upload import router as upload_router
 
 __all__ = [
     "admin_router",
@@ -18,4 +19,5 @@ __all__ = [
     "courses_router",
     "exams_router",
     "student_portal_router",
+    "upload_router",
 ]

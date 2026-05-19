@@ -13,6 +13,7 @@ import {
 } from '@/lib/api/courses';
 import type { Course } from '@/lib/types';
 import { Toast } from '@/components/Toast';
+import { FileUpload } from '@/components/FileUpload';
 import { Dialog } from '@/components/Dialog';
 
 export default function CoursesPage() {
@@ -230,9 +231,32 @@ export default function CoursesPage() {
         open={showCreate}
         onClose={closeCreate}
         title="Tạo khóa học mới"
-        size="lg"
+        size="xl"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={closeCreate}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="create-course-form"
+              disabled={creating || !newTitle.trim()}
+              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {creating ? 'Đang tạo...' : 'Tạo khóa học'}
+            </button>
+          </div>
+        }
       >
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form
+          id="create-course-form"
+          onSubmit={handleCreate}
+          className="space-y-4"
+        >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tên khóa học <span className="text-red-500">*</span>
@@ -261,31 +285,14 @@ export default function CoursesPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Ảnh bìa (URL)
+              Ảnh bìa
             </label>
-            <input
-              type="url"
-              value={newCoverImage}
-              onChange={(e) => setNewCoverImage(e.target.value)}
-              placeholder="https://..."
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            <FileUpload
+              folder="covers"
+              imageOnly
+              value={newCoverImage || undefined}
+              onUpload={(url) => setNewCoverImage(url)}
             />
-          </div>
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={closeCreate}
-              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={creating || !newTitle.trim()}
-              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {creating ? 'Đang tạo...' : 'Tạo khóa học'}
-            </button>
           </div>
         </form>
       </Dialog>

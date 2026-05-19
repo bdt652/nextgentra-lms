@@ -18,10 +18,18 @@ interface Props {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
   size?: DialogSize;
 }
 
-export function Dialog({ open, onClose, title, children, size = 'lg' }: Props) {
+export function Dialog({
+  open,
+  onClose,
+  title,
+  children,
+  footer,
+  size = 'lg',
+}: Props) {
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -39,10 +47,11 @@ export function Dialog({ open, onClose, title, children, size = 'lg' }: Props) {
       onClick={onClose}
     >
       <div
-        className={`relative mb-8 w-full ${SIZE[size]} rounded-2xl bg-white shadow-2xl dark:bg-gray-800`}
+        className={`relative mb-8 flex max-h-[85vh] w-full flex-col ${SIZE[size]} rounded-2xl bg-white shadow-2xl dark:bg-gray-800`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-700">
+        {/* Pinned header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {title}
           </h2>
@@ -66,7 +75,16 @@ export function Dialog({ open, onClose, title, children, size = 'lg' }: Props) {
             </svg>
           </button>
         </div>
-        <div className="px-6 py-5">{children}</div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
+
+        {/* Pinned footer */}
+        {footer && (
+          <div className="shrink-0 border-t border-gray-100 px-6 py-4 dark:border-gray-700">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

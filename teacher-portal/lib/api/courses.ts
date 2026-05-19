@@ -1,4 +1,10 @@
-import type { Course, CourseDetail, Lesson, LessonAttachment } from '../types';
+import type {
+  Course,
+  CourseDetail,
+  Lesson,
+  LessonAttachment,
+  Section,
+} from '../types';
 import { apiFetch } from './client';
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -75,7 +81,14 @@ export async function listLessons(courseId: string): Promise<Lesson[]> {
 
 export async function createLesson(
   courseId: string,
-  data: { title: string; content?: string; video_url?: string; order?: number }
+  data: {
+    title: string;
+    content?: string;
+    video_url?: string;
+    order?: number;
+    section_id?: string | null;
+    prerequisite_ids?: string[];
+  }
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons`, {
     method: 'POST',
@@ -102,6 +115,8 @@ export async function updateLesson(
     video_url?: string;
     order?: number;
     is_published?: boolean;
+    section_id?: string | null;
+    prerequisite_ids?: string[];
   }
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons/${lessonId}`, {
@@ -160,4 +175,58 @@ export async function deleteAttachment(
     { method: 'DELETE' }
   );
   return handleResponse<void>(res);
+}
+
+// ─── Sections ────────────────────────────────────────────────────────────────
+
+export async function createSection(
+  courseId: string,
+  data: { title: string; description?: string; order?: number }
+): Promise<Section> {
+  const res = await apiFetch(`/courses/${courseId}/sections`, {
+    method: 'POST',
+    headers: JSON_HEADERS,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<Section>(res);
+}
+
+export async function updateSection(
+  courseId: string,
+  sectionId: string,
+  data: {
+    title?: string;
+    description?: string;
+    order?: number;
+    is_published?: boolean;
+  }
+): Promise<Section> {
+  const res = await apiFetch(`/courses/${courseId}/sections/${sectionId}`, {
+    method: 'PATCH',
+    headers: JSON_HEADERS,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<Section>(res);
+}
+
+export async function deleteSection(
+  courseId: string,
+  sectionId: string
+): Promise<void> {
+  const res = await apiFetch(`/courses/${courseId}/sections/${sectionId}`, {
+    method: 'DELETE',
+  });
+  return handleResponse<void>(res);
+}
+
+export async function reorderSections(
+  courseId: string,
+  items: { id: string; order: number }[]
+): Promise<Section[]> {
+  const res = await apiFetch(`/courses/${courseId}/sections/reorder`, {
+    method: 'POST',
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ items }),
+  });
+  return handleResponse<Section[]>(res);
 }

@@ -99,26 +99,59 @@ model Course {
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
   lessons      Lesson[]
+  sections     Section[]
   class_courses ClassCourse[]
 
   @@index([teacher_id])
   @@index([category_id])
 }
 
-model Lesson {
-  id           String             @id @default(uuid())
+model Section {
+  id           String   @id @default(uuid())
   title        String
-  content      String?
-  video_url    String?
-  order        Int                @default(0)
+  description  String?
+  order        Int      @default(0)
   course_id    String
-  course       Course             @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  is_published Boolean            @default(false)
-  created_at   DateTime           @default(now())
-  updated_at   DateTime           @updatedAt
-  attachments  LessonAttachment[]
+  course       Course   @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  lessons      Lesson[]
 
   @@index([course_id])
+}
+
+model Lesson {
+  id             String               @id @default(uuid())
+  title          String
+  content        String?
+  video_url      String?
+  order          Int                  @default(0)
+  course_id      String
+  course         Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  section_id     String?
+  section        Section?             @relation(fields: [section_id], references: [id], onDelete: SetNull)
+  is_published   Boolean              @default(false)
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+  attachments    LessonAttachment[]
+  progresses     LessonProgress[]
+  prerequisites  LessonPrerequisite[] @relation("HasPrerequisites")
+  is_prereq_of   LessonPrerequisite[] @relation("IsPrerequisiteOf")
+
+  @@index([course_id])
+  @@index([section_id])
+}
+
+model LessonPrerequisite {
+  lesson_id              String
+  lesson                 Lesson @relation("HasPrerequisites", fields: [lesson_id], references: [id], onDelete: Cascade)
+  prerequisite_lesson_id String
+  prerequisite           Lesson @relation("IsPrerequisiteOf", fields: [prerequisite_lesson_id], references: [id], onDelete: Cascade)
+
+  @@id([lesson_id, prerequisite_lesson_id])
+  @@index([lesson_id])
+  @@index([prerequisite_lesson_id])
 }
 
 model LessonAttachment {
@@ -202,16 +235,32 @@ model ClassTeacher {
 }
 
 model ClassEnrollment {
-  id          String    @id @default(uuid())
-  class_id    String
-  classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
-  student_id  String
-  student     Student   @relation(fields: [student_id], references: [id])
-  enrolled_at DateTime  @default(now())
+  id               String           @id @default(uuid())
+  class_id         String
+  classroom        Classroom        @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  student_id       String
+  student          Student          @relation(fields: [student_id], references: [id])
+  enrolled_at      DateTime         @default(now())
+  lesson_progresses LessonProgress[]
 
   @@unique([class_id, student_id])
   @@index([class_id])
   @@index([student_id])
+}
+
+model LessonProgress {
+  id            String          @id @default(uuid())
+  enrollment_id String
+  enrollment    ClassEnrollment @relation(fields: [enrollment_id], references: [id], onDelete: Cascade)
+  lesson_id     String
+  lesson        Lesson          @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  is_completed  Boolean         @default(false)
+  completed_at  DateTime?
+  created_at    DateTime        @default(now())
+
+  @@unique([enrollment_id, lesson_id])
+  @@index([enrollment_id])
+  @@index([lesson_id])
 }
 
 model ClassCourse {
@@ -219,7 +268,7 @@ model ClassCourse {
   class_id    String
   classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
   course_id   String
-  course      Course    @relation(fields: [course_id], references: [id])
+  course      Course    @relation(fields: [course_id], references: [id], onDelete: Cascade)
   assigned_at DateTime  @default(now())
 
   @@unique([class_id, course_id])
@@ -232,7 +281,7 @@ model ClassExam {
   class_id    String
   classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
   exam_id     String
-  exam        Exam      @relation(fields: [exam_id], references: [id])
+  exam        Exam      @relation(fields: [exam_id], references: [id], onDelete: Cascade)
   start_time  DateTime?
   end_time    DateTime?
   assigned_at DateTime  @default(now())

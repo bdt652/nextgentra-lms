@@ -14,6 +14,8 @@ import {
 import type { ExamDetail, Question, QuestionType } from '@/lib/types';
 import { Toast } from '@/components/Toast';
 import { Dialog } from '@/components/Dialog';
+import { RichTextEditor } from '@/components/RichTextEditor';
+import { RichTextRenderer } from '@/components/RichTextRenderer';
 
 const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   multiple_choice: 'Trắc nghiệm',
@@ -148,13 +150,11 @@ function QuestionForm({
         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
           Nội dung câu hỏi
         </label>
-        <textarea
+        <RichTextEditor
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-          rows={3}
-          placeholder="Nhập nội dung câu hỏi..."
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          onChange={setContent}
+          placeholder="Nhập nội dung câu hỏi... (**bold**, *italic*, $LaTeX$, ```mermaid)"
+          minHeight="140px"
         />
       </div>
 
@@ -164,7 +164,7 @@ function QuestionForm({
             Đáp án (chọn đáp án đúng)
           </label>
           {mcOptions.map((opt, i) => (
-            <div key={opt.id} className="flex items-center gap-2">
+            <div key={opt.id ?? i} className="flex items-start gap-2">
               <input
                 type="radio"
                 name="correct"
@@ -174,24 +174,23 @@ function QuestionForm({
                     prev.map((o, j) => ({ ...o, is_correct: j === i }))
                   )
                 }
-                className="h-4 w-4 text-emerald-600"
+                className="mt-2 h-4 w-4 text-emerald-600"
               />
-              <span className="w-6 text-xs font-bold text-gray-500">
+              <span className="mt-1.5 w-6 text-xs font-bold text-gray-500">
                 {opt.id}.
               </span>
-              <input
-                type="text"
-                value={opt.text}
-                onChange={(e) =>
-                  setMcOptions((prev) =>
-                    prev.map((o, j) =>
-                      j === i ? { ...o, text: e.target.value } : o
+              <div className="flex-1">
+                <RichTextEditor
+                  compact
+                  value={opt.text}
+                  onChange={(v) =>
+                    setMcOptions((prev) =>
+                      prev.map((o, j) => (j === i ? { ...o, text: v } : o))
                     )
-                  )
-                }
-                placeholder={`Đáp án ${opt.id}`}
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
+                  }
+                  placeholder={`Đáp án ${opt.id}`}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -284,7 +283,9 @@ function QuestionForm({
         </button>
         <button
           type="submit"
-          disabled={saving || !content.trim()}
+          disabled={
+            saving || content.replace(/[\s\n#*_`>~-]/g, '').length === 0
+          }
           className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
         >
           {saving ? 'Đang lưu...' : 'Lưu câu hỏi'}
@@ -478,9 +479,11 @@ export default function ExamDetailPage() {
                     {idx + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-800 dark:text-gray-200">
-                      {q.content}
-                    </p>
+                    <RichTextRenderer
+                      content={q.content}
+                      compact
+                      className="text-gray-800 dark:text-gray-200"
+                    />
                     <div className="mt-1 flex gap-2 text-xs text-gray-400">
                       <span className="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-700">
                         {QUESTION_TYPE_LABELS[q.type]}
@@ -516,9 +519,32 @@ export default function ExamDetailPage() {
         open={editingExam}
         onClose={() => setEditingExam(false)}
         title="Sửa đề thi"
-        size="lg"
+        size="xl"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setEditingExam(false)}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="edit-exam-form"
+              disabled={savingExam}
+              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {savingExam ? 'Đang lưu...' : 'Lưu'}
+            </button>
+          </div>
+        }
       >
-        <form onSubmit={handleSaveExam} className="space-y-4">
+        <form
+          id="edit-exam-form"
+          onSubmit={handleSaveExam}
+          className="space-y-4"
+        >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tên đề thi <span className="text-red-500">*</span>
@@ -573,22 +599,6 @@ export default function ExamDetailPage() {
               />
             </div>
           </div>
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={() => setEditingExam(false)}
-              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={savingExam}
-              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {savingExam ? 'Đang lưu...' : 'Lưu'}
-            </button>
-          </div>
         </form>
       </Dialog>
 
@@ -597,7 +607,7 @@ export default function ExamDetailPage() {
         open={addingQuestion}
         onClose={() => setAddingQuestion(false)}
         title="Thêm câu hỏi"
-        size="2xl"
+        size="3xl"
       >
         <QuestionForm
           onSubmit={handleAddQuestion}
@@ -610,7 +620,7 @@ export default function ExamDetailPage() {
         open={!!editingQuestion}
         onClose={() => setEditingQuestion(null)}
         title="Sửa câu hỏi"
-        size="2xl"
+        size="3xl"
       >
         {editingQuestion && (
           <QuestionForm

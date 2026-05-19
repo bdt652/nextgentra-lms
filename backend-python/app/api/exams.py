@@ -79,8 +79,10 @@ def _exam_to_response(e: object) -> ExamResponse:
     )
 
 
-def _require_owner(teacher_id: str, current_user_id: str) -> None:
-    if teacher_id != current_user_id:
+def _require_owner(teacher_id: str, current_user: "CurrentUser") -> None:
+    if "admin:access" in current_user.permissions:
+        return
+    if teacher_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only the exam owner can perform this action",
@@ -172,7 +174,7 @@ async def update_exam(
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
-    _require_owner(exam.teacher_id, current_user.id)
+    _require_owner(exam.teacher_id, current_user)
 
     update_data: ExamUpdateInput = {}
     if data.title is not None:
@@ -203,7 +205,7 @@ async def delete_exam(
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
-    _require_owner(exam.teacher_id, current_user.id)
+    _require_owner(exam.teacher_id, current_user)
     await prisma.exam.delete(where={"id": exam_id})
 
 
@@ -226,7 +228,7 @@ async def add_question(
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
-    _require_owner(exam.teacher_id, current_user.id)
+    _require_owner(exam.teacher_id, current_user)
 
     if data.order is None:
         count = await prisma.question.count(where={"exam_id": exam_id})
@@ -265,7 +267,7 @@ async def update_question(
 
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if exam:
-        _require_owner(exam.teacher_id, current_user.id)
+        _require_owner(exam.teacher_id, current_user)
 
     update_data: QuestionUpdateInput = {}
     if data.content is not None:
@@ -304,7 +306,7 @@ async def delete_question(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found")
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if exam:
-        _require_owner(exam.teacher_id, current_user.id)
+        _require_owner(exam.teacher_id, current_user)
     await prisma.question.delete(where={"id": question_id})
 
 
@@ -318,7 +320,7 @@ async def reorder_questions(
     exam = await prisma.exam.find_unique(where={"id": exam_id})
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
-    _require_owner(exam.teacher_id, current_user.id)
+    _require_owner(exam.teacher_id, current_user)
 
     for item in data.items:
         await prisma.question.update(

@@ -156,9 +156,32 @@ export default function ClassesPage() {
         open={showCreate}
         onClose={closeCreate}
         title="Tạo lớp học mới"
-        size="lg"
+        size="xl"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={closeCreate}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="create-class-form"
+              disabled={creating || !newName.trim()}
+              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {creating ? 'Đang tạo...' : 'Tạo lớp học'}
+            </button>
+          </div>
+        }
       >
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form
+          id="create-class-form"
+          onSubmit={handleCreate}
+          className="space-y-4"
+        >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tên lớp <span className="text-red-500">*</span>
@@ -188,22 +211,6 @@ export default function ClassesPage() {
           <p className="text-xs text-gray-400">
             Mã lớp (join code) sẽ được tự động tạo sau khi tạo lớp.
           </p>
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={closeCreate}
-              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={creating || !newName.trim()}
-              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {creating ? 'Đang tạo...' : 'Tạo lớp học'}
-            </button>
-          </div>
         </form>
       </Dialog>
 

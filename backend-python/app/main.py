@@ -29,6 +29,7 @@ from app.api import (
     courses_router,
     exams_router,
     student_portal_router,
+    upload_router,
 )
 from app.core.database import connect_db, disconnect_db
 from app.core.health import health_check_endpoint
@@ -143,6 +144,7 @@ app.include_router(courses_router)
 app.include_router(exams_router)
 app.include_router(classes_router)
 app.include_router(student_portal_router)
+app.include_router(upload_router)
 
 
 @app.get("/")

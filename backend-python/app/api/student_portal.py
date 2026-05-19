@@ -9,6 +9,7 @@ from app.dependencies.auth import CurrentUser, get_current_student
 from app.schemas.class_ import ClassDetailResponse, ClassExamResponse, ClassResponse
 from app.schemas.course import CourseDetailResponse, CourseResponse
 from app.schemas.lesson import LessonAttachmentResponse, LessonResponse
+from app.schemas.section import SectionResponse
 
 router = APIRouter(prefix="/student", tags=["student-portal"])
 
@@ -39,9 +40,28 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
         order=l.order,  # type: ignore[attr-defined]
         is_published=l.is_published,  # type: ignore[attr-defined]
         course_id=l.course_id,  # type: ignore[attr-defined]
+        section_id=l.section_id,  # type: ignore[attr-defined]
+        prerequisite_ids=[
+            p.prerequisite_lesson_id for p in (getattr(l, "prerequisites", None) or [])
+        ],
         created_at=l.created_at,  # type: ignore[attr-defined]
         updated_at=l.updated_at,  # type: ignore[attr-defined]
         attachments=attachments,
+    )
+
+
+def _section_to_response(s: object) -> SectionResponse:
+    lessons = [_lesson_to_response(lesson) for lesson in (s.lessons or [])]  # type: ignore[attr-defined]
+    return SectionResponse(
+        id=s.id,  # type: ignore[attr-defined]
+        title=s.title,  # type: ignore[attr-defined]
+        description=s.description,  # type: ignore[attr-defined]
+        order=s.order,  # type: ignore[attr-defined]
+        course_id=s.course_id,  # type: ignore[attr-defined]
+        is_published=s.is_published,  # type: ignore[attr-defined]
+        created_at=s.created_at,  # type: ignore[attr-defined]
+        updated_at=s.updated_at,  # type: ignore[attr-defined]
+        lessons=lessons,
     )
 
 
@@ -219,17 +239,29 @@ async def get_course(
     course = await prisma.course.find_unique(
         where={"id": course_id},
         include={
-            "lessons": {
-                "where": {"is_published": True},
-                "include": {"attachments": True},
+            "sections": {
+                "include": {
+                    "lessons": {
+                        "where": {"is_published": True},
+                        "include": {"attachments": True, "prerequisites": True},
+                        "order_by": {"order": "asc"},
+                    }
+                },
                 "order_by": {"order": "asc"},
-            }
+            },
+            "lessons": {
+                "where": {"section_id": None, "is_published": True},
+                "include": {"attachments": True, "prerequisites": True},
+                "order_by": {"order": "asc"},
+            },
         },
     )
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
 
-    lessons = [_lesson_to_response(lesson) for lesson in (course.lessons or [])]
+    sections = [_section_to_response(s) for s in (course.sections or [])]
+    unsectioned = [_lesson_to_response(lesson) for lesson in (course.lessons or [])]
+    total = sum(len(s.lessons) for s in sections) + len(unsectioned)
     return CourseDetailResponse(
         id=course.id,
         title=course.title,
@@ -240,8 +272,9 @@ async def get_course(
         category_id=course.category_id,
         created_at=course.created_at,
         updated_at=course.updated_at,
-        lesson_count=len(lessons),
-        lessons=lessons,
+        lesson_count=total,
+        sections=sections,
+        unsectioned_lessons=unsectioned,
     )
 
 
@@ -266,7 +299,7 @@ async def get_lesson(
 
     lesson = await prisma.lesson.find_unique(
         where={"id": lesson_id},
-        include={"attachments": True},
+        include={"attachments": True, "prerequisites": True},
     )
     if not lesson or lesson.course_id != course_id or not lesson.is_published:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")

@@ -565,9 +565,32 @@ export default function ClassDetailPage() {
         open={editing}
         onClose={() => setEditing(false)}
         title="Sửa lớp học"
-        size="lg"
+        size="xl"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="edit-class-form"
+              disabled={savingEdit}
+              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {savingEdit ? 'Đang lưu...' : 'Lưu'}
+            </button>
+          </div>
+        }
       >
-        <form onSubmit={handleSaveEdit} className="space-y-4">
+        <form
+          id="edit-class-form"
+          onSubmit={handleSaveEdit}
+          className="space-y-4"
+        >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tên lớp <span className="text-red-500">*</span>
@@ -593,22 +616,6 @@ export default function ClassDetailPage() {
               placeholder="Mô tả"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
-          </div>
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={() => setEditing(false)}
-              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={savingEdit}
-              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-            >
-              {savingEdit ? 'Đang lưu...' : 'Lưu'}
-            </button>
           </div>
         </form>
       </Dialog>

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from app.schemas.category import CategorySummary
 from app.schemas.lesson import LessonResponse
+from app.schemas.section import SectionResponse
 
 
 class CourseCreate(BaseModel):
@@ -36,4 +37,5 @@ class CourseResponse(BaseModel):
 
 
 class CourseDetailResponse(CourseResponse):
-    lessons: list[LessonResponse] = []
+    sections: list[SectionResponse] = []
+    unsectioned_lessons: list[LessonResponse] = []
