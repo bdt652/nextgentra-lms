@@ -25,9 +25,13 @@ from app.api import (
     auth_student_router,
     auth_teacher_router,
     categories_router,
+    class_content_router,
+    class_members_router,
     classes_router,
     courses_router,
     exams_router,
+    lessons_router,
+    sections_router,
     student_portal_router,
     upload_router,
 )
@@ -141,8 +145,12 @@ app.include_router(auth_teacher_router)
 app.include_router(admin_router)
 app.include_router(categories_router)
 app.include_router(courses_router)
+app.include_router(sections_router)
+app.include_router(lessons_router)
 app.include_router(exams_router)
 app.include_router(classes_router)
+app.include_router(class_members_router)
+app.include_router(class_content_router)
 app.include_router(student_portal_router)
 app.include_router(upload_router)
 
