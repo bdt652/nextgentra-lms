@@ -18,7 +18,7 @@ import {
   deleteSection,
   reorderSections,
 } from '@/lib/api/courses';
-import type { CourseDetail, Lesson, Section } from '@/lib/types';
+import type { CourseDetail, Lesson, LessonType, Section } from '@/lib/types';
 import { Toast } from '@/components/Toast';
 import { Dialog } from '@/components/Dialog';
 import { LessonRow } from '@/components/course/LessonRow';
@@ -59,10 +59,14 @@ export default function CourseDetailPage() {
   // Add lesson dialog
   const [addingLesson, setAddingLesson] = useState(false);
   const [newLessonTitle, setNewLessonTitle] = useState('');
+  const [newLessonType, setNewLessonType] = useState<LessonType>('lecture');
   const [newLessonSectionId, setNewLessonSectionId] = useState<string | null>(
     null,
   );
   const [savingLesson, setSavingLesson] = useState(false);
+
+  // Filter by lesson type
+  const [filterType, setFilterType] = useState<LessonType | 'all'>('all');
 
   // Unified drag state for cross-section lesson reordering
   const [dragState, setDragState] = useState<{
@@ -220,6 +224,7 @@ export default function CourseDetailPage() {
   const openAddLesson = (sectionId: string | null) => {
     setNewLessonSectionId(sectionId);
     setNewLessonTitle('');
+    setNewLessonType('lecture');
     setAddingLesson(true);
   };
 
@@ -230,6 +235,7 @@ export default function CourseDetailPage() {
     try {
       const lesson = await createLesson(course.id, {
         title: newLessonTitle.trim(),
+        lesson_type: newLessonType,
         section_id: newLessonSectionId,
       });
       if (newLessonSectionId) {
@@ -479,6 +485,13 @@ export default function CourseDetailPage() {
   const totalLessons =
     course.sections.reduce((n, s) => n + s.lessons.length, 0) +
     course.unsectioned_lessons.length;
+  const filterLesson = (l: Lesson) =>
+    filterType === 'all' || l.lesson_type === filterType;
+  const filteredSections = course.sections.map((s) => ({
+    ...s,
+    lessons: s.lessons.filter(filterLesson),
+  }));
+  const filteredUnsectioned = course.unsectioned_lessons.filter(filterLesson);
 
   return (
     <div className="space-y-5">
@@ -545,6 +558,31 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
+      {/* Filter tabs */}
+      <div className="flex flex-wrap gap-1.5">
+        {(
+          [
+            { value: 'all', label: 'Tất cả' },
+            { value: 'lecture', label: '📖 Bài giảng' },
+            { value: 'quiz', label: '📝 Bài kiểm tra' },
+            { value: 'assignment', label: '📋 Bài tập' },
+            { value: 'document', label: '📄 Tài liệu' },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setFilterType(tab.value)}
+            className={`rounded-full px-3 py-1 text-xs transition ${
+              filterType === tab.value
+                ? 'bg-emerald-600 text-white'
+                : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Course outline */}
       <div className="rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-gray-700 dark:bg-gray-900">
         {/* outline header */}
@@ -580,14 +618,14 @@ export default function CourseDetailPage() {
               </div>
             )}
 
-          {course.sections.map((section, idx) => (
+          {filteredSections.map((section, idx) => (
             <SectionBlock
               key={section.id}
               section={section}
               allLessons={allLessons}
               courseId={course.id}
               isFirst={idx === 0}
-              isLast={idx === course.sections.length - 1}
+              isLast={idx === filteredSections.length - 1}
               canEditCourse={canUpdate}
               canCreateLesson={canCreateLesson}
               canEditLesson={canEditLesson}
@@ -618,7 +656,7 @@ export default function CourseDetailPage() {
           ))}
 
           {/* Unsectioned lessons */}
-          {course.unsectioned_lessons.length > 0 && (
+          {filteredUnsectioned.length > 0 && (
             <div className="rounded-xl border border-dashed border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
               <div className="border-b border-dashed border-gray-200 px-4 py-3 dark:border-gray-700">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -626,7 +664,7 @@ export default function CourseDetailPage() {
                 </h3>
               </div>
               <ul className="divide-y divide-gray-100 px-2 dark:divide-gray-700">
-                {course.unsectioned_lessons.map((lesson, idx) => (
+                {filteredUnsectioned.map((lesson, idx) => (
                   <LessonRow
                     key={lesson.id}
                     lesson={lesson}
@@ -658,18 +696,14 @@ export default function CourseDetailPage() {
               <div
                 onDragOver={(e) => {
                   e.preventDefault();
-                  handleLessonDragOver(
-                    e,
-                    null,
-                    course.unsectioned_lessons.length,
-                  );
+                  handleLessonDragOver(e, null, filteredUnsectioned.length);
                 }}
                 onDrop={(e) =>
-                  handleLessonDrop(e, null, course.unsectioned_lessons.length)
+                  handleLessonDrop(e, null, filteredUnsectioned.length)
                 }
                 className={`h-2 rounded-b-lg transition ${
                   dropTarget?.sectionId === null &&
-                  dropTarget.idx === course.unsectioned_lessons.length
+                  dropTarget.idx === filteredUnsectioned.length
                     ? 'bg-emerald-100 dark:bg-emerald-900/30'
                     : ''
                 }`}
@@ -830,6 +864,21 @@ export default function CourseDetailPage() {
           onSubmit={handleAddLesson}
           className="space-y-4"
         >
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Loại bài học
+            </label>
+            <select
+              value={newLessonType}
+              onChange={(e) => setNewLessonType(e.target.value as LessonType)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="lecture">📖 Bài giảng</option>
+              <option value="quiz">📝 Bài kiểm tra</option>
+              <option value="assignment">📋 Bài tập</option>
+              <option value="document">📄 Tài liệu</option>
+            </select>
+          </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tên bài học <span className="text-red-500">*</span>

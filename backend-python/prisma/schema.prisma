@@ -86,6 +86,13 @@ enum QuestionType {
   matching
 }
 
+enum LessonType {
+  lecture
+  quiz
+  assignment
+  document
+}
+
 model Course {
   id           String        @id @default(uuid())
   title        String
@@ -126,6 +133,7 @@ model Lesson {
   title            String
   content          String?
   video_url        String?
+  lesson_type      LessonType           @default(lecture)
   order            Int                  @default(0)
   course_id        String
   course           Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)

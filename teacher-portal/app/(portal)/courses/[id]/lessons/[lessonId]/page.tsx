@@ -11,7 +11,73 @@ import {
   removeLessonQuestion,
   updateLessonQuestion,
 } from '@/lib/api/courses';
-import type { Lesson, LessonAttachment, LessonQuestionItem } from '@/lib/types';
+import type {
+  Lesson,
+  LessonAttachment,
+  LessonQuestionItem,
+  LessonType,
+} from '@/lib/types';
+
+const TYPE_META: Record<
+  LessonType,
+  {
+    icon: string;
+    label: string;
+    badgeCls: string;
+    contentLabel: string;
+    contentPlaceholder: string;
+    showVideo: boolean;
+    hint: string;
+    primaryPanel: 'attachments' | 'questions' | null;
+    primaryPanelBorder: string;
+  }
+> = {
+  lecture: {
+    icon: '📖',
+    label: 'Bài giảng',
+    badgeCls: 'bg-blue-50 text-blue-600',
+    contentLabel: 'Nội dung bài giảng',
+    contentPlaceholder:
+      'Nhập nội dung bài giảng... (**bold**, *italic*, `code`, $LaTeX$)',
+    showVideo: true,
+    hint: '',
+    primaryPanel: null,
+    primaryPanelBorder: '',
+  },
+  quiz: {
+    icon: '📝',
+    label: 'Bài kiểm tra',
+    badgeCls: 'bg-orange-50 text-orange-600',
+    contentLabel: 'Mô tả / Giới thiệu (không bắt buộc)',
+    contentPlaceholder: 'Mô tả ngắn về bài kiểm tra...',
+    showVideo: false,
+    hint: 'Thêm câu hỏi ở mục "Câu hỏi bài học" phía dưới.',
+    primaryPanel: 'questions',
+    primaryPanelBorder: 'border-orange-300 dark:border-orange-700',
+  },
+  assignment: {
+    icon: '📋',
+    label: 'Bài tập',
+    badgeCls: 'bg-green-50 text-green-600',
+    contentLabel: 'Hướng dẫn / Yêu cầu',
+    contentPlaceholder: 'Nhập hướng dẫn và yêu cầu làm bài...',
+    showVideo: false,
+    hint: 'Đính kèm tài liệu tham khảo ở mục "File đính kèm" phía dưới.',
+    primaryPanel: 'attachments',
+    primaryPanelBorder: 'border-green-300 dark:border-green-700',
+  },
+  document: {
+    icon: '📄',
+    label: 'Tài liệu',
+    badgeCls: 'bg-gray-100 text-gray-600',
+    contentLabel: 'Mô tả tài liệu',
+    contentPlaceholder: 'Mô tả nội dung tài liệu...',
+    showVideo: false,
+    hint: 'Upload tài liệu học tập ở mục "File đính kèm" phía dưới.',
+    primaryPanel: 'attachments',
+    primaryPanelBorder: 'border-gray-400 dark:border-gray-500',
+  },
+};
 import { Toast } from '@/components/Toast';
 import { FileUpload } from '@/components/FileUpload';
 import { RichTextEditor } from '@/components/RichTextEditor';
@@ -35,6 +101,7 @@ export default function LessonEditorPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
+  const [lessonType, setLessonType] = useState<LessonType>('lecture');
   const [isPublished, setIsPublished] = useState(false);
 
   // New attachment form
@@ -59,6 +126,7 @@ export default function LessonEditorPage() {
         setTitle(l.title);
         setContent(l.content ?? '');
         setVideoUrl(l.video_url ?? '');
+        setLessonType(l.lesson_type);
         setIsPublished(l.is_published);
       })
       .catch(() => showToast('Không thể tải bài học', 'error'))
@@ -73,6 +141,7 @@ export default function LessonEditorPage() {
         title: title.trim(),
         content: content.trim() || undefined,
         video_url: videoUrl.trim() || undefined,
+        lesson_type: lessonType,
         is_published: isPublished,
       });
       setLesson(updated);
@@ -248,9 +317,16 @@ export default function LessonEditorPage() {
             <p className="text-xs font-medium text-gray-400">
               Chỉnh sửa bài học
             </p>
-            <h2 className="truncate text-lg font-semibold text-gray-900 dark:text-white">
-              {lesson.title}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="truncate text-lg font-semibold text-gray-900 dark:text-white">
+                {lesson.title}
+              </h2>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_META[lessonType].badgeCls}`}
+              >
+                {TYPE_META[lessonType].icon} {TYPE_META[lessonType].label}
+              </span>
+            </div>
           </div>
           <Link
             href={`/courses/${courseId}`}
@@ -290,28 +366,53 @@ export default function LessonEditorPage() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nội dung
+                Loại bài học
+              </label>
+              <select
+                value={lessonType}
+                onChange={(e) => setLessonType(e.target.value as LessonType)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="lecture">📖 Bài giảng</option>
+                <option value="quiz">📝 Bài kiểm tra</option>
+                <option value="assignment">📋 Bài tập</option>
+                <option value="document">📄 Tài liệu</option>
+              </select>
+            </div>
+
+            {TYPE_META[lessonType].hint && (
+              <div className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                <span className="mt-0.5 shrink-0">💡</span>
+                <span>{TYPE_META[lessonType].hint}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {TYPE_META[lessonType].contentLabel}
               </label>
               <RichTextEditor
                 value={content}
                 onChange={setContent}
-                placeholder="Nhập nội dung bài học... (**bold**, *italic*, `code`, $LaTeX$)"
-                minHeight="280px"
+                placeholder={TYPE_META[lessonType].contentPlaceholder}
+                minHeight={lessonType === 'quiz' ? '120px' : '280px'}
               />
             </div>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                URL Video
-              </label>
-              <input
-                type="url"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="https://youtube.com/..."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
+            {TYPE_META[lessonType].showVideo && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  URL Video
+                </label>
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="https://youtube.com/..."
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+            )}
 
             <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
               <input
@@ -340,12 +441,25 @@ export default function LessonEditorPage() {
             </div>
           </form>
 
-          {/* Attachments */}
-          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700">
+          {/* Attachments — lecture + document only */}
+          {(lessonType === 'lecture' || lessonType === 'document') && <div
+            className={`mt-6 rounded-xl border ${
+              TYPE_META[lessonType].primaryPanel === 'attachments'
+                ? TYPE_META[lessonType].primaryPanelBorder
+                : 'border-gray-200 dark:border-gray-700'
+            }`}
+          >
             <div className="border-b border-gray-100 px-5 py-3 dark:border-gray-700">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                File đính kèm ({lesson.attachments.length})
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-gray-900 dark:text-white">
+                  File đính kèm ({lesson.attachments.length})
+                </h3>
+                {TYPE_META[lessonType].primaryPanel === 'attachments' && (
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_META[lessonType].badgeCls}`}>
+                    Nội dung chính
+                  </span>
+                )}
+              </div>
             </div>
 
             {lesson.attachments.length > 0 && (
@@ -409,15 +523,28 @@ export default function LessonEditorPage() {
                 {addingAtt ? '...' : '+ Thêm'}
               </button>
             </form>
-          </div>
+          </div>}
 
-          {/* Lesson Questions */}
-          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700">
+          {/* Lesson Questions — quiz only */}
+          {lessonType === 'quiz' && <div
+            className={`mt-6 rounded-xl border ${
+              TYPE_META[lessonType].primaryPanel === 'questions'
+                ? TYPE_META[lessonType].primaryPanelBorder
+                : 'border-gray-200 dark:border-gray-700'
+            }`}
+          >
             <div className="border-b border-gray-100 px-5 py-3 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  Câu hỏi bài học ({lesson.lesson_questions.length})
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    Câu hỏi bài học ({lesson.lesson_questions.length})
+                  </h3>
+                  {TYPE_META[lessonType].primaryPanel === 'questions' && (
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_META[lessonType].badgeCls}`}>
+                      Nội dung chính
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={() => setQuestionDialogOpen(true)}
                   className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-700"
@@ -649,7 +776,7 @@ export default function LessonEditorPage() {
                 thư viện đề.
               </p>
             )}
-          </div>
+          </div>}
         </div>
       </div>
 

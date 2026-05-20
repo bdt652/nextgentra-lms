@@ -45,6 +45,8 @@ export interface ApiError {
 
 // ─── Courses & Lessons ───────────────────────────────────────────────────────
 
+export type LessonType = 'lecture' | 'quiz' | 'assignment' | 'document';
+
 export interface LessonAttachment {
   id: string;
   name: string;
@@ -76,6 +78,7 @@ export interface Lesson {
   title: string;
   content: string | null;
   video_url: string | null;
+  lesson_type: LessonType;
   order: number;
   is_published: boolean;
   random_question_count: number | null;

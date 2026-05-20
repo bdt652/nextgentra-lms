@@ -4,6 +4,7 @@ import type {
   Lesson,
   LessonAttachment,
   LessonQuestionItem,
+  LessonType,
   Section,
 } from '../types';
 import { apiFetch } from './client';
@@ -86,6 +87,7 @@ export async function createLesson(
     title: string;
     content?: string;
     video_url?: string;
+    lesson_type?: LessonType;
     order?: number;
     section_id?: string | null;
     prerequisite_ids?: string[];
@@ -114,6 +116,7 @@ export async function updateLesson(
     title?: string;
     content?: string;
     video_url?: string;
+    lesson_type?: LessonType;
     order?: number;
     is_published?: boolean;
     section_id?: string | null;

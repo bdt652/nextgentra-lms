@@ -73,6 +73,7 @@ async def create_lesson(
         "title": data.title,
         "content": data.content,
         "video_url": data.video_url,
+        "lesson_type": data.lesson_type,
         "order": order,
         "course_id": course_id,
     }
@@ -132,6 +133,8 @@ async def update_lesson(  # noqa: PLR0912
         update_data["content"] = data.content
     if data.video_url is not None:
         update_data["video_url"] = data.video_url
+    if data.lesson_type is not None:
+        update_data["lesson_type"] = data.lesson_type
     if data.order is not None:
         update_data["order"] = data.order
     if data.is_published is not None:

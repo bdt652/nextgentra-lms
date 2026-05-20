@@ -89,6 +89,7 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
         title=l.title,  # type: ignore[attr-defined]
         content=l.content,  # type: ignore[attr-defined]
         video_url=l.video_url,  # type: ignore[attr-defined]
+        lesson_type=l.lesson_type,  # type: ignore[attr-defined]
         order=l.order,  # type: ignore[attr-defined]
         is_published=l.is_published,  # type: ignore[attr-defined]
         random_question_count=l.random_question_count,  # type: ignore[attr-defined]

@@ -2,8 +2,26 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import type { Lesson } from '@/lib/types';
+import type { Lesson, LessonType } from '@/lib/types';
 import { Dialog } from '@/components/Dialog';
+
+const TYPE_CONFIG: Record<
+  LessonType,
+  { icon: string; label: string; cls: string }
+> = {
+  lecture: { icon: '📖', label: 'Bài giảng', cls: 'bg-blue-50 text-blue-600' },
+  quiz: {
+    icon: '📝',
+    label: 'Bài kiểm tra',
+    cls: 'bg-orange-50 text-orange-600',
+  },
+  assignment: {
+    icon: '📋',
+    label: 'Bài tập',
+    cls: 'bg-green-50 text-green-600',
+  },
+  document: { icon: '📄', label: 'Tài liệu', cls: 'bg-gray-50 text-gray-500' },
+};
 
 export interface LessonRowProps {
   lesson: Lesson;
@@ -83,8 +101,13 @@ export function LessonRow({
           ⠿
         </span>
 
-        {/* lesson icon */}
-        <span className="text-base">{lesson.video_url ? '🎬' : '📄'}</span>
+        {/* lesson type icon + badge */}
+        <span className="text-base">{TYPE_CONFIG[lesson.lesson_type].icon}</span>
+        <span
+          className={`hidden shrink-0 rounded-full px-2 py-0.5 text-xs sm:inline ${TYPE_CONFIG[lesson.lesson_type].cls}`}
+        >
+          {TYPE_CONFIG[lesson.lesson_type].label}
+        </span>
 
         {/* title + meta */}
         <div className="min-w-0 flex-1">

@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.schemas.lesson_question import LessonQuestionResponse
+from prisma.enums import LessonType
 
 
 class LessonAttachmentResponse(BaseModel):
@@ -24,6 +25,7 @@ class LessonCreate(BaseModel):
     title: str
     content: Optional[str] = None
     video_url: Optional[str] = None
+    lesson_type: LessonType = LessonType.lecture
     order: Optional[int] = None
     section_id: Optional[str] = None
     prerequisite_ids: list[str] = []
@@ -33,6 +35,7 @@ class LessonUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
     video_url: Optional[str] = None
+    lesson_type: Optional[LessonType] = None
     order: Optional[int] = None
     is_published: Optional[bool] = None
     section_id: Optional[str] = None
@@ -54,6 +57,7 @@ class LessonResponse(BaseModel):
     title: str
     content: Optional[str]
     video_url: Optional[str]
+    lesson_type: LessonType
     order: int
     is_published: bool
     random_question_count: Optional[int] = None
