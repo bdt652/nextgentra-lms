@@ -4,7 +4,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api._course_utils import _LESSON_INCLUDE, _lesson_to_response, _require_owner
+from app.api._course_utils import (
+    _LESSON_FULL_INCLUDE,
+    _LESSON_INCLUDE,
+    _lesson_to_response,
+    _require_owner,
+)
 from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
 from app.schemas.lesson import (
@@ -97,7 +102,7 @@ async def get_lesson(
 ) -> LessonResponse:
     lesson = await prisma.lesson.find_unique(
         where={"id": lesson_id},
-        include=_LESSON_INCLUDE,
+        include=_LESSON_FULL_INCLUDE,  # type: ignore[arg-type]
     )
     if not lesson or lesson.course_id != course_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")
@@ -139,7 +144,7 @@ async def update_lesson(
     updated = await prisma.lesson.update(
         where={"id": lesson_id},
         data=update_data,
-        include=_LESSON_INCLUDE,
+        include=_LESSON_FULL_INCLUDE,  # type: ignore[arg-type]
     )
     if "prerequisite_ids" in data.model_fields_set:
         await prisma.lessonprerequisite.delete_many(where={"lesson_id": lesson_id})
@@ -147,7 +152,10 @@ async def update_lesson(
             await prisma.lessonprerequisite.create(
                 data={"lesson_id": lesson_id, "prerequisite_lesson_id": prereq_id}
             )
-        reloaded = await prisma.lesson.find_unique(where={"id": lesson_id}, include=_LESSON_INCLUDE)
+        reloaded = await prisma.lesson.find_unique(
+            where={"id": lesson_id},
+            include=_LESSON_FULL_INCLUDE,  # type: ignore[arg-type]
+        )
         return _lesson_to_response(reloaded)
     return _lesson_to_response(updated)
 

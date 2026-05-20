@@ -8,11 +8,13 @@ import {
   updateLesson,
   addAttachment,
   deleteAttachment,
+  removeLessonQuestion,
 } from '@/lib/api/courses';
-import type { Lesson, LessonAttachment } from '@/lib/types';
+import type { Lesson, LessonAttachment, LessonQuestionItem } from '@/lib/types';
 import { Toast } from '@/components/Toast';
 import { FileUpload } from '@/components/FileUpload';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { AddQuestionsDialog } from '@/components/lesson/AddQuestionsDialog';
 
 export default function LessonEditorPage() {
   const { id: courseId, lessonId } = useParams<{
@@ -39,6 +41,8 @@ export default function LessonEditorPage() {
   const [attUrl, setAttUrl] = useState('');
   const [attType, setAttType] = useState('pdf');
   const [addingAtt, setAddingAtt] = useState(false);
+
+  const [questionDialogOpen, setQuestionDialogOpen] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type });
@@ -109,6 +113,30 @@ export default function LessonEditorPage() {
         attachments: lesson.attachments.filter((a) => a.id !== att.id),
       });
       showToast('Đã xóa file đính kèm', 'success');
+    } catch (e) {
+      showToast((e as Error).message, 'error');
+    }
+  };
+
+  const handleQuestionsAdded = (items: LessonQuestionItem[]) => {
+    if (!lesson) return;
+    const existingIds = new Set(lesson.lesson_questions.map((q) => q.id));
+    const newItems = items.filter((item) => !existingIds.has(item.id));
+    setLesson({
+      ...lesson,
+      lesson_questions: [...lesson.lesson_questions, ...newItems],
+    });
+    showToast(`Đã thêm ${newItems.length} câu hỏi`, 'success');
+  };
+
+  const handleRemoveQuestion = async (lq: LessonQuestionItem) => {
+    if (!lesson) return;
+    try {
+      await removeLessonQuestion(courseId, lessonId, lq.question_id);
+      setLesson({
+        ...lesson,
+        lesson_questions: lesson.lesson_questions.filter((q) => q.id !== lq.id),
+      });
     } catch (e) {
       showToast((e as Error).message, 'error');
     }
@@ -313,8 +341,80 @@ export default function LessonEditorPage() {
               </button>
             </form>
           </div>
+
+          {/* Lesson Questions */}
+          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3 dark:border-gray-700">
+              <h3 className="font-semibold text-gray-900 dark:text-white">
+                Câu hỏi bài học ({lesson.lesson_questions.length})
+              </h3>
+              <button
+                onClick={() => setQuestionDialogOpen(true)}
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-700"
+              >
+                + Thêm câu hỏi
+              </button>
+            </div>
+
+            {lesson.lesson_questions.length > 0 && (
+              <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+                {lesson.lesson_questions.map((lq, idx) => (
+                  <li
+                    key={lq.id}
+                    className="flex items-start gap-3 px-5 py-3 text-sm"
+                  >
+                    <span className="mt-0.5 shrink-0 text-xs text-gray-400">
+                      {idx + 1}.
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 text-gray-700 dark:text-gray-300">
+                        {lq.question.content}
+                      </p>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                          {lq.question.type}
+                        </span>
+                        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                          {lq.question.points}đ
+                        </span>
+                        {lq.question.exam_title && (
+                          <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                            {lq.question.exam_title}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveQuestion(lq)}
+                      className="shrink-0 text-xs text-red-500 hover:underline"
+                    >
+                      Xóa
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {lesson.lesson_questions.length === 0 && (
+              <p className="px-5 py-4 text-sm text-gray-400">
+                Chưa có câu hỏi nào. Nhấn &quot;+ Thêm câu hỏi&quot; để chọn từ
+                thư viện đề.
+              </p>
+            )}
+          </div>
         </div>
       </div>
+
+      <AddQuestionsDialog
+        open={questionDialogOpen}
+        onClose={() => setQuestionDialogOpen(false)}
+        courseId={courseId}
+        lessonId={lessonId}
+        existingQuestionIds={
+          new Set(lesson.lesson_questions.map((lq) => lq.question_id))
+        }
+        onAdded={handleQuestionsAdded}
+      />
 
       {toast && (
         <Toast

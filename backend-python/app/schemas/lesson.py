@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.schemas.lesson_question import LessonQuestionResponse
+
 
 class LessonAttachmentResponse(BaseModel):
     id: str
@@ -59,3 +61,4 @@ class LessonResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     attachments: list[LessonAttachmentResponse] = []
+    lesson_questions: list[LessonQuestionResponse] = []

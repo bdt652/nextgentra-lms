@@ -30,6 +30,7 @@ from app.api import (
     classes_router,
     courses_router,
     exams_router,
+    lesson_questions_router,
     lessons_router,
     sections_router,
     student_portal_router,
@@ -147,6 +148,7 @@ app.include_router(categories_router)
 app.include_router(courses_router)
 app.include_router(sections_router)
 app.include_router(lessons_router)
+app.include_router(lesson_questions_router)
 app.include_router(exams_router)
 app.include_router(classes_router)
 app.include_router(class_members_router)

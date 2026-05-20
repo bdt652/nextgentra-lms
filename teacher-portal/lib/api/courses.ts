@@ -3,6 +3,7 @@ import type {
   CourseDetail,
   Lesson,
   LessonAttachment,
+  LessonQuestionItem,
   Section,
 } from '../types';
 import { apiFetch } from './client';
@@ -175,6 +176,52 @@ export async function deleteAttachment(
     { method: 'DELETE' },
   );
   return handleResponse<void>(res);
+}
+
+// ─── Lesson Questions ─────────────────────────────────────────────────────────
+
+export async function addLessonQuestions(
+  courseId: string,
+  lessonId: string,
+  questionIds: string[],
+): Promise<LessonQuestionItem[]> {
+  const res = await apiFetch(
+    `/courses/${courseId}/lessons/${lessonId}/questions`,
+    {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ question_ids: questionIds }),
+    },
+  );
+  return handleResponse<LessonQuestionItem[]>(res);
+}
+
+export async function removeLessonQuestion(
+  courseId: string,
+  lessonId: string,
+  questionId: string,
+): Promise<void> {
+  const res = await apiFetch(
+    `/courses/${courseId}/lessons/${lessonId}/questions/${questionId}`,
+    { method: 'DELETE' },
+  );
+  return handleResponse<void>(res);
+}
+
+export async function reorderLessonQuestions(
+  courseId: string,
+  lessonId: string,
+  items: { id: string; order: number }[],
+): Promise<LessonQuestionItem[]> {
+  const res = await apiFetch(
+    `/courses/${courseId}/lessons/${lessonId}/questions/reorder`,
+    {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ items }),
+    },
+  );
+  return handleResponse<LessonQuestionItem[]>(res);
 }
 
 // ─── Sections ────────────────────────────────────────────────────────────────

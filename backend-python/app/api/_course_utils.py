@@ -7,12 +7,23 @@ from fastapi import HTTPException, status
 from app.schemas.category import CategorySummary
 from app.schemas.course import CourseResponse
 from app.schemas.lesson import LessonAttachmentResponse, LessonResponse
+from app.schemas.lesson_question import LessonQuestionResponse, QuestionBrief
 from app.schemas.section import SectionResponse
 from prisma.types import CourseInclude, LessonInclude
 
 _COURSE_INCLUDE: CourseInclude = {"lessons": True, "category": True}
 
 _LESSON_INCLUDE: LessonInclude = {"attachments": True, "prerequisites": True}
+
+# Full include used for single-lesson get/update — includes questions with exam info
+_LESSON_FULL_INCLUDE = {
+    "attachments": True,
+    "prerequisites": True,
+    "lesson_questions": {
+        "include": {"question": {"include": {"exam": True}}},
+        "order_by": {"order": "asc"},
+    },
+}
 
 _SECTION_LESSON_INCLUDE = {
     "include": {
@@ -45,6 +56,24 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
         )
         for a in (l.attachments or [])  # type: ignore[attr-defined]
     ]
+    lesson_questions = [
+        LessonQuestionResponse(
+            id=lq.id,
+            lesson_id=lq.lesson_id,
+            question_id=lq.question_id,
+            order=lq.order,
+            created_at=lq.created_at,
+            question=QuestionBrief(
+                id=lq.question.id,
+                content=lq.question.content,
+                type=lq.question.type.value,
+                points=lq.question.points,
+                exam_id=lq.question.exam_id,
+                exam_title=lq.question.exam.title if lq.question.exam else None,
+            ),
+        )
+        for lq in (getattr(l, "lesson_questions", None) or [])
+    ]
     return LessonResponse(
         id=l.id,  # type: ignore[attr-defined]
         title=l.title,  # type: ignore[attr-defined]
@@ -60,6 +89,7 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
         created_at=l.created_at,  # type: ignore[attr-defined]
         updated_at=l.updated_at,  # type: ignore[attr-defined]
         attachments=attachments,
+        lesson_questions=lesson_questions,
     )
 
 

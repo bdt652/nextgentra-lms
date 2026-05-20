@@ -53,6 +53,22 @@ export interface LessonAttachment {
   created_at: string;
 }
 
+export interface LessonQuestionItem {
+  id: string;
+  lesson_id: string;
+  question_id: string;
+  order: number;
+  created_at: string;
+  question: {
+    id: string;
+    content: string;
+    type: string;
+    points: number;
+    exam_id: string;
+    exam_title: string | null;
+  };
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -66,6 +82,7 @@ export interface Lesson {
   created_at: string;
   updated_at: string;
   attachments: LessonAttachment[];
+  lesson_questions: LessonQuestionItem[];
 }
 
 export interface Section {

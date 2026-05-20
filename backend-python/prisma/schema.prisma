@@ -122,22 +122,23 @@ model Section {
 }
 
 model Lesson {
-  id             String               @id @default(uuid())
-  title          String
-  content        String?
-  video_url      String?
-  order          Int                  @default(0)
-  course_id      String
-  course         Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  section_id     String?
-  section        Section?             @relation(fields: [section_id], references: [id], onDelete: SetNull)
-  is_published   Boolean              @default(false)
-  created_at     DateTime             @default(now())
-  updated_at     DateTime             @updatedAt
-  attachments    LessonAttachment[]
-  progresses     LessonProgress[]
-  prerequisites  LessonPrerequisite[] @relation("HasPrerequisites")
-  is_prereq_of   LessonPrerequisite[] @relation("IsPrerequisiteOf")
+  id               String               @id @default(uuid())
+  title            String
+  content          String?
+  video_url        String?
+  order            Int                  @default(0)
+  course_id        String
+  course           Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  section_id       String?
+  section          Section?             @relation(fields: [section_id], references: [id], onDelete: SetNull)
+  is_published     Boolean              @default(false)
+  created_at       DateTime             @default(now())
+  updated_at       DateTime             @updatedAt
+  attachments      LessonAttachment[]
+  progresses       LessonProgress[]
+  prerequisites    LessonPrerequisite[] @relation("HasPrerequisites")
+  is_prereq_of     LessonPrerequisite[] @relation("IsPrerequisiteOf")
+  lesson_questions LessonQuestion[]
 
   @@index([course_id])
   @@index([section_id])
@@ -186,19 +187,34 @@ model Exam {
 }
 
 model Question {
-  id             String       @id @default(uuid())
-  exam_id        String
-  exam           Exam         @relation(fields: [exam_id], references: [id], onDelete: Cascade)
-  content        String
-  type           QuestionType
-  options        Json?
-  correct_answer String?
-  code_template  String?
-  test_cases     Json?
-  points         Float        @default(1)
-  order          Int          @default(0)
+  id               String         @id @default(uuid())
+  exam_id          String
+  exam             Exam           @relation(fields: [exam_id], references: [id], onDelete: Cascade)
+  content          String
+  type             QuestionType
+  options          Json?
+  correct_answer   String?
+  code_template    String?
+  test_cases       Json?
+  points           Float          @default(1)
+  order            Int            @default(0)
+  lesson_questions LessonQuestion[]
 
   @@index([exam_id])
+}
+
+model LessonQuestion {
+  id          String   @id @default(uuid())
+  lesson_id   String
+  lesson      Lesson   @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  question_id String
+  question    Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  order       Int      @default(0)
+  created_at  DateTime @default(now())
+
+  @@unique([lesson_id, question_id])
+  @@index([lesson_id])
+  @@index([question_id])
 }
 
 model Classroom {
