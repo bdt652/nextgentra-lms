@@ -61,7 +61,7 @@ async def create_lesson(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
 
     if data.order is None:
         count = await prisma.lesson.count(where={"course_id": course_id})
@@ -123,7 +123,7 @@ async def update_lesson(
 
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     update_data: LessonUpdateInput = {}
     if data.title is not None:
@@ -172,7 +172,7 @@ async def delete_lesson(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
     await prisma.lesson.delete(where={"id": lesson_id})
 
 
@@ -186,7 +186,7 @@ async def reorder_lessons(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
 
     for item in data.items:
         await prisma.lesson.update(
@@ -224,7 +224,7 @@ async def add_attachment(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     att = await prisma.lessonattachment.create(
         data={
@@ -259,5 +259,5 @@ async def delete_attachment(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Attachment not found")
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
     await prisma.lessonattachment.delete(where={"id": attachment_id})

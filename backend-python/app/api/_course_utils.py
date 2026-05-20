@@ -1,10 +1,13 @@
 """Shared helpers for courses, sections and lessons routers."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from fastapi import HTTPException, status
 
 from app.schemas.category import CategorySummary
+
+if TYPE_CHECKING:
+    from app.dependencies.auth import CurrentUser
 from app.schemas.course import CourseResponse
 from app.schemas.lesson import LessonAttachmentResponse, LessonResponse
 from app.schemas.lesson_question import LessonQuestionResponse, QuestionBrief
@@ -66,7 +69,7 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
             question=QuestionBrief(
                 id=lq.question.id,
                 content=lq.question.content,
-                type=lq.question.type.value,
+                type=lq.question.type,
                 points=lq.question.points,
                 exam_id=lq.question.exam_id,
                 exam_title=lq.question.exam.title if lq.question.exam else None,
@@ -125,8 +128,10 @@ def _course_to_response(c: object) -> CourseResponse:
     )
 
 
-def _require_owner(teacher_id: str, current_user_id: str) -> None:
-    if teacher_id != current_user_id:
+def _require_owner(teacher_id: str, current_user: "CurrentUser") -> None:
+    if "admin:access" in current_user.permissions:
+        return
+    if teacher_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only the course owner can perform this action",

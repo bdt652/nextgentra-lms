@@ -55,7 +55,7 @@ export function AddQuestionsDialog({
   // Load exam list whenever dialog opens; setState only in callbacks
   useEffect(() => {
     if (!open) return;
-    listExams(true)
+    listExams()
       .then(setExams)
       .catch(() => setError('Không thể tải danh sách đề'))
       .finally(() => setLoadingExams(false));

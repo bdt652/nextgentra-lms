@@ -63,7 +63,7 @@ async def add_lesson_questions(
     await _get_lesson_or_404(course_id, lesson_id, prisma)
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     if not data.question_ids:
         raise HTTPException(
@@ -112,7 +112,7 @@ async def remove_lesson_question(
     await _get_lesson_or_404(course_id, lesson_id, prisma)
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     lq = await prisma.lessonquestion.find_first(
         where={"lesson_id": lesson_id, "question_id": question_id}
@@ -136,7 +136,7 @@ async def reorder_lesson_questions(
     await _get_lesson_or_404(course_id, lesson_id, prisma)
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     for item in data.items:
         await prisma.lessonquestion.update(

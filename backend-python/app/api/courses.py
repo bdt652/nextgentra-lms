@@ -124,7 +124,7 @@ async def update_course(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
 
     update_data: CourseUpdateInput = {}
     if data.title is not None:
@@ -155,7 +155,7 @@ async def delete_course(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
     await prisma.course.delete(where={"id": course_id})
 
 
@@ -168,7 +168,7 @@ async def toggle_publish(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
     updated = await prisma.course.update(
         where={"id": course_id},
         data={"is_published": not course.is_published},

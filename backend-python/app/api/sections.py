@@ -41,7 +41,7 @@ async def create_section(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
 
     if data.order is None:
         count = await prisma.section.count(where={"course_id": course_id})
@@ -74,7 +74,7 @@ async def update_section(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Section not found")
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
 
     update_data: SectionUpdateInput = {}
     if data.title is not None:
@@ -106,7 +106,7 @@ async def delete_section(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Section not found")
     course = await prisma.course.find_unique(where={"id": course_id})
     if course:
-        _require_owner(course.teacher_id, current_user.id)
+        _require_owner(course.teacher_id, current_user)
     # onDelete: SetNull on Lesson.section automatically NULLs section_id in DB
     await prisma.section.delete(where={"id": section_id})
 
@@ -121,7 +121,7 @@ async def reorder_sections(
     course = await prisma.course.find_unique(where={"id": course_id})
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-    _require_owner(course.teacher_id, current_user.id)
+    _require_owner(course.teacher_id, current_user)
 
     for item in data.items:
         await prisma.section.update(
