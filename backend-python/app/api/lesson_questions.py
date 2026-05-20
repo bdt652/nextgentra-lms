@@ -11,6 +11,8 @@ from app.schemas.lesson_question import (
     LessonQuestionAddRequest,
     LessonQuestionReorderRequest,
     LessonQuestionResponse,
+    LessonQuestionUpdateRequest,
+    QuestionBrief,
 )
 
 router = APIRouter(prefix="/courses", tags=["lesson-questions"])
@@ -149,3 +151,69 @@ async def reorder_lesson_questions(
         include=_LESSON_FULL_INCLUDE,  # type: ignore[arg-type]
     )
     return _lesson_to_response(reloaded).lesson_questions
+
+
+@router.patch(
+    "/{course_id}/lessons/{lesson_id}/questions/{lq_id}",
+    response_model=LessonQuestionResponse,
+)
+async def update_lesson_question(
+    course_id: str,
+    lesson_id: str,
+    lq_id: str,
+    data: LessonQuestionUpdateRequest,
+    current_user: LessonEditor,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> LessonQuestionResponse:
+    await _get_lesson_or_404(course_id, lesson_id, prisma)
+    course = await prisma.course.find_unique(where={"id": course_id})
+    if course:
+        _require_owner(course.teacher_id, current_user)
+
+    lq = await prisma.lessonquestion.find_unique(where={"id": lq_id})
+    if not lq or lq.lesson_id != lesson_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not in lesson")
+
+    if data.is_extension is not None:
+        await prisma.lessonquestion.update(
+            where={"id": lq_id},
+            data={"is_extension": data.is_extension},
+        )
+
+    if data.prerequisite_ids is not None:
+        await prisma.lessonquestionprerequisite.delete_many(where={"lesson_question_id": lq_id})
+        if data.prerequisite_ids:
+            await prisma.lessonquestionprerequisite.create_many(
+                data=[
+                    {"lesson_question_id": lq_id, "prerequisite_id": pid}
+                    for pid in data.prerequisite_ids
+                ],
+                skip_duplicates=True,
+            )
+
+    reloaded = await prisma.lessonquestion.find_unique(
+        where={"id": lq_id},
+        include={
+            "question": {"include": {"exam": True}},
+            "prerequisites": True,
+        },
+    )
+    assert reloaded is not None
+    assert reloaded.question is not None
+    return LessonQuestionResponse(
+        id=reloaded.id,
+        lesson_id=reloaded.lesson_id,
+        question_id=reloaded.question_id,
+        order=reloaded.order,
+        is_extension=reloaded.is_extension,
+        prerequisite_ids=[p.prerequisite_id for p in (reloaded.prerequisites or [])],
+        created_at=reloaded.created_at,
+        question=QuestionBrief(
+            id=reloaded.question.id,
+            content=reloaded.question.content,
+            type=reloaded.question.type,
+            points=reloaded.question.points,
+            exam_id=reloaded.question.exam_id,
+            exam_title=reloaded.question.exam.title if reloaded.question.exam else None,
+        ),
+    )

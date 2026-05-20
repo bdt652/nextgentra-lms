@@ -58,6 +58,8 @@ export interface LessonQuestionItem {
   lesson_id: string;
   question_id: string;
   order: number;
+  is_extension: boolean;
+  prerequisite_ids: string[];
   created_at: string;
   question: {
     id: string;
@@ -76,6 +78,7 @@ export interface Lesson {
   video_url: string | null;
   order: number;
   is_published: boolean;
+  random_question_count: number | null;
   course_id: string;
   section_id: string | null;
   prerequisite_ids: string[];

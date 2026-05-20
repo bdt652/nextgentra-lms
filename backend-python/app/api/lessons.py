@@ -110,7 +110,7 @@ async def get_lesson(
 
 
 @router.patch("/{course_id}/lessons/{lesson_id}", response_model=LessonResponse)
-async def update_lesson(
+async def update_lesson(  # noqa: PLR0912
     course_id: str,
     lesson_id: str,
     data: LessonUpdate,
@@ -141,6 +141,8 @@ async def update_lesson(
             update_data["section"] = {"connect": {"id": data.section_id}}
         else:
             update_data["section"] = {"disconnect": True}
+    if "random_question_count" in data.model_fields_set:
+        update_data["random_question_count"] = data.random_question_count
     updated = await prisma.lesson.update(
         where={"id": lesson_id},
         data=update_data,

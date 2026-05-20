@@ -9,6 +9,7 @@ import {
   addAttachment,
   deleteAttachment,
   removeLessonQuestion,
+  updateLessonQuestion,
 } from '@/lib/api/courses';
 import type { Lesson, LessonAttachment, LessonQuestionItem } from '@/lib/types';
 import { Toast } from '@/components/Toast';
@@ -43,6 +44,10 @@ export default function LessonEditorPage() {
   const [addingAtt, setAddingAtt] = useState(false);
 
   const [questionDialogOpen, setQuestionDialogOpen] = useState(false);
+  const [prereqPanelId, setPrereqPanelId] = useState<string | null>(null);
+  const [editingRandomCount, setEditingRandomCount] = useState(false);
+  const [randomCountInput, setRandomCountInput] = useState(5);
+  const [savingRandomCount, setSavingRandomCount] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type });
@@ -129,6 +134,30 @@ export default function LessonEditorPage() {
     showToast(`Đã thêm ${newItems.length} câu hỏi`, 'success');
   };
 
+  const handleLessonUpdated = (updated: Lesson) => {
+    setLesson(updated);
+  };
+
+  const handleSaveRandomCount = async (n: number | null) => {
+    if (!lesson) return;
+    setSavingRandomCount(true);
+    try {
+      const updated = await updateLesson(courseId, lessonId, {
+        random_question_count: n,
+      });
+      setLesson(updated);
+      setEditingRandomCount(false);
+      showToast(
+        n === null ? 'Đã tắt hiển thị ngẫu nhiên' : `Đã lưu: ${n} câu/học sinh`,
+        'success',
+      );
+    } catch (e) {
+      showToast((e as Error).message, 'error');
+    } finally {
+      setSavingRandomCount(false);
+    }
+  };
+
   const handleRemoveQuestion = async (lq: LessonQuestionItem) => {
     if (!lesson) return;
     try {
@@ -136,6 +165,46 @@ export default function LessonEditorPage() {
       setLesson({
         ...lesson,
         lesson_questions: lesson.lesson_questions.filter((q) => q.id !== lq.id),
+      });
+    } catch (e) {
+      showToast((e as Error).message, 'error');
+    }
+  };
+
+  const handleToggleExtension = async (lq: LessonQuestionItem) => {
+    if (!lesson) return;
+    try {
+      const updated = await updateLessonQuestion(courseId, lessonId, lq.id, {
+        is_extension: !lq.is_extension,
+      });
+      setLesson({
+        ...lesson,
+        lesson_questions: lesson.lesson_questions.map((q) =>
+          q.id === lq.id ? updated : q,
+        ),
+      });
+    } catch (e) {
+      showToast((e as Error).message, 'error');
+    }
+  };
+
+  const handleTogglePrerequisite = async (
+    lq: LessonQuestionItem,
+    prereqId: string,
+  ) => {
+    if (!lesson) return;
+    const current = new Set(lq.prerequisite_ids);
+    if (current.has(prereqId)) current.delete(prereqId);
+    else current.add(prereqId);
+    try {
+      const updated = await updateLessonQuestion(courseId, lessonId, lq.id, {
+        prerequisite_ids: Array.from(current),
+      });
+      setLesson({
+        ...lesson,
+        lesson_questions: lesson.lesson_questions.map((q) =>
+          q.id === lq.id ? updated : q,
+        ),
       });
     } catch (e) {
       showToast((e as Error).message, 'error');
@@ -344,16 +413,95 @@ export default function LessonEditorPage() {
 
           {/* Lesson Questions */}
           <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3 dark:border-gray-700">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Câu hỏi bài học ({lesson.lesson_questions.length})
-              </h3>
-              <button
-                onClick={() => setQuestionDialogOpen(true)}
-                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-700"
-              >
-                + Thêm câu hỏi
-              </button>
+            <div className="border-b border-gray-100 px-5 py-3 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900 dark:text-white">
+                  Câu hỏi bài học ({lesson.lesson_questions.length})
+                </h3>
+                <button
+                  onClick={() => setQuestionDialogOpen(true)}
+                  className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-700"
+                >
+                  + Thêm câu hỏi
+                </button>
+              </div>
+              {lesson.lesson_questions.length > 0 && (
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                  {editingRandomCount ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-500">Mỗi HS thấy</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={lesson.lesson_questions.length}
+                        value={randomCountInput}
+                        onChange={(e) =>
+                          setRandomCountInput(
+                            Math.min(
+                              lesson.lesson_questions.length,
+                              Math.max(1, parseInt(e.target.value) || 1),
+                            ),
+                          )
+                        }
+                        className="w-14 rounded-lg border border-gray-300 px-2 py-0.5 text-xs focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      />
+                      <span className="text-xs text-gray-500">
+                        / {lesson.lesson_questions.length} câu
+                      </span>
+                      <button
+                        onClick={() => handleSaveRandomCount(randomCountInput)}
+                        disabled={savingRandomCount}
+                        className="rounded bg-indigo-600 px-2 py-0.5 text-xs text-white hover:bg-indigo-700 disabled:opacity-50"
+                      >
+                        Lưu
+                      </button>
+                      <button
+                        onClick={() => setEditingRandomCount(false)}
+                        className="rounded px-2 py-0.5 text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  ) : lesson.random_question_count !== null ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400">
+                        Mỗi HS thấy {lesson.random_question_count} /{' '}
+                        {lesson.lesson_questions.length} câu ngẫu nhiên
+                      </span>
+                      <button
+                        onClick={() => {
+                          setRandomCountInput(lesson.random_question_count!);
+                          setEditingRandomCount(true);
+                        }}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        onClick={() => handleSaveRandomCount(null)}
+                        className="text-xs text-red-400 hover:text-red-600"
+                      >
+                        Tắt
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setRandomCountInput(
+                          Math.max(
+                            1,
+                            Math.floor(lesson.lesson_questions.length / 2),
+                          ),
+                        );
+                        setEditingRandomCount(true);
+                      }}
+                      className="text-xs text-gray-400 hover:text-indigo-600"
+                    >
+                      + Bật hiển thị ngẫu nhiên
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {lesson.lesson_questions.length > 0 && (
@@ -361,35 +509,135 @@ export default function LessonEditorPage() {
                 {lesson.lesson_questions.map((lq, idx) => (
                   <li
                     key={lq.id}
-                    className="flex items-start gap-3 px-5 py-3 text-sm"
+                    className={
+                      lq.is_extension
+                        ? 'bg-amber-50 dark:bg-amber-900/10'
+                        : undefined
+                    }
                   >
-                    <span className="mt-0.5 shrink-0 text-xs text-gray-400">
-                      {idx + 1}.
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-gray-700 dark:text-gray-300">
-                        {lq.question.content}
-                      </p>
-                      <div className="mt-1 flex flex-wrap gap-1.5">
-                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                          {lq.question.type}
-                        </span>
-                        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                          {lq.question.points}đ
-                        </span>
-                        {lq.question.exam_title && (
-                          <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                            {lq.question.exam_title}
+                    {/* Main row */}
+                    <div className="flex items-start gap-2 px-5 py-3 text-sm">
+                      <span className="mt-0.5 shrink-0 text-xs text-gray-400">
+                        {idx + 1}.
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 text-gray-700 dark:text-gray-300">
+                          {lq.question.content}
+                        </p>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                            {lq.question.type}
                           </span>
+                          <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                            {lq.question.points}đ
+                          </span>
+                          {lq.question.exam_title && (
+                            <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                              {lq.question.exam_title}
+                            </span>
+                          )}
+                          {lq.is_extension && (
+                            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                              Mở rộng
+                            </span>
+                          )}
+                          {lq.prerequisite_ids.length > 0 && (
+                            <span className="rounded bg-purple-50 px-1.5 py-0.5 text-xs text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+                              Tiên quyết:{' '}
+                              {lq.prerequisite_ids
+                                .map((pid) => {
+                                  const i = lesson.lesson_questions.findIndex(
+                                    (q) => q.id === pid,
+                                  );
+                                  return i >= 0 ? i + 1 : '?';
+                                })
+                                .join(', ')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {/* Extension toggle */}
+                      <button
+                        onClick={() => handleToggleExtension(lq)}
+                        title={
+                          lq.is_extension ? 'Bỏ mở rộng' : 'Đánh dấu mở rộng'
+                        }
+                        className={`shrink-0 rounded px-1.5 py-0.5 text-xs ${
+                          lq.is_extension
+                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                            : 'text-gray-400 hover:text-amber-500'
+                        }`}
+                      >
+                        {lq.is_extension ? '★' : '☆'}
+                      </button>
+                      {/* Prereq toggle */}
+                      <button
+                        onClick={() =>
+                          setPrereqPanelId(
+                            prereqPanelId === lq.id ? null : lq.id,
+                          )
+                        }
+                        title="Cài đặt tiên quyết"
+                        className={`shrink-0 rounded px-1.5 py-0.5 text-xs ${
+                          lq.prerequisite_ids.length > 0
+                            ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                            : 'text-gray-400 hover:text-purple-500'
+                        }`}
+                      >
+                        ⛓{' '}
+                        {lq.prerequisite_ids.length > 0
+                          ? lq.prerequisite_ids.length
+                          : '–'}
+                      </button>
+                      <button
+                        onClick={() => handleRemoveQuestion(lq)}
+                        className="shrink-0 text-xs text-red-500 hover:underline"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                    {/* Prereq panel */}
+                    {prereqPanelId === lq.id && (
+                      <div className="border-t border-purple-100 bg-purple-50 px-5 pb-3 pt-2 dark:border-purple-900/30 dark:bg-purple-900/10">
+                        <p className="mb-1.5 text-xs font-medium text-purple-700 dark:text-purple-400">
+                          Tiên quyết — phải hoàn thành trước khi làm câu này:
+                        </p>
+                        {lesson.lesson_questions.filter((q) => q.id !== lq.id)
+                          .length === 0 ? (
+                          <p className="text-xs text-gray-400">
+                            Chưa có câu hỏi nào khác trong bài học.
+                          </p>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {lesson.lesson_questions.map((other, otherIdx) =>
+                              other.id === lq.id ? null : (
+                                <label
+                                  key={other.id}
+                                  className="flex cursor-pointer items-center gap-2 text-xs text-gray-700 dark:text-gray-300"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={lq.prerequisite_ids.includes(
+                                      other.id,
+                                    )}
+                                    onChange={() =>
+                                      handleTogglePrerequisite(lq, other.id)
+                                    }
+                                    className="h-3.5 w-3.5 rounded border-gray-300 text-purple-600"
+                                  />
+                                  <span className="font-medium">
+                                    {otherIdx + 1}.
+                                  </span>
+                                  <span className="line-clamp-1">
+                                    {other.question.content}
+                                  </span>
+                                </label>
+                              ),
+                            )}
+                          </div>
                         )}
                       </div>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveQuestion(lq)}
-                      className="shrink-0 text-xs text-red-500 hover:underline"
-                    >
-                      Xóa
-                    </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -414,6 +662,7 @@ export default function LessonEditorPage() {
           new Set(lesson.lesson_questions.map((lq) => lq.question_id))
         }
         onAdded={handleQuestionsAdded}
+        onLessonUpdated={handleLessonUpdated}
       />
 
       {toast && (

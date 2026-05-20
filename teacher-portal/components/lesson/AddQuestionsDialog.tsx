@@ -2,8 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { listExams, getExam } from '@/lib/api/exams';
-import { addLessonQuestions } from '@/lib/api/courses';
-import type { Exam, ExamDetail, LessonQuestionItem } from '@/lib/types';
+import { addLessonQuestions, updateLesson } from '@/lib/api/courses';
+import type {
+  Exam,
+  ExamDetail,
+  Lesson,
+  LessonQuestionItem,
+  Question,
+} from '@/lib/types';
 
 interface Props {
   open: boolean;
@@ -12,6 +18,7 @@ interface Props {
   lessonId: string;
   existingQuestionIds: Set<string>;
   onAdded: (items: LessonQuestionItem[]) => void;
+  onLessonUpdated?: (lesson: Lesson) => void;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -30,29 +37,31 @@ export function AddQuestionsDialog({
   lessonId,
   existingQuestionIds,
   onAdded,
+  onLessonUpdated,
 }: Props) {
   const [tab, setTab] = useState<'pick' | 'exam'>('pick');
 
   const [exams, setExams] = useState<Exam[]>([]);
-  // Initialize true so there's no flash of empty state on first open
   const [loadingExams, setLoadingExams] = useState(true);
   const [examCache, setExamCache] = useState<Record<string, ExamDetail>>({});
   const loadedIds = useRef(new Set<string>());
 
-  // Tab 1 state
-  const [filterExamId, setFilterExamId] = useState('all');
+  // ── Shared selection pool (used by both tabs) ─────────────────────────────
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [randomN, setRandomN] = useState(5);
 
-  // Tab 2 state
+  // Tab 1 filter
+  const [filterExamId, setFilterExamId] = useState('all');
+
+  // Tab 2 exam picker
   const [examId2, setExamId2] = useState('');
-  const [mode2, setMode2] = useState<'all' | 'random'>('all');
-  const [randomN2, setRandomN2] = useState(5);
+
+  // Per-student random setting
+  const [randomEnabled, setRandomEnabled] = useState(false);
+  const [randomN, setRandomN] = useState(5);
 
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load exam list whenever dialog opens; setState only in callbacks
   useEffect(() => {
     if (!open) return;
     listExams()
@@ -61,7 +70,7 @@ export function AddQuestionsDialog({
       .finally(() => setLoadingExams(false));
   }, [open]);
 
-  // Load exam details for tab 1 (all or filtered); setState only in callbacks
+  // Load exam questions for Tab 1 (all or filtered)
   useEffect(() => {
     if (!open || !exams.length) return;
     const toLoad =
@@ -85,7 +94,7 @@ export function AddQuestionsDialog({
       .catch(() => setError('Không thể tải câu hỏi'));
   }, [open, exams, filterExamId]);
 
-  // Load exam detail for tab 2; setState only in callbacks
+  // Load exam detail for Tab 2
   useEffect(() => {
     if (!examId2 || loadedIds.current.has(examId2)) return;
     getExam(examId2)
@@ -96,7 +105,6 @@ export function AddQuestionsDialog({
       .catch(() => setError('Không thể tải đề'));
   }, [examId2]);
 
-  // Derive loading states from cache presence (no synchronous setState in effects)
   const loadingQ = useMemo(() => {
     if (!open || !exams.length) return false;
     if (filterExamId === 'all') return exams.some((e) => !examCache[e.id]);
@@ -111,36 +119,49 @@ export function AddQuestionsDialog({
   );
 
   const questionsForTab1 = useMemo(() => {
-    if (filterExamId === 'all') {
+    if (filterExamId === 'all')
       return Object.values(examCache).flatMap((d) => d.questions);
-    }
     return examCache[filterExamId]?.questions ?? [];
   }, [filterExamId, examCache]);
+
+  const questionsForTab2 = useMemo(() => {
+    if (!examId2 || !examCache[examId2]) return [];
+    return examCache[examId2].questions;
+  }, [examId2, examCache]);
 
   const toggleQ = (id: string) =>
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
 
-  const handleRandom = () => {
-    const pool = questionsForTab1.filter(
-      (q) => !existingQuestionIds.has(q.id) && !selectedIds.has(q.id),
-    );
-    const picks = [...pool].sort(() => Math.random() - 0.5).slice(0, randomN);
+  // Tab 2 helpers: bulk select / deselect all available questions from current exam
+  const available2 = questionsForTab2.filter(
+    (q) => !existingQuestionIds.has(q.id),
+  );
+  const allExam2Selected =
+    available2.length > 0 && available2.every((q) => selectedIds.has(q.id));
+
+  const handleSelectAllFromExam = () => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      picks.forEach((q) => next.add(q.id));
+      available2.forEach((q) => next.add(q.id));
       return next;
     });
   };
 
-  const confirm1 = async () => {
+  const handleDeselectAllFromExam = () => {
+    const examQIds = new Set(questionsForTab2.map((q) => q.id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      examQIds.forEach((id) => next.delete(id));
+      return next;
+    });
+  };
+
+  const confirm = async () => {
     if (!selectedIds.size) return;
     setAdding(true);
     setError(null);
@@ -149,36 +170,12 @@ export function AddQuestionsDialog({
         ...selectedIds,
       ]);
       onAdded(result);
-      handleClose();
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  const confirm2 = async () => {
-    const detail = examCache[examId2];
-    if (!detail) return;
-    setAdding(true);
-    setError(null);
-    try {
-      const available = detail.questions.filter(
-        (q) => !existingQuestionIds.has(q.id),
-      );
-      const ids =
-        mode2 === 'all'
-          ? available.map((q) => q.id)
-          : [...available]
-              .sort(() => Math.random() - 0.5)
-              .slice(0, Math.min(randomN2, available.length))
-              .map((q) => q.id);
-      if (!ids.length) {
-        setError('Tất cả câu hỏi trong đề này đã được thêm');
-        return;
+      if (randomEnabled && randomN > 0 && onLessonUpdated) {
+        const updatedLesson = await updateLesson(courseId, lessonId, {
+          random_question_count: randomN,
+        });
+        onLessonUpdated(updatedLesson);
       }
-      const result = await addLessonQuestions(courseId, lessonId, ids);
-      onAdded(result);
       handleClose();
     } catch (e) {
       setError((e as Error).message);
@@ -191,22 +188,75 @@ export function AddQuestionsDialog({
     setTab('pick');
     setFilterExamId('all');
     setSelectedIds(new Set());
+    setRandomEnabled(false);
     setRandomN(5);
     setExamId2('');
-    setMode2('all');
-    setRandomN2(5);
     setError(null);
-    // Reset loading so next open shows the spinner while re-fetching
     setLoadingExams(true);
     onClose();
   };
 
   if (!open) return null;
 
-  const detail2 = examCache[examId2];
-  const available2 =
-    detail2?.questions.filter((q) => !existingQuestionIds.has(q.id)) ?? [];
-  const totalPts2 = available2.reduce((s, q) => s + q.points, 0);
+  const renderQuestionList = (qs: Question[], showExamBadge: boolean) => {
+    if (!qs.length)
+      return (
+        <p className="py-10 text-center text-sm text-gray-400">
+          Không có câu hỏi
+        </p>
+      );
+    return (
+      <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+        {qs.map((q) => {
+          const already = existingQuestionIds.has(q.id);
+          const checked = selectedIds.has(q.id);
+          return (
+            <li
+              key={q.id}
+              onClick={() => !already && toggleQ(q.id)}
+              className={`flex items-start gap-3 px-5 py-3 text-sm ${
+                already
+                  ? 'opacity-50'
+                  : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={already || checked}
+                disabled={already}
+                onChange={() => !already && toggleQ(q.id)}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-emerald-600"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="line-clamp-2 text-gray-800 dark:text-gray-200">
+                  {q.content}
+                </p>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                    {TYPE_LABELS[q.type] ?? q.type}
+                  </span>
+                  <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                    {q.points}đ
+                  </span>
+                  {showExamBadge && examMap[q.exam_id] && (
+                    <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                      {examMap[q.exam_id]}
+                    </span>
+                  )}
+                  {already && (
+                    <span className="rounded bg-purple-50 px-1.5 py-0.5 text-xs text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+                      Đã thêm
+                    </span>
+                  )}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
@@ -259,16 +309,13 @@ export function AddQuestionsDialog({
           </div>
         )}
 
-        {/* ── Tab 1: Pick questions ── */}
+        {/* ── Tab 1: Chọn từng câu ── */}
         {tab === 'pick' && (
           <>
             <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-gray-100 px-5 py-3 dark:border-gray-700">
               <select
                 value={filterExamId}
-                onChange={(e) => {
-                  setFilterExamId(e.target.value);
-                  setSelectedIds(new Set());
-                }}
+                onChange={(e) => setFilterExamId(e.target.value)}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               >
                 <option value="all">Tất cả đề</option>
@@ -278,26 +325,6 @@ export function AddQuestionsDialog({
                   </option>
                 ))}
               </select>
-
-              <div className="ml-auto flex items-center gap-2">
-                <span className="text-xs text-gray-500">Ngẫu nhiên</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={randomN}
-                  onChange={(e) =>
-                    setRandomN(Math.max(1, parseInt(e.target.value) || 1))
-                  }
-                  className="w-16 rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                />
-                <span className="text-xs text-gray-500">câu</span>
-                <button
-                  onClick={handleRandom}
-                  className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700"
-                >
-                  Lấy ngẫu nhiên
-                </button>
-              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto">
@@ -305,199 +332,106 @@ export function AddQuestionsDialog({
                 <p className="py-10 text-center text-sm text-gray-400">
                   Đang tải...
                 </p>
-              ) : questionsForTab1.length === 0 ? (
-                <p className="py-10 text-center text-sm text-gray-400">
-                  Không có câu hỏi
-                </p>
               ) : (
-                <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                  {questionsForTab1.map((q) => {
-                    const already = existingQuestionIds.has(q.id);
-                    const checked = selectedIds.has(q.id);
-                    return (
-                      <li
-                        key={q.id}
-                        onClick={() => !already && toggleQ(q.id)}
-                        className={`flex items-start gap-3 px-5 py-3 text-sm ${
-                          already
-                            ? 'opacity-50'
-                            : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={already || checked}
-                          disabled={already}
-                          onChange={() => !already && toggleQ(q.id)}
-                          onClick={(e) => e.stopPropagation()}
-                          className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-emerald-600"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="line-clamp-2 text-gray-800 dark:text-gray-200">
-                            {q.content}
-                          </p>
-                          <div className="mt-1 flex flex-wrap gap-1.5">
-                            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                              {TYPE_LABELS[q.type] ?? q.type}
-                            </span>
-                            <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                              {q.points}đ
-                            </span>
-                            {filterExamId === 'all' && examMap[q.exam_id] && (
-                              <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                                {examMap[q.exam_id]}
-                              </span>
-                            )}
-                            {already && (
-                              <span className="rounded bg-purple-50 px-1.5 py-0.5 text-xs text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
-                                Đã thêm
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                renderQuestionList(questionsForTab1, filterExamId === 'all')
               )}
-            </div>
-
-            <div className="flex shrink-0 items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-700">
-              <span className="text-sm text-gray-500">
-                Đã chọn {selectedIds.size} câu
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleClose}
-                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={confirm1}
-                  disabled={adding || !selectedIds.size}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  {adding ? 'Đang thêm...' : `Thêm ${selectedIds.size} câu`}
-                </button>
-              </div>
             </div>
           </>
         )}
 
-        {/* ── Tab 2: Whole exam ── */}
+        {/* ── Tab 2: Cả bộ đề ── */}
         {tab === 'exam' && (
           <>
-            <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Chọn bộ đề
-                </label>
-                <select
-                  value={examId2}
-                  onChange={(e) => setExamId2(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">-- Chọn bộ đề --</option>
-                  {exams.map((e) => (
-                    <option key={e.id} value={e.id}>
-                      {e.title} ({e.question_count} câu)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {examId2 &&
-                (loadingExam2 ? (
-                  <p className="text-sm text-gray-400">Đang tải đề...</p>
-                ) : (
-                  detail2 && (
-                    <>
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700/30">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {detail2.title}
-                        </p>
-                        <div className="mt-2 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
-                          <span>
-                            {available2.length} câu chưa thêm /{' '}
-                            {detail2.questions.length} câu
-                          </span>
-                          {totalPts2 > 0 && <span>Tổng {totalPts2}đ</span>}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-600">
-                          <input
-                            type="radio"
-                            name="mode2"
-                            value="all"
-                            checked={mode2 === 'all'}
-                            onChange={() => setMode2('all')}
-                            className="mt-0.5 h-4 w-4 text-emerald-600"
-                          />
-                          <div>
-                            <p className="font-medium text-gray-800 dark:text-gray-200">
-                              Thêm tất cả
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Thêm {available2.length} câu chưa có trong bài học
-                            </p>
-                          </div>
-                        </label>
-
-                        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm dark:border-gray-600">
-                          <input
-                            type="radio"
-                            name="mode2"
-                            value="random"
-                            checked={mode2 === 'random'}
-                            onChange={() => setMode2('random')}
-                            className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
-                          />
-                          <div className="flex flex-1 flex-wrap items-center gap-2">
-                            <div>
-                              <p className="font-medium text-gray-800 dark:text-gray-200">
-                                Ngẫu nhiên
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Lấy N câu ngẫu nhiên từ đề
-                              </p>
-                            </div>
-                            {mode2 === 'random' && (
-                              <div className="ml-auto flex items-center gap-1.5">
-                                <input
-                                  type="number"
-                                  min={1}
-                                  max={available2.length || 1}
-                                  value={randomN2}
-                                  onChange={(e) =>
-                                    setRandomN2(
-                                      Math.max(
-                                        1,
-                                        Math.min(
-                                          available2.length || 1,
-                                          parseInt(e.target.value) || 1,
-                                        ),
-                                      ),
-                                    )
-                                  }
-                                  className="w-16 rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                />
-                                <span className="text-xs text-gray-500">
-                                  / {available2.length} câu
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </label>
-                      </div>
-                    </>
-                  )
+            <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-gray-100 px-5 py-3 dark:border-gray-700">
+              <select
+                value={examId2}
+                onChange={(e) => setExamId2(e.target.value)}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">-- Chọn bộ đề --</option>
+                {exams.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.title} ({e.question_count} câu)
+                  </option>
                 ))}
+              </select>
+
+              {examId2 && !loadingExam2 && available2.length > 0 && (
+                <div className="ml-auto flex gap-2">
+                  {allExam2Selected ? (
+                    <button
+                      onClick={handleDeselectAllFromExam}
+                      className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+                    >
+                      Bỏ chọn tất cả
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSelectAllFromExam}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-700"
+                    >
+                      Chọn tất cả {available2.length} câu
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="flex shrink-0 items-center justify-end gap-2 border-t border-gray-100 px-5 py-3 dark:border-gray-700">
+            <div className="flex-1 overflow-y-auto">
+              {!examId2 ? (
+                <p className="py-10 text-center text-sm text-gray-400">
+                  Chọn bộ đề để xem câu hỏi
+                </p>
+              ) : loadingExam2 ? (
+                <p className="py-10 text-center text-sm text-gray-400">
+                  Đang tải đề...
+                </p>
+              ) : (
+                renderQuestionList(questionsForTab2, false)
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ── Shared footer ── */}
+        <div className="flex shrink-0 flex-col gap-2 border-t border-gray-100 px-5 py-3 dark:border-gray-700">
+          {selectedIds.size > 0 && (
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={randomEnabled}
+                onChange={(e) => setRandomEnabled(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600"
+              />
+              <span className="text-gray-600 dark:text-gray-400">
+                Mỗi học sinh thấy
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={selectedIds.size}
+                value={randomN}
+                disabled={!randomEnabled}
+                onChange={(e) =>
+                  setRandomN(
+                    Math.min(
+                      selectedIds.size,
+                      Math.max(1, parseInt(e.target.value) || 1),
+                    ),
+                  )
+                }
+                className="w-14 rounded-lg border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none disabled:opacity-40 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              <span className="text-gray-600 dark:text-gray-400">
+                / {selectedIds.size} câu ngẫu nhiên
+              </span>
+            </label>
+          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              Đã chọn {selectedIds.size} câu
+            </span>
+            <div className="flex gap-2">
               <button
                 onClick={handleClose}
                 className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
@@ -505,19 +439,15 @@ export function AddQuestionsDialog({
                 Hủy
               </button>
               <button
-                onClick={confirm2}
-                disabled={adding || !examId2 || !detail2 || !available2.length}
+                onClick={confirm}
+                disabled={adding || !selectedIds.size}
                 className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
               >
-                {adding
-                  ? 'Đang thêm...'
-                  : mode2 === 'all'
-                    ? `Thêm tất cả ${available2.length} câu`
-                    : `Thêm ${Math.min(randomN2, available2.length)} câu ngẫu nhiên`}
+                {adding ? 'Đang thêm...' : `Thêm ${selectedIds.size} câu`}
               </button>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );

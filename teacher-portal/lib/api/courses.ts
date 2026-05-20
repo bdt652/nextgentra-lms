@@ -118,6 +118,7 @@ export async function updateLesson(
     is_published?: boolean;
     section_id?: string | null;
     prerequisite_ids?: string[];
+    random_question_count?: number | null;
   },
 ): Promise<Lesson> {
   const res = await apiFetch(`/courses/${courseId}/lessons/${lessonId}`, {
@@ -222,6 +223,23 @@ export async function reorderLessonQuestions(
     },
   );
   return handleResponse<LessonQuestionItem[]>(res);
+}
+
+export async function updateLessonQuestion(
+  courseId: string,
+  lessonId: string,
+  lqId: string,
+  data: { is_extension?: boolean; prerequisite_ids?: string[] },
+): Promise<LessonQuestionItem> {
+  const res = await apiFetch(
+    `/courses/${courseId}/lessons/${lessonId}/questions/${lqId}`,
+    {
+      method: 'PATCH',
+      headers: JSON_HEADERS,
+      body: JSON.stringify(data),
+    },
+  );
+  return handleResponse<LessonQuestionItem>(res);
 }
 
 // ─── Sections ────────────────────────────────────────────────────────────────

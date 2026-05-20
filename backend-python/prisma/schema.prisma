@@ -131,10 +131,11 @@ model Lesson {
   course           Course               @relation(fields: [course_id], references: [id], onDelete: Cascade)
   section_id       String?
   section          Section?             @relation(fields: [section_id], references: [id], onDelete: SetNull)
-  is_published     Boolean              @default(false)
-  created_at       DateTime             @default(now())
-  updated_at       DateTime             @updatedAt
-  attachments      LessonAttachment[]
+  is_published          Boolean              @default(false)
+  random_question_count Int?
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+  attachments           LessonAttachment[]
   progresses       LessonProgress[]
   prerequisites    LessonPrerequisite[] @relation("HasPrerequisites")
   is_prereq_of     LessonPrerequisite[] @relation("IsPrerequisiteOf")
@@ -204,17 +205,33 @@ model Question {
 }
 
 model LessonQuestion {
-  id          String   @id @default(uuid())
-  lesson_id   String
-  lesson      Lesson   @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
-  question_id String
-  question    Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
-  order       Int      @default(0)
-  created_at  DateTime @default(now())
+  id           String   @id @default(uuid())
+  lesson_id    String
+  lesson       Lesson   @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  question_id  String
+  question     Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  order        Int      @default(0)
+  is_extension Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  prerequisites LessonQuestionPrerequisite[] @relation("gated_by")
+  required_by   LessonQuestionPrerequisite[] @relation("gates")
 
   @@unique([lesson_id, question_id])
   @@index([lesson_id])
   @@index([question_id])
+}
+
+model LessonQuestionPrerequisite {
+  id                 String         @id @default(uuid())
+  lesson_question_id String
+  lesson_question    LessonQuestion @relation("gated_by", fields: [lesson_question_id], references: [id], onDelete: Cascade)
+  prerequisite_id    String
+  prerequisite       LessonQuestion @relation("gates",    fields: [prerequisite_id],    references: [id], onDelete: Cascade)
+
+  @@unique([lesson_question_id, prerequisite_id])
+  @@index([lesson_question_id])
+  @@index([prerequisite_id])
 }
 
 model Classroom {

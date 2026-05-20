@@ -37,6 +37,7 @@ class LessonUpdate(BaseModel):
     is_published: Optional[bool] = None
     section_id: Optional[str] = None
     prerequisite_ids: Optional[list[str]] = None
+    random_question_count: Optional[int] = None
 
 
 class LessonReorderItem(BaseModel):
@@ -55,6 +56,7 @@ class LessonResponse(BaseModel):
     video_url: Optional[str]
     order: int
     is_published: bool
+    random_question_count: Optional[int] = None
     course_id: str
     section_id: Optional[str] = None
     prerequisite_ids: list[str] = []

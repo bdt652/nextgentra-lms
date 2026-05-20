@@ -19,12 +19,19 @@ class LessonQuestionResponse(BaseModel):
     lesson_id: str
     question_id: str
     order: int
+    is_extension: bool
+    prerequisite_ids: list[str]
     created_at: datetime
     question: QuestionBrief
 
 
 class LessonQuestionAddRequest(BaseModel):
     question_ids: list[str]
+
+
+class LessonQuestionUpdateRequest(BaseModel):
+    is_extension: bool | None = None
+    prerequisite_ids: list[str] | None = None
 
 
 class LessonQuestionReorderItem(BaseModel):

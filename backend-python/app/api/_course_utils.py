@@ -23,7 +23,10 @@ _LESSON_FULL_INCLUDE = {
     "attachments": True,
     "prerequisites": True,
     "lesson_questions": {
-        "include": {"question": {"include": {"exam": True}}},
+        "include": {
+            "question": {"include": {"exam": True}},
+            "prerequisites": True,
+        },
         "order_by": {"order": "asc"},
     },
 }
@@ -65,6 +68,10 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
             lesson_id=lq.lesson_id,
             question_id=lq.question_id,
             order=lq.order,
+            is_extension=lq.is_extension,
+            prerequisite_ids=[
+                p.prerequisite_id for p in (getattr(lq, "prerequisites", None) or [])
+            ],
             created_at=lq.created_at,
             question=QuestionBrief(
                 id=lq.question.id,
@@ -84,6 +91,7 @@ def _lesson_to_response(l: object) -> LessonResponse:  # noqa: E741
         video_url=l.video_url,  # type: ignore[attr-defined]
         order=l.order,  # type: ignore[attr-defined]
         is_published=l.is_published,  # type: ignore[attr-defined]
+        random_question_count=l.random_question_count,  # type: ignore[attr-defined]
         course_id=l.course_id,  # type: ignore[attr-defined]
         section_id=l.section_id,  # type: ignore[attr-defined]
         prerequisite_ids=[
