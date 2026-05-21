@@ -1,7 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { usePermission } from '@/lib/hooks/usePermission';
+import { useAuthStore } from '@/lib/store/authStore';
+import { logoutTeacher } from '@/lib/api/auth';
+import { clearAuthCookies } from '@/lib/utils/authCookies';
 
 interface NavItem {
   href: string;
@@ -19,6 +23,8 @@ interface TeacherInfo {
 interface SidebarProps {
   teacher: TeacherInfo | null | undefined;
   pathname: string;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 function PlusIcon() {
@@ -147,7 +153,7 @@ function HomeIcon() {
   );
 }
 
-const NAV_ITEMS: NavItem[] = [
+const MAIN_NAV: NavItem[] = [
   {
     href: '/dashboard',
     label: 'Tổng quan',
@@ -162,7 +168,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: '/exams',
-    label: 'Thư viện đề thi',
+    label: 'Thư viện câu hỏi',
     icon: <FileTextIcon />,
     permission: 'exam:read',
   },
@@ -172,6 +178,9 @@ const NAV_ITEMS: NavItem[] = [
     icon: <UsersIcon />,
     permission: 'class:read',
   },
+];
+
+const ADMIN_NAV: NavItem[] = [
   {
     href: '/admin',
     label: 'Quản trị',
@@ -204,9 +213,11 @@ const NAV_ITEMS: NavItem[] = [
 function NavLink({
   item,
   currentPath,
+  onClick,
 }: {
   item: NavItem;
   currentPath: string;
+  onClick?: () => void;
 }) {
   const hasPermission = usePermission(item.permission ?? '');
   if (item.permission && !hasPermission) return null;
@@ -218,6 +229,7 @@ function NavLink({
   return (
     <Link
       href={item.href}
+      onClick={onClick}
       className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
         item.sublevel ? 'ml-4 text-xs' : 'text-sm font-medium'
       } ${
@@ -232,54 +244,167 @@ function NavLink({
   );
 }
 
-export function Sidebar({ teacher, pathname }: SidebarProps) {
+function AdminNavSection({
+  pathname,
+  onNavClick,
+}: {
+  pathname: string;
+  onNavClick?: () => void;
+}) {
+  const hasAdmin = usePermission('admin:access');
+  if (!hasAdmin) return null;
   return (
-    <aside className="hidden w-56 shrink-0 border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 md:flex md:flex-col">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-gray-200 px-4 dark:border-gray-700">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white shadow">
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <div className="space-y-1">
+      <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+        Administrator
+      </p>
+      {ADMIN_NAV.map((item) => (
+        <NavLink
+          key={item.href}
+          item={item}
+          currentPath={pathname}
+          onClick={onNavClick}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function Sidebar({
+  teacher,
+  pathname,
+  mobileOpen = false,
+  onMobileClose,
+}: SidebarProps) {
+  const router = useRouter();
+  const logout = useAuthStore((s) => s.logout);
+  const refresh_token = useAuthStore((s) => s.refresh_token);
+
+  const handleLogout = async () => {
+    try {
+      if (refresh_token) {
+        await logoutTeacher(refresh_token);
+      }
+    } finally {
+      clearAuthCookies();
+      logout();
+      router.push('/login');
+    }
+  };
+
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={onMobileClose}
+        />
+      )}
+
+      <aside
+        className={`flex flex-col border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-200 md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:translate-x-0 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Logo */}
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white shadow">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+              NextGenTra LMS
+            </span>
+          </div>
+          {/* Close button — mobile only */}
+          <button
+            onClick={onMobileClose}
+            className="rounded-lg p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 md:hidden"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-            />
-          </svg>
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-          NextGenTra LMS
-        </span>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.href} item={item} currentPath={pathname} />
-        ))}
-      </nav>
+        {/* Main navigation — scrollable */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <div className="space-y-1">
+            {MAIN_NAV.map((item) => (
+              <NavLink
+                key={item.href}
+                item={item}
+                currentPath={pathname}
+                onClick={onMobileClose}
+              />
+            ))}
+          </div>
+        </nav>
 
-      {/* Teacher profile */}
-      <div className="border-t border-gray-200 p-3 dark:border-gray-700">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-            {teacher?.name?.charAt(0).toUpperCase() ?? 'T'}
+        {/* Bottom section: admin + profile + logout */}
+        <div className="shrink-0 border-t border-gray-200 px-3 pb-3 pt-2 dark:border-gray-700">
+          <AdminNavSection pathname={pathname} onNavClick={onMobileClose} />
+
+          {/* Teacher profile */}
+          <div className="mt-3 flex items-center gap-3 rounded-lg px-1 py-1">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              {teacher?.name?.charAt(0).toUpperCase() ?? 'T'}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                {teacher?.name}
+              </p>
+              <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                {teacher?.role ?? 'Giáo viên'}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-              {teacher?.name}
-            </p>
-            <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-              {teacher?.role ?? 'Giáo viên'}
-            </p>
-          </div>
+
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Đăng xuất
+          </button>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

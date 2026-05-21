@@ -10,6 +10,8 @@ from app.core.database import Prisma
 from app.schemas.category import CategorySummary
 from app.schemas.class_ import ClassResponse
 
+_TA_ROLE = "ta"
+
 
 def _generate_class_code(length: int = 8) -> str:
     alphabet = string.ascii_uppercase + string.digits
@@ -60,4 +62,19 @@ def _require_class_member(cls: object, current_user_id: str) -> None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not a member of this class",
+        )
+
+
+def _get_user_class_role(cls: object, user_id: str) -> Optional[str]:
+    for t in cls.teachers or []:  # type: ignore[attr-defined]
+        if t.teacher_id == user_id:
+            return str(t.role)
+    return None
+
+
+def _require_not_ta(cls: object, user_id: str) -> None:
+    if _get_user_class_role(cls, user_id) == _TA_ROLE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Teaching assistants have read-only access to this class",
         )

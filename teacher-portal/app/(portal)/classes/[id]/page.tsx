@@ -10,16 +10,24 @@ import {
   removeStudent,
   assignCourse,
   unassignCourse,
+  reorderCourses,
   assignExam,
+  updateClassExam,
   unassignExam,
+  reorderExams,
   addTeacher,
   removeTeacher,
+  updateTeacherRole,
 } from '@/lib/api/classes';
+import { useAuthStore } from '@/lib/store/authStore';
 import { listCourses } from '@/lib/api/courses';
-import { listExams } from '@/lib/api/exams';
-import type { ClassDetail, ClassEnrollment, Course, Exam } from '@/lib/types';
+import { listExams, updateExam } from '@/lib/api/exams';
+import type { ClassDetail, ClassExam, Course, Exam } from '@/lib/types';
 import { Toast } from '@/components/Toast';
 import { Dialog } from '@/components/Dialog';
+import { StudentsTab } from './StudentsTab';
+import { TeachersTab } from './TeachersTab';
+import { EditClassDialog } from './EditClassDialog';
 
 type Tab = 'students' | 'courses' | 'exams' | 'teachers';
 
@@ -28,6 +36,7 @@ export default function ClassDetailPage() {
   const canUpdate = usePermission('class:update');
   const canManageStudents = usePermission('class:manage_students');
   const canManageCourses = usePermission('class:manage_courses');
+  const currentTeacherId = useAuthStore((s) => s.teacher?.id);
 
   const [cls, setCls] = useState<ClassDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,14 +57,37 @@ export default function ClassDetailPage() {
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [assigningCourse, setAssigningCourse] = useState(false);
 
-  // Assign exam picker
+  // Exam tab state
   const [availableExams, setAvailableExams] = useState<Exam[]>([]);
-  const [selectedExamId, setSelectedExamId] = useState('');
-  const [assigningExam, setAssigningExam] = useState(false);
 
-  // Add teacher
-  const [addTeacherId, setAddTeacherId] = useState('');
-  const [addingTeacher, setAddingTeacher] = useState(false);
+  // Assign exam dialog
+  const [showCreateExam, setShowCreateExam] = useState(false);
+  const [createSourceId, setCreateSourceId] = useState('');
+  const [createDisplayName, setCreateDisplayName] = useState('');
+  const [createDuration, setCreateDuration] = useState('');
+  const [createPassScore, setCreatePassScore] = useState('');
+  const [createShuffle, setCreateShuffle] = useState(false);
+  const [createQuestionLimit, setCreateQuestionLimit] = useState('');
+  const [createStartTime, setCreateStartTime] = useState('');
+  const [createEndTime, setCreateEndTime] = useState('');
+  const [creatingExam, setCreatingExam] = useState(false);
+
+  // Edit exam settings dialog
+  const [editingClassExam, setEditingClassExam] = useState<ClassExam | null>(
+    null,
+  );
+  const [editDisplayName, setEditDisplayName] = useState('');
+  const [editExamDuration, setEditExamDuration] = useState('');
+  const [editExamPassScore, setEditExamPassScore] = useState('');
+  const [editShuffle, setEditShuffle] = useState(false);
+  const [editQuestionLimit, setEditQuestionLimit] = useState('');
+  const [savingExamSettings, setSavingExamSettings] = useState(false);
+
+  // Drag-and-drop
+  const [dragCourseIdx, setDragCourseIdx] = useState<number | null>(null);
+  const [overCourseIdx, setOverCourseIdx] = useState<number | null>(null);
+  const [dragExamIdx, setDragExamIdx] = useState<number | null>(null);
+  const [overExamIdx, setOverExamIdx] = useState<number | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type });
@@ -130,23 +162,97 @@ export default function ClassDetailPage() {
     }
   };
 
-  const handleAssignExam = async () => {
-    if (!cls || !selectedExamId) return;
-    setAssigningExam(true);
+  const closeCreateExamDialog = () => {
+    setShowCreateExam(false);
+    setCreateSourceId('');
+    setCreateDisplayName('');
+    setCreateDuration('');
+    setCreatePassScore('');
+    setCreateShuffle(false);
+    setCreateQuestionLimit('');
+    setCreateStartTime('');
+    setCreateEndTime('');
+  };
+
+  const handleAssignClassExam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cls || !createSourceId) return;
+    setCreatingExam(true);
     try {
-      const ce = await assignExam(cls.id, { exam_id: selectedExamId });
+      if (createDuration || createPassScore) {
+        await updateExam(createSourceId, {
+          duration: createDuration ? parseInt(createDuration) : undefined,
+          pass_score: createPassScore ? parseFloat(createPassScore) : undefined,
+        });
+      }
+      const ce = await assignExam(cls.id, {
+        exam_id: createSourceId,
+        display_name: createDisplayName.trim() || undefined,
+        shuffle_questions: createShuffle,
+        question_limit: createQuestionLimit
+          ? parseInt(createQuestionLimit)
+          : undefined,
+        start_time: createStartTime || undefined,
+        end_time: createEndTime || undefined,
+      });
       setCls((prev) => (prev ? { ...prev, exams: [...prev.exams, ce] } : prev));
-      setSelectedExamId('');
-      showToast('Đã gán đề thi', 'success');
+      closeCreateExamDialog();
+      showToast('Đã gán bài kiểm tra', 'success');
     } catch (err) {
       showToast((err as Error).message, 'error');
     } finally {
-      setAssigningExam(false);
+      setCreatingExam(false);
+    }
+  };
+
+  const openEditExamSettings = (ce: ClassExam) => {
+    setEditingClassExam(ce);
+    setEditDisplayName(ce.display_name ?? '');
+    setEditExamDuration(ce.duration ? String(ce.duration) : '');
+    setEditExamPassScore('');
+    setEditShuffle(ce.shuffle_questions);
+    setEditQuestionLimit(ce.question_limit ? String(ce.question_limit) : '');
+  };
+
+  const handleSaveExamSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingClassExam || !cls) return;
+    setSavingExamSettings(true);
+    try {
+      if (editExamDuration || editExamPassScore) {
+        await updateExam(editingClassExam.exam_id, {
+          duration: editExamDuration ? parseInt(editExamDuration) : undefined,
+          pass_score: editExamPassScore
+            ? parseFloat(editExamPassScore)
+            : undefined,
+        });
+      }
+      const updated = await updateClassExam(cls.id, editingClassExam.exam_id, {
+        display_name: editDisplayName.trim() || null,
+        shuffle_questions: editShuffle,
+        question_limit: editQuestionLimit ? parseInt(editQuestionLimit) : null,
+      });
+      setCls((prev) =>
+        prev
+          ? {
+              ...prev,
+              exams: prev.exams.map((e) =>
+                e.exam_id === editingClassExam.exam_id ? updated : e,
+              ),
+            }
+          : prev,
+      );
+      setEditingClassExam(null);
+      showToast('Đã cập nhật cài đặt', 'success');
+    } catch (err) {
+      showToast((err as Error).message, 'error');
+    } finally {
+      setSavingExamSettings(false);
     }
   };
 
   const handleUnassignExam = async (examId: string) => {
-    if (!cls || !confirm('Gỡ đề thi khỏi lớp?')) return;
+    if (!cls || !confirm('Gỡ bài kiểm tra khỏi lớp?')) return;
     try {
       await unassignExam(cls.id, examId);
       setCls((prev) =>
@@ -154,33 +260,78 @@ export default function ClassDetailPage() {
           ? { ...prev, exams: prev.exams.filter((e) => e.exam_id !== examId) }
           : prev,
       );
-      showToast('Đã gỡ đề thi', 'success');
+      showToast('Đã gỡ bài kiểm tra', 'success');
     } catch (err) {
       showToast((err as Error).message, 'error');
     }
   };
 
-  const handleAddTeacher = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cls || !addTeacherId.trim()) return;
-    setAddingTeacher(true);
+  const handleAddTeacher = async (
+    teacher: { id: string; name: string },
+    role: 'assistant' | 'ta',
+  ) => {
+    if (!cls) return;
+    const ct = await addTeacher(cls.id, teacher.id, role);
+    setCls((prev) =>
+      prev
+        ? {
+            ...prev,
+            teachers: [...prev.teachers, ct],
+            teacher_count: prev.teacher_count + 1,
+          }
+        : prev,
+    );
+    showToast(`Đã thêm ${ct.name}`, 'success');
+  };
+
+  const handleUpdateTeacherRole = async (
+    teacherId: string,
+    role: 'assistant' | 'ta',
+  ) => {
+    if (!cls) return;
+    const updated = await updateTeacherRole(cls.id, teacherId, role);
+    setCls((prev) =>
+      prev
+        ? {
+            ...prev,
+            teachers: prev.teachers.map((t) =>
+              t.teacher_id === teacherId ? { ...t, role: updated.role } : t,
+            ),
+          }
+        : prev,
+    );
+    showToast('Đã cập nhật vai trò', 'success');
+  };
+
+  const handleDropCourse = async (fromIdx: number, toIdx: number) => {
+    if (!cls || fromIdx === toIdx) return;
+    const reordered = [...cls.courses];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setCls((prev) => (prev ? { ...prev, courses: reordered } : prev));
     try {
-      const ct = await addTeacher(cls.id, addTeacherId.trim());
-      setCls((prev) =>
-        prev
-          ? {
-              ...prev,
-              teachers: [...prev.teachers, ct],
-              teacher_count: prev.teacher_count + 1,
-            }
-          : prev,
+      await reorderCourses(
+        cls.id,
+        reordered.map((c) => c.id),
       );
-      setAddTeacherId('');
-      showToast(`Đã thêm giáo viên ${ct.name}`, 'success');
-    } catch (err) {
-      showToast((err as Error).message, 'error');
-    } finally {
-      setAddingTeacher(false);
+    } catch {
+      showToast('Không thể lưu thứ tự', 'error');
+    }
+  };
+
+  const handleDropExam = async (fromIdx: number, toIdx: number) => {
+    if (!cls || fromIdx === toIdx) return;
+    const reordered = [...cls.exams];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setCls((prev) => (prev ? { ...prev, exams: reordered } : prev));
+    try {
+      await reorderExams(
+        cls.id,
+        reordered.map((e) => e.exam_id),
+      );
+    } catch {
+      showToast('Không thể lưu thứ tự', 'error');
     }
   };
 
@@ -225,11 +376,18 @@ export default function ClassDetailPage() {
       </div>
     );
 
+  const myClassRole =
+    cls.teachers.find((t) => t.teacher_id === currentTeacherId)?.role ?? null;
+  const isTA = myClassRole === 'ta';
+  const canManageTeachers = canUpdate && !isTA;
+  const canEditClass = canUpdate && !isTA;
+  const canManageStudentsInClass = canManageStudents && !isTA;
+  const canManageCoursesInClass = canManageCourses && !isTA;
   const assignedCourseIds = new Set(cls.courses.map((c) => c.id));
-  const assignedExamIds = new Set(cls.exams.map((e) => e.exam_id));
   const unassignedCourses = availableCourses.filter(
     (c) => !assignedCourseIds.has(c.id),
   );
+  const assignedExamIds = new Set(cls.exams.map((e) => e.exam_id));
   const unassignedExams = availableExams.filter(
     (e) => !assignedExamIds.has(e.id),
   );
@@ -279,7 +437,7 @@ export default function ClassDetailPage() {
             </button>
           </div>
         </div>
-        {canUpdate && (
+        {canEditClass && (
           <button
             onClick={() => {
               setEditName(cls.name);
@@ -299,7 +457,7 @@ export default function ClassDetailPage() {
           [
             { key: 'students', label: 'Học sinh' },
             { key: 'courses', label: 'Khóa học' },
-            { key: 'exams', label: 'Đề thi' },
+            { key: 'exams', label: 'Bài kiểm tra' },
             { key: 'teachers', label: 'Giáo viên' },
           ] as const
         ).map(({ key, label }) => (
@@ -323,7 +481,7 @@ export default function ClassDetailPage() {
         {tab === 'students' && (
           <StudentsTab
             classId={cls.id}
-            canManage={canManageStudents}
+            canManage={canManageStudentsInClass}
             onEnrolled={() =>
               setCls((prev) =>
                 prev
@@ -355,8 +513,36 @@ export default function ClassDetailPage() {
           <div>
             {cls.courses.length > 0 && (
               <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                {cls.courses.map((c) => (
-                  <li key={c.id} className="flex items-center gap-3 px-5 py-3">
+                {cls.courses.map((c, i) => (
+                  <li
+                    key={c.id}
+                    draggable={canManageCoursesInClass}
+                    onDragStart={() => setDragCourseIdx(i)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setOverCourseIdx(i);
+                    }}
+                    onDrop={() => {
+                      if (dragCourseIdx !== null)
+                        handleDropCourse(dragCourseIdx, i);
+                      setDragCourseIdx(null);
+                      setOverCourseIdx(null);
+                    }}
+                    onDragEnd={() => {
+                      setDragCourseIdx(null);
+                      setOverCourseIdx(null);
+                    }}
+                    className={`flex items-center gap-3 px-5 py-3 transition-colors ${
+                      overCourseIdx === i && dragCourseIdx !== i
+                        ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                        : ''
+                    } ${dragCourseIdx === i ? 'opacity-50' : ''}`}
+                  >
+                    {canManageCoursesInClass && (
+                      <span className="cursor-grab select-none text-gray-300 hover:text-gray-500 active:cursor-grabbing">
+                        ⠿
+                      </span>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
                         {c.title}
@@ -371,7 +557,7 @@ export default function ClassDetailPage() {
                     >
                       Xem
                     </Link>
-                    {canManageCourses && (
+                    {canManageCoursesInClass && (
                       <button
                         onClick={() => handleUnassignCourse(c.id)}
                         className="text-xs text-red-400 hover:text-red-600"
@@ -383,7 +569,7 @@ export default function ClassDetailPage() {
                 ))}
               </ul>
             )}
-            {canManageCourses && unassignedCourses.length > 0 && (
+            {canManageCoursesInClass && unassignedCourses.length > 0 && (
               <div className="flex items-center gap-2 border-t border-gray-100 p-4 dark:border-gray-700">
                 <select
                   value={selectedCourseId}
@@ -417,19 +603,62 @@ export default function ClassDetailPage() {
         {/* Exams tab */}
         {tab === 'exams' && (
           <div>
-            {cls.exams.length > 0 && (
+            {canEditClass && (
+              <div className="flex justify-end border-b border-gray-100 px-5 py-3 dark:border-gray-700">
+                <button
+                  onClick={() => setShowCreateExam(true)}
+                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                >
+                  + Gán bài kiểm tra
+                </button>
+              </div>
+            )}
+            {cls.exams.length > 0 ? (
               <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                {cls.exams.map((ce) => (
+                {cls.exams.map((ce, i) => (
                   <li
                     key={ce.exam_id}
-                    className="flex items-center gap-3 px-5 py-3"
+                    draggable={canEditClass}
+                    onDragStart={() => setDragExamIdx(i)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setOverExamIdx(i);
+                    }}
+                    onDrop={() => {
+                      if (dragExamIdx !== null) handleDropExam(dragExamIdx, i);
+                      setDragExamIdx(null);
+                      setOverExamIdx(null);
+                    }}
+                    onDragEnd={() => {
+                      setDragExamIdx(null);
+                      setOverExamIdx(null);
+                    }}
+                    className={`flex items-center gap-3 px-5 py-3 transition-colors ${
+                      overExamIdx === i && dragExamIdx !== i
+                        ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                        : ''
+                    } ${dragExamIdx === i ? 'opacity-50' : ''}`}
                   >
+                    {canEditClass && (
+                      <span className="cursor-grab select-none text-gray-300 hover:text-gray-500 active:cursor-grabbing">
+                        ⠿
+                      </span>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
-                        {ce.title}
+                        {ce.display_name ?? ce.title}
                       </p>
-                      <div className="flex gap-3 text-xs text-gray-400">
+                      {ce.display_name && (
+                        <p className="truncate text-xs text-gray-400">
+                          {ce.title}
+                        </p>
+                      )}
+                      <div className="mt-0.5 flex flex-wrap gap-2 text-xs text-gray-400">
                         {ce.duration && <span>{ce.duration} phút</span>}
+                        {ce.question_limit && (
+                          <span>{ce.question_limit} câu</span>
+                        )}
+                        {ce.shuffle_questions && <span>Trộn câu</span>}
                         {ce.start_time && (
                           <span>
                             Từ{' '}
@@ -452,44 +681,28 @@ export default function ClassDetailPage() {
                     >
                       Xem
                     </Link>
-                    {canManageCourses && (
-                      <button
-                        onClick={() => handleUnassignExam(ce.exam_id)}
-                        className="text-xs text-red-400 hover:text-red-600"
-                      >
-                        Gỡ
-                      </button>
+                    {canEditClass && (
+                      <>
+                        <button
+                          onClick={() => openEditExamSettings(ce)}
+                          className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                        >
+                          Cài đặt
+                        </button>
+                        <button
+                          onClick={() => handleUnassignExam(ce.exam_id)}
+                          className="text-xs text-red-400 hover:text-red-600"
+                        >
+                          Gỡ
+                        </button>
+                      </>
                     )}
                   </li>
                 ))}
               </ul>
-            )}
-            {canManageCourses && unassignedExams.length > 0 && (
-              <div className="flex items-center gap-2 border-t border-gray-100 p-4 dark:border-gray-700">
-                <select
-                  value={selectedExamId}
-                  onChange={(e) => setSelectedExamId(e.target.value)}
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">-- Chọn đề thi --</option>
-                  {unassignedExams.map((e) => (
-                    <option key={e.id} value={e.id}>
-                      {e.title}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={handleAssignExam}
-                  disabled={assigningExam || !selectedExamId}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  {assigningExam ? '...' : 'Gán'}
-                </button>
-              </div>
-            )}
-            {cls.exams.length === 0 && (
+            ) : (
               <p className="px-5 py-10 text-center text-sm text-gray-400">
-                Chưa có đề thi nào
+                Chưa có bài kiểm tra nào
               </p>
             )}
           </div>
@@ -497,130 +710,283 @@ export default function ClassDetailPage() {
 
         {/* Teachers tab */}
         {tab === 'teachers' && (
-          <div>
-            {cls.teachers.length > 0 && (
-              <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                {cls.teachers.map((t) => (
-                  <li
-                    key={t.teacher_id}
-                    className="flex items-center gap-3 px-5 py-3"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">
-                      {t.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
-                        {t.name}
-                      </p>
-                      <p className="text-xs text-gray-400">{t.email}</p>
-                    </div>
-                    <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${
-                        t.role === 'owner'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-gray-100 text-gray-500'
-                      }`}
-                    >
-                      {t.role === 'owner' ? 'Chủ lớp' : 'Giảng viên'}
-                    </span>
-                    {canUpdate && t.role !== 'owner' && (
-                      <button
-                        onClick={() =>
-                          handleRemoveTeacher(t.teacher_id, t.name)
-                        }
-                        className="text-xs text-red-400 hover:text-red-600"
-                      >
-                        Xóa
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {canUpdate && (
-              <form
-                onSubmit={handleAddTeacher}
-                className="flex items-center gap-2 border-t border-gray-100 p-4 dark:border-gray-700"
-              >
-                <input
-                  type="text"
-                  value={addTeacherId}
-                  onChange={(e) => setAddTeacherId(e.target.value)}
-                  placeholder="Teacher ID..."
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                />
-                <button
-                  type="submit"
-                  disabled={addingTeacher || !addTeacherId.trim()}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  {addingTeacher ? '...' : 'Thêm'}
-                </button>
-              </form>
-            )}
-          </div>
+          <TeachersTab
+            teachers={cls.teachers}
+            canManage={canManageTeachers}
+            onAdd={handleAddTeacher}
+            onRemove={handleRemoveTeacher}
+            onUpdateRole={
+              canManageTeachers ? handleUpdateTeacherRole : undefined
+            }
+          />
         )}
       </div>
 
-      {/* Edit class dialog */}
+      {/* Assign exam dialog */}
       <Dialog
-        open={editing}
-        onClose={() => setEditing(false)}
-        title="Sửa lớp học"
+        open={showCreateExam}
+        onClose={closeCreateExamDialog}
+        title="Gán bài kiểm tra"
         size="xl"
         footer={
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => setEditing(false)}
-              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              onClick={closeCreateExamDialog}
+              disabled={creatingExam}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
             >
               Hủy
             </button>
             <button
               type="submit"
-              form="edit-class-form"
-              disabled={savingEdit}
+              form="assign-exam-form"
+              disabled={creatingExam || !createSourceId}
               className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {savingEdit ? 'Đang lưu...' : 'Lưu'}
+              {creatingExam ? 'Đang gán...' : 'Gán bài kiểm tra'}
             </button>
           </div>
         }
       >
         <form
-          id="edit-class-form"
-          onSubmit={handleSaveEdit}
+          id="assign-exam-form"
+          onSubmit={handleAssignClassExam}
           className="space-y-4"
         >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tên lớp <span className="text-red-500">*</span>
+              Chọn bộ câu hỏi <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
+            <select
+              value={createSourceId}
+              onChange={(e) => setCreateSourceId(e.target.value)}
               required
               autoFocus
-              placeholder="Tên lớp"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
+            >
+              <option value="">-- Chọn bộ câu hỏi --</option>
+              {unassignedExams.map((ex) => (
+                <option key={ex.id} value={ex.id}>
+                  {ex.title} ({ex.question_count} câu)
+                </option>
+              ))}
+            </select>
+            {unassignedExams.length === 0 && availableExams.length > 0 && (
+              <p className="mt-1 text-xs text-gray-400">
+                Tất cả bộ câu hỏi đã được gán cho lớp này.
+              </p>
+            )}
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Mô tả
+              Tên hiển thị
             </label>
-            <textarea
-              value={editDesc}
-              onChange={(e) => setEditDesc(e.target.value)}
-              rows={3}
-              placeholder="Mô tả"
+            <input
+              type="text"
+              value={createDisplayName}
+              onChange={(e) => setCreateDisplayName(e.target.value)}
+              placeholder="Để trống sẽ dùng tên bộ câu hỏi"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Thời gian làm bài (phút)
+              </label>
+              <input
+                type="number"
+                value={createDuration}
+                onChange={(e) => setCreateDuration(e.target.value)}
+                min="1"
+                placeholder="60"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Điểm đạt (%)
+              </label>
+              <input
+                type="number"
+                value={createPassScore}
+                onChange={(e) => setCreatePassScore(e.target.value)}
+                min="0"
+                max="100"
+                step="0.1"
+                placeholder="70"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Số câu hiển thị
+              </label>
+              <input
+                type="number"
+                value={createQuestionLimit}
+                onChange={(e) => setCreateQuestionLimit(e.target.value)}
+                min="1"
+                placeholder="Tất cả câu"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div className="flex items-end pb-2">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={createShuffle}
+                  onChange={(e) => setCreateShuffle(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-emerald-600"
+                />
+                Trộn thứ tự câu hỏi
+              </label>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Thời gian bắt đầu
+              </label>
+              <input
+                type="datetime-local"
+                value={createStartTime}
+                onChange={(e) => setCreateStartTime(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Thời gian kết thúc
+              </label>
+              <input
+                type="datetime-local"
+                value={createEndTime}
+                onChange={(e) => setCreateEndTime(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
         </form>
       </Dialog>
+
+      {/* Edit exam settings dialog */}
+      <Dialog
+        open={!!editingClassExam}
+        onClose={() => setEditingClassExam(null)}
+        title={`Cài đặt: ${editingClassExam?.title ?? ''}`}
+        size="md"
+        footer={
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setEditingClassExam(null)}
+              disabled={savingExamSettings}
+              className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="edit-exam-settings-form"
+              disabled={savingExamSettings}
+              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {savingExamSettings ? 'Đang lưu...' : 'Lưu cài đặt'}
+            </button>
+          </div>
+        }
+      >
+        <form
+          id="edit-exam-settings-form"
+          onSubmit={handleSaveExamSettings}
+          className="space-y-4"
+        >
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tên hiển thị
+            </label>
+            <input
+              type="text"
+              value={editDisplayName}
+              onChange={(e) => setEditDisplayName(e.target.value)}
+              autoFocus
+              placeholder="Để trống sẽ dùng tên bộ câu hỏi"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Thời gian làm bài (phút)
+              </label>
+              <input
+                type="number"
+                value={editExamDuration}
+                onChange={(e) => setEditExamDuration(e.target.value)}
+                min="1"
+                placeholder="60"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Điểm đạt (%)
+              </label>
+              <input
+                type="number"
+                value={editExamPassScore}
+                onChange={(e) => setEditExamPassScore(e.target.value)}
+                min="0"
+                max="100"
+                step="0.1"
+                placeholder="70"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Số câu hiển thị
+              </label>
+              <input
+                type="number"
+                value={editQuestionLimit}
+                onChange={(e) => setEditQuestionLimit(e.target.value)}
+                min="1"
+                placeholder="Tất cả câu"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div className="flex items-end pb-2">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={editShuffle}
+                  onChange={(e) => setEditShuffle(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-emerald-600"
+                />
+                Trộn thứ tự câu hỏi
+              </label>
+            </div>
+          </div>
+        </form>
+      </Dialog>
+
+      <EditClassDialog
+        open={editing}
+        onClose={() => setEditing(false)}
+        editName={editName}
+        onEditNameChange={setEditName}
+        editDesc={editDesc}
+        onEditDescChange={setEditDesc}
+        onSubmit={handleSaveEdit}
+        saving={savingEdit}
+      />
 
       {toast && (
         <Toast
@@ -628,202 +994,6 @@ export default function ClassDetailPage() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
-      )}
-    </div>
-  );
-}
-
-function StudentsTab({
-  classId,
-  canManage,
-  onRemove,
-  onEnrolled,
-}: {
-  classId: string;
-  canManage: boolean;
-  onRemove: (sid: string, name: string) => void;
-  onEnrolled: () => void;
-}) {
-  const [students, setStudents] = useState<ClassEnrollment[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Enroll search state
-  const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<
-    { id: string; name: string; email: string; student_code: string }[]
-  >([]);
-  const [selectedStudent, setSelectedStudent] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
-  const [searching, setSearching] = useState(false);
-  const [enrolling, setEnrolling] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-
-  useEffect(() => {
-    import('@/lib/api/classes')
-      .then(({ listStudents }) => listStudents(classId))
-      .then(setStudents)
-      .finally(() => setLoading(false));
-  }, [classId]);
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setSearching(true);
-    setSearchError(null);
-    setSearchResults([]);
-    setSelectedStudent(null);
-    try {
-      const { listStudents: searchStudents } = await import('@/lib/api/admin');
-      const results = await searchStudents(query.trim());
-      if (results.length === 0) {
-        setSearchError('Không tìm thấy học sinh nào');
-      } else if (results.length === 1) {
-        setSelectedStudent({ id: results[0].id, name: results[0].name });
-      } else {
-        setSearchResults(results);
-      }
-    } catch {
-      setSearchError('Tìm kiếm thất bại');
-    } finally {
-      setSearching(false);
-    }
-  };
-
-  const handleEnroll = async () => {
-    if (!selectedStudent) return;
-    setEnrolling(true);
-    try {
-      const { enrollStudent } = await import('@/lib/api/classes');
-      const enrollment = await enrollStudent(classId, selectedStudent.id);
-      setStudents((prev) => [...prev, enrollment]);
-      setQuery('');
-      setSelectedStudent(null);
-      setSearchResults([]);
-      onEnrolled();
-    } catch (err) {
-      setSearchError(err instanceof Error ? err.message : 'Thêm thất bại');
-    } finally {
-      setEnrolling(false);
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="py-10 text-center text-sm text-gray-400">Đang tải...</div>
-    );
-
-  return (
-    <div>
-      {students.length > 0 ? (
-        <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-          {students.map((s) => (
-            <li
-              key={s.student_id}
-              className="flex items-center gap-3 px-5 py-3"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
-                {s.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {s.name}
-                </p>
-                <p className="text-xs text-gray-400">{s.email}</p>
-              </div>
-              <span className="text-xs text-gray-400">
-                {new Date(s.enrolled_at).toLocaleDateString('vi-VN')}
-              </span>
-              {canManage && (
-                <button
-                  onClick={() => onRemove(s.student_id, s.name)}
-                  className="text-xs text-red-400 hover:text-red-600"
-                >
-                  Xóa
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="px-5 py-10 text-center text-sm text-gray-400">
-          Chưa có học sinh nào
-        </p>
-      )}
-
-      {canManage && (
-        <div className="border-t border-gray-100 p-4 dark:border-gray-700">
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setSearchResults([]);
-                setSelectedStudent(null);
-                setSearchError(null);
-              }}
-              placeholder="Tìm theo email hoặc mã học sinh..."
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              type="submit"
-              disabled={searching || !query.trim()}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300"
-            >
-              {searching ? '...' : 'Tìm'}
-            </button>
-          </form>
-
-          {searchError && (
-            <p className="mt-2 text-xs text-red-500">{searchError}</p>
-          )}
-
-          {searchResults.length > 1 && (
-            <div className="mt-2 rounded-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
-              {searchResults.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => {
-                    setSelectedStudent({ id: r.id, name: r.name });
-                    setSearchResults([]);
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <span className="font-medium text-gray-800 dark:text-gray-200">
-                    {r.name}
-                  </span>
-                  <span className="text-gray-400">{r.email}</span>
-                  <span className="ml-auto font-mono text-xs text-gray-400">
-                    {r.student_code}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {selectedStudent && (
-            <div className="mt-2 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 dark:bg-emerald-900/20">
-              <span className="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-300">
-                {selectedStudent.name}
-              </span>
-              <button
-                onClick={handleEnroll}
-                disabled={enrolling}
-                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-              >
-                {enrolling ? '...' : 'Thêm vào lớp'}
-              </button>
-              <button
-                onClick={() => setSelectedStudent(null)}
-                className="text-xs text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-        </div>
       )}
     </div>
   );

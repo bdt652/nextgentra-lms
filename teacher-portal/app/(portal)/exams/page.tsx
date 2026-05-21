@@ -30,15 +30,16 @@ export default function ExamsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newDuration, setNewDuration] = useState('');
-  const [newPassScore, setNewPassScore] = useState('');
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     listExams(filter === 'mine')
       .then(setExams)
       .catch(() =>
-        setToast({ message: 'Không thể tải danh sách đề thi', type: 'error' }),
+        setToast({
+          message: 'Không thể tải danh sách bộ câu hỏi',
+          type: 'error',
+        }),
       )
       .finally(() => setLoading(false));
   }, [filter]);
@@ -47,8 +48,6 @@ export default function ExamsPage() {
     setShowCreate(false);
     setNewTitle('');
     setNewDesc('');
-    setNewDuration('');
-    setNewPassScore('');
   };
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -58,8 +57,6 @@ export default function ExamsPage() {
       const exam = await createExam({
         title: newTitle.trim(),
         description: newDesc.trim() || undefined,
-        duration: newDuration ? parseInt(newDuration) : undefined,
-        pass_score: newPassScore ? parseFloat(newPassScore) : undefined,
       });
       router.push(`/exams/${exam.id}`);
     } catch (err) {
@@ -74,7 +71,7 @@ export default function ExamsPage() {
     try {
       await deleteExam(deleteTarget.id);
       setExams((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-      setToast({ message: 'Đã xóa đề thi', type: 'success' });
+      setToast({ message: 'Đã xóa bộ câu hỏi', type: 'success' });
       setDeleteTarget(null);
     } catch (e) {
       setToast({ message: (e as Error).message, type: 'error' });
@@ -88,10 +85,10 @@ export default function ExamsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Thư viện đề thi
+            Thư viện câu hỏi
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Quản lý ngân hàng câu hỏi và đề thi
+            Quản lý ngân hàng câu hỏi
           </p>
         </div>
         {canCreate && (
@@ -99,7 +96,7 @@ export default function ExamsPage() {
             onClick={() => setShowCreate(true)}
             className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
-            + Tạo đề thi
+            + Tạo bộ câu hỏi
           </button>
         )}
       </div>
@@ -127,13 +124,13 @@ export default function ExamsPage() {
         <div className="py-12 text-center text-gray-500">Đang tải...</div>
       ) : exams.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-600">
-          <p className="text-gray-500">Chưa có đề thi nào</p>
+          <p className="text-gray-500">Chưa có bộ câu hỏi nào</p>
           {canCreate && (
             <button
               onClick={() => setShowCreate(true)}
               className="mt-3 text-sm text-emerald-600 hover:underline"
             >
-              Tạo đề thi đầu tiên
+              Tạo bộ câu hỏi đầu tiên
             </button>
           )}
         </div>
@@ -157,8 +154,6 @@ export default function ExamsPage() {
               )}
               <div className="mt-2 flex gap-3 text-xs text-gray-400">
                 <span>{exam.question_count} câu hỏi</span>
-                {exam.duration && <span>{exam.duration} phút</span>}
-                {exam.pass_score && <span>Đạt: {exam.pass_score}%</span>}
               </div>
               <div className="mt-3 flex gap-2">
                 <Link
@@ -185,7 +180,7 @@ export default function ExamsPage() {
       <Dialog
         open={!!deleteTarget}
         onClose={() => !deleting && setDeleteTarget(null)}
-        title="Xóa đề thi"
+        title="Xóa bộ câu hỏi"
         size="md"
         footer={
           <div className="flex gap-3">
@@ -203,7 +198,7 @@ export default function ExamsPage() {
               disabled={deleting}
               className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
             >
-              {deleting ? 'Đang xóa...' : 'Xóa đề thi'}
+              {deleting ? 'Đang xóa...' : 'Xóa bộ câu hỏi'}
             </button>
           </div>
         }
@@ -227,7 +222,7 @@ export default function ExamsPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Bạn có chắc muốn xóa đề thi này?
+                Bạn có chắc muốn xóa bộ câu hỏi này?
               </p>
               <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                 &ldquo;{deleteTarget?.title}&rdquo;
@@ -242,18 +237,18 @@ export default function ExamsPage() {
                 <span className="font-bold">
                   {deleteTarget?.question_count} câu hỏi
                 </span>{' '}
-                bên trong đề thi và không thể khôi phục.
+                bên trong bộ câu hỏi và không thể khôi phục.
               </p>
             </div>
           )}
         </div>
       </Dialog>
 
-      {/* Create exam dialog */}
+      {/* Create dialog */}
       <Dialog
         open={showCreate}
         onClose={closeCreate}
-        title="Tạo đề thi mới"
+        title="Tạo bộ câu hỏi mới"
         size="xl"
         footer={
           <div className="flex gap-3">
@@ -270,7 +265,7 @@ export default function ExamsPage() {
               disabled={creating || !newTitle.trim()}
               className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {creating ? 'Đang tạo...' : 'Tạo đề thi'}
+              {creating ? 'Đang tạo...' : 'Tạo bộ câu hỏi'}
             </button>
           </div>
         }
@@ -282,7 +277,7 @@ export default function ExamsPage() {
         >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tên đề thi <span className="text-red-500">*</span>
+              Tên bộ câu hỏi <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -290,7 +285,7 @@ export default function ExamsPage() {
               onChange={(e) => setNewTitle(e.target.value)}
               required
               autoFocus
-              placeholder="Nhập tên đề thi..."
+              placeholder="Nhập tên bộ câu hỏi..."
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
@@ -304,36 +299,6 @@ export default function ExamsPage() {
               rows={3}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Thời gian (phút)
-              </label>
-              <input
-                type="number"
-                value={newDuration}
-                onChange={(e) => setNewDuration(e.target.value)}
-                min="1"
-                placeholder="60"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Điểm đạt (%)
-              </label>
-              <input
-                type="number"
-                value={newPassScore}
-                onChange={(e) => setNewPassScore(e.target.value)}
-                min="0"
-                max="100"
-                step="0.1"
-                placeholder="70"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
           </div>
         </form>
       </Dialog>

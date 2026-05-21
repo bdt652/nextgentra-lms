@@ -94,6 +94,19 @@ export async function removeTeacher(
   return handleResponse<void>(res);
 }
 
+export async function updateTeacherRole(
+  classId: string,
+  teacherId: string,
+  role: 'assistant' | 'ta',
+): Promise<ClassTeacher> {
+  const res = await apiFetch(`/classes/${classId}/teachers/${teacherId}/role`, {
+    method: 'PATCH',
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ role }),
+  });
+  return handleResponse<ClassTeacher>(res);
+}
+
 // ─── Students ────────────────────────────────────────────────────────────────
 
 export async function listStudents(
@@ -163,10 +176,36 @@ export async function listClassExams(classId: string): Promise<ClassExam[]> {
 
 export async function assignExam(
   classId: string,
-  data: { exam_id: string; start_time?: string; end_time?: string },
+  data: {
+    exam_id: string;
+    display_name?: string;
+    shuffle_questions?: boolean;
+    question_limit?: number;
+    start_time?: string;
+    end_time?: string;
+  },
 ): Promise<ClassExam> {
   const res = await apiFetch(`/classes/${classId}/exams`, {
     method: 'POST',
+    headers: JSON_HEADERS,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<ClassExam>(res);
+}
+
+export async function updateClassExam(
+  classId: string,
+  examId: string,
+  data: {
+    display_name?: string | null;
+    shuffle_questions?: boolean;
+    question_limit?: number | null;
+    start_time?: string | null;
+    end_time?: string | null;
+  },
+): Promise<ClassExam> {
+  const res = await apiFetch(`/classes/${classId}/exams/${examId}`, {
+    method: 'PATCH',
     headers: JSON_HEADERS,
     body: JSON.stringify(data),
   });
@@ -179,6 +218,30 @@ export async function unassignExam(
 ): Promise<void> {
   const res = await apiFetch(`/classes/${classId}/exams/${examId}`, {
     method: 'DELETE',
+  });
+  return handleResponse<void>(res);
+}
+
+export async function reorderCourses(
+  classId: string,
+  ids: string[],
+): Promise<void> {
+  const res = await apiFetch(`/classes/${classId}/courses/reorder`, {
+    method: 'PATCH',
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ ids }),
+  });
+  return handleResponse<void>(res);
+}
+
+export async function reorderExams(
+  classId: string,
+  ids: string[],
+): Promise<void> {
+  const res = await apiFetch(`/classes/${classId}/exams/reorder`, {
+    method: 'PATCH',
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ ids }),
   });
   return handleResponse<void>(res);
 }

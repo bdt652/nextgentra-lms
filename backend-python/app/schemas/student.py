@@ -46,6 +46,17 @@ class StudentLogin(BaseModel):
     password: str
 
 
+class StudentImportRow(BaseModel):
+    email: EmailStr
+    name: str
+    student_code: str
+    password: str
+
+
+class StudentImportRequest(BaseModel):
+    rows: list[StudentImportRow]
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str

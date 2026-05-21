@@ -310,6 +310,7 @@ model ClassCourse {
   classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
   course_id   String
   course      Course    @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  position    Int       @default(0)
   assigned_at DateTime  @default(now())
 
   @@unique([class_id, course_id])
@@ -318,14 +319,18 @@ model ClassCourse {
 }
 
 model ClassExam {
-  id          String    @id @default(uuid())
-  class_id    String
-  classroom   Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
-  exam_id     String
-  exam        Exam      @relation(fields: [exam_id], references: [id], onDelete: Cascade)
-  start_time  DateTime?
-  end_time    DateTime?
-  assigned_at DateTime  @default(now())
+  id                 String    @id @default(uuid())
+  class_id           String
+  classroom          Classroom @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  exam_id            String
+  exam               Exam      @relation(fields: [exam_id], references: [id], onDelete: Cascade)
+  display_name       String?
+  shuffle_questions  Boolean   @default(false)
+  question_limit     Int?
+  position           Int       @default(0)
+  start_time         DateTime?
+  end_time           DateTime?
+  assigned_at        DateTime  @default(now())
 
   @@unique([class_id, exam_id])
   @@index([class_id])

@@ -4,10 +4,15 @@ import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { assignTeacherRole, listRoles, listTeachers } from '@/lib/api/admin';
+import { importTeachers, type TeacherImportRow } from '@/lib/api/import';
 import { useIsAdmin } from '@/lib/hooks/usePermission';
 import { useHasHydrated } from '@/lib/store/authStore';
 import type { Role, TeacherAdmin } from '@/lib/types';
 import { Toast } from '@/components/Toast';
+import {
+  ImportDialog,
+  type ImportColumn,
+} from '@/components/common/ImportDialog';
 import { EditTeacherModal, ResetPasswordModal } from './TeacherModals';
 
 export default function TeachersPage() {
@@ -25,10 +30,18 @@ export default function TeachersPage() {
     null,
   );
   const [resetTeacher, setResetTeacher] = useState<TeacherAdmin | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: 'success' | 'error';
   } | null>(null);
+
+  const teacherImportColumns: ImportColumn<TeacherImportRow>[] = [
+    { key: 'email', label: 'Email' },
+    { key: 'name', label: 'Tên' },
+    { key: 'password', label: 'Mật khẩu' },
+    { key: 'role', label: 'Vai trò' },
+  ];
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -90,18 +103,48 @@ export default function TeachersPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-2">
-        <Link
-          href="/admin"
-          className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin"
+            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            Quản trị
+          </Link>
+          <span className="text-gray-400">/</span>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Quản lý giáo viên
+          </h2>
+        </div>
+        <button
+          onClick={() => setImportOpen(true)}
+          className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         >
-          Quản trị
-        </Link>
-        <span className="text-gray-400">/</span>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Quản lý giáo viên
-        </h2>
+          Nhập từ file
+        </button>
       </div>
+
+      <ImportDialog<TeacherImportRow>
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Nhập giáo viên từ file"
+        templateHeaders={['email', 'name', 'password', 'role']}
+        templateFilename="mau-giao-vien.csv"
+        columns={teacherImportColumns}
+        onImport={(rows) => importTeachers(rows)}
+        onSuccess={async (res) => {
+          setToast({
+            message: `Đã tạo ${res.created} giáo viên`,
+            type: 'success',
+          });
+          const [teacherList, roleList] = await Promise.all([
+            listTeachers(),
+            listRoles(),
+          ]);
+          setTeachers(teacherList);
+          setRoles(roleList);
+        }}
+      />
 
       {fetchError && (
         <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">

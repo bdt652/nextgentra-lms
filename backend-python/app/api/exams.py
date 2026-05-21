@@ -13,10 +13,12 @@ from app.schemas.exam import (
     ExamResponse,
     ExamUpdate,
     QuestionCreate,
+    QuestionImportRequest,
     QuestionReorderRequest,
     QuestionResponse,
     QuestionUpdate,
 )
+from app.schemas.import_ import ImportResult, ImportRowError
 from prisma import fields as prisma_fields
 from prisma.enums import QuestionType
 from prisma.types import ExamInclude, ExamUpdateInput, ExamWhereInput, QuestionUpdateInput
@@ -308,6 +310,57 @@ async def delete_question(
     if exam:
         _require_owner(exam.teacher_id, current_user)
     await prisma.question.delete(where={"id": question_id})
+
+
+@router.post(
+    "/{exam_id}/questions/import",
+    response_model=ImportResult,
+    status_code=status.HTTP_200_OK,
+)
+async def import_questions(
+    exam_id: str,
+    data: QuestionImportRequest,
+    current_user: ExamEditor,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> ImportResult:
+    """Bulk-add questions to an exam from a flat row format."""
+    exam = await prisma.exam.find_unique(where={"id": exam_id})
+    if not exam:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
+    _require_owner(exam.teacher_id, current_user)
+
+    base_order = await prisma.question.count(where={"exam_id": exam_id})
+    created = 0
+    skipped = 0
+    errors: list[ImportRowError] = []
+
+    for idx, row in enumerate(data.rows):
+        try:
+            q_type = QuestionType(row.type)
+        except ValueError:
+            skipped += 1
+            errors.append(
+                ImportRowError(row=idx + 1, reason=f"Loại câu hỏi không hợp lệ: {row.type}")
+            )
+            continue
+
+        options = [v for v in [row.option_a, row.option_b, row.option_c, row.option_d] if v]
+
+        create_data: dict = {
+            "exam_id": exam_id,
+            "content": row.content,
+            "type": q_type,
+            "correct_answer": row.correct_answer,
+            "points": row.points,
+            "order": base_order + created,
+        }
+        if options:
+            create_data["options"] = prisma_fields.Json(options)
+
+        await prisma.question.create(data=create_data)  # type: ignore[arg-type]
+        created += 1
+
+    return ImportResult(created=created, skipped=skipped, errors=errors)
 
 
 @router.post("/{exam_id}/questions/reorder", response_model=list[QuestionResponse])

@@ -7,13 +7,20 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.core.auth import get_password_hash
 from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
+from app.schemas.import_ import ImportResult, ImportRowError
 from app.schemas.permission import PermissionResponse
 from app.schemas.role import RoleCreate, RolePermissionsRequest, RoleResponse, RoleUpdate
-from app.schemas.student import StudentAdminResponse, StudentCreate, StudentUpdate
+from app.schemas.student import (
+    StudentAdminResponse,
+    StudentCreate,
+    StudentImportRequest,
+    StudentUpdate,
+)
 from app.schemas.teacher import (
     AssignRoleRequest,
     ResetPasswordRequest,
     TeacherAdminResponse,
+    TeacherImportRequest,
     TeacherUpdate,
 )
 from prisma.models import Permission, Role, Student, Teacher
@@ -493,3 +500,86 @@ async def delete_student(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
     await prisma.classenrollment.delete_many(where={"student_id": student_id})
     await prisma.student.delete(where={"id": student_id})
+
+
+# ---------------------------------------------------------------------------
+# Bulk import
+# ---------------------------------------------------------------------------
+
+
+@router.post(
+    "/teachers/import",
+    response_model=ImportResult,
+    status_code=status.HTTP_200_OK,
+)
+async def import_teachers(
+    data: TeacherImportRequest,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> ImportResult:
+    """Bulk-create teacher accounts. Rows with duplicate emails are skipped."""
+    created = 0
+    skipped = 0
+    errors: list[ImportRowError] = []
+
+    for idx, row in enumerate(data.rows):
+        if await prisma.teacher.find_unique(where={"email": row.email}):
+            skipped += 1
+            errors.append(ImportRowError(row=idx + 1, reason="Email đã tồn tại"))
+            continue
+
+        role_record = await prisma.role.find_first(where={"name": row.role})
+        if not role_record:
+            skipped += 1
+            errors.append(ImportRowError(row=idx + 1, reason=f"Vai trò '{row.role}' không tồn tại"))
+            continue
+
+        await prisma.teacher.create(
+            data={
+                "email": row.email,
+                "name": row.name,
+                "hashed_password": get_password_hash(row.password),
+                "role": {"connect": {"id": role_record.id}},
+            }
+        )
+        created += 1
+
+    return ImportResult(created=created, skipped=skipped, errors=errors)
+
+
+@router.post(
+    "/students/import",
+    response_model=ImportResult,
+    status_code=status.HTTP_200_OK,
+)
+async def import_students(
+    data: StudentImportRequest,
+    _: AdminUser,
+    prisma: Annotated[Prisma, Depends(get_prisma)],
+) -> ImportResult:
+    """Bulk-create student accounts. Rows with duplicate email or student_code are skipped."""
+    created = 0
+    skipped = 0
+    errors: list[ImportRowError] = []
+
+    for idx, row in enumerate(data.rows):
+        if await prisma.student.find_unique(where={"email": row.email}):
+            skipped += 1
+            errors.append(ImportRowError(row=idx + 1, reason="Email đã tồn tại"))
+            continue
+        if await prisma.student.find_unique(where={"student_code": row.student_code}):
+            skipped += 1
+            errors.append(ImportRowError(row=idx + 1, reason="Mã học sinh đã tồn tại"))
+            continue
+
+        await prisma.student.create(
+            data={
+                "email": row.email,
+                "name": row.name,
+                "student_code": row.student_code,
+                "hashed_password": get_password_hash(row.password),
+            }
+        )
+        created += 1
+
+    return ImportResult(created=created, skipped=skipped, errors=errors)

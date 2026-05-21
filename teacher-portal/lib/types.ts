@@ -173,13 +173,17 @@ export interface ClassEnrollment {
   student_id: string;
   name: string;
   email: string;
+  student_code: string;
   enrolled_at: string;
 }
 
 export interface ClassExam {
   exam_id: string;
   title: string;
+  display_name: string | null;
   duration: number | null;
+  shuffle_questions: boolean;
+  question_limit: number | null;
   start_time: string | null;
   end_time: string | null;
   assigned_at: string;

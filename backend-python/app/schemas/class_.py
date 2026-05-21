@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel
 
@@ -29,7 +29,11 @@ class ClassTeacherResponse(BaseModel):
 
 class ClassTeacherAdd(BaseModel):
     teacher_id: str
-    role: Optional[str] = "assistant"
+    role: Literal["assistant", "ta"] = "assistant"
+
+
+class ClassTeacherRoleUpdate(BaseModel):
+    role: Literal["assistant", "ta"]
 
 
 class ClassEnrollmentCreate(BaseModel):
@@ -40,6 +44,7 @@ class ClassEnrollmentResponse(BaseModel):
     student_id: str
     name: str
     email: str
+    student_code: str
     enrolled_at: datetime
 
 
@@ -49,6 +54,9 @@ class ClassCourseCreate(BaseModel):
 
 class ClassExamCreate(BaseModel):
     exam_id: str
+    display_name: Optional[str] = None
+    shuffle_questions: bool = False
+    question_limit: Optional[int] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
 
@@ -56,10 +64,25 @@ class ClassExamCreate(BaseModel):
 class ClassExamResponse(BaseModel):
     exam_id: str
     title: str
+    display_name: Optional[str]
     duration: Optional[int]
+    shuffle_questions: bool
+    question_limit: Optional[int]
     start_time: Optional[datetime]
     end_time: Optional[datetime]
     assigned_at: datetime
+
+
+class ReorderRequest(BaseModel):
+    ids: list[str]
+
+
+class ClassExamUpdate(BaseModel):
+    display_name: Optional[str] = None
+    shuffle_questions: Optional[bool] = None
+    question_limit: Optional[int] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
 
 
 class ClassResponse(BaseModel):
@@ -79,3 +102,11 @@ class ClassDetailResponse(ClassResponse):
     teachers: list[ClassTeacherResponse] = []
     courses: list[CourseResponse] = []
     exams: list[ClassExamResponse] = []
+
+
+class ClassStudentImportRow(BaseModel):
+    student_code: str
+
+
+class ClassStudentImportRequest(BaseModel):
+    rows: list[ClassStudentImportRow]

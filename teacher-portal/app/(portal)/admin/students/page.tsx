@@ -4,10 +4,15 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { deleteStudent, listStudents } from '@/lib/api/admin';
+import { importStudents, type StudentImportRow } from '@/lib/api/import';
 import { useIsAdmin } from '@/lib/hooks/usePermission';
 import { useHasHydrated } from '@/lib/store/authStore';
 import type { StudentAdmin } from '@/lib/types';
 import { Toast } from '@/components/Toast';
+import {
+  ImportDialog,
+  type ImportColumn,
+} from '@/components/common/ImportDialog';
 import {
   CreateStudentModal,
   EditStudentModal,
@@ -25,6 +30,7 @@ export default function StudentsPage() {
   const [search, setSearch] = useState('');
 
   const [creating, setCreating] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentAdmin | null>(
     null,
   );
@@ -33,6 +39,13 @@ export default function StudentsPage() {
     message: string;
     type: 'success' | 'error';
   } | null>(null);
+
+  const studentImportColumns: ImportColumn<StudentImportRow>[] = [
+    { key: 'email', label: 'Email' },
+    { key: 'name', label: 'Tên' },
+    { key: 'student_code', label: 'Mã học sinh' },
+    { key: 'password', label: 'Mật khẩu' },
+  ];
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -112,12 +125,20 @@ export default function StudentsPage() {
             Quản lý học sinh
           </h2>
         </div>
-        <button
-          onClick={() => setCreating(true)}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-        >
-          + Tạo học sinh
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setImportOpen(true)}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            Nhập từ file
+          </button>
+          <button
+            onClick={() => setCreating(true)}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          >
+            + Tạo học sinh
+          </button>
+        </div>
       </div>
 
       <div className="mb-4">
@@ -232,6 +253,23 @@ export default function StudentsPage() {
           </table>
         </div>
       )}
+
+      <ImportDialog<StudentImportRow>
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Nhập học sinh từ file"
+        templateHeaders={['email', 'name', 'student_code', 'password']}
+        templateFilename="mau-hoc-sinh.csv"
+        columns={studentImportColumns}
+        onImport={(rows) => importStudents(rows)}
+        onSuccess={async (res) => {
+          setToast({
+            message: `Đã tạo ${res.created} học sinh`,
+            type: 'success',
+          });
+          setStudents(await listStudents(search || undefined));
+        }}
+      />
 
       {creating && (
         <CreateStudentModal

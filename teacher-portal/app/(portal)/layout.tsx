@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore, useHasHydrated } from '@/lib/store/authStore';
 import type { AuthState } from '@/lib/store/authStore';
-import { logoutTeacher } from '@/lib/api/auth';
-import { clearAuthCookies } from '@/lib/utils/authCookies';
 import { Sidebar } from '@/components/layout/Sidebar';
 
 export default function PortalLayout({
@@ -17,9 +15,10 @@ export default function PortalLayout({
   const pathname = usePathname();
   const hasHydrated = useHasHydrated();
   const access_token = useAuthStore((s: AuthState) => s.access_token);
-  const refresh_token = useAuthStore((s: AuthState) => s.refresh_token);
   const teacher = useAuthStore((s: AuthState) => s.teacher);
-  const logout = useAuthStore((s: AuthState) => s.logout);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -30,64 +29,79 @@ export default function PortalLayout({
 
   if (!hasHydrated || !access_token) return null;
 
-  const handleLogout = async () => {
-    try {
-      if (refresh_token) {
-        await logoutTeacher(refresh_token);
-      }
-    } finally {
-      clearAuthCookies();
-      logout();
-      router.replace('/login');
-    }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+    searchRef.current?.blur();
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar teacher={teacher} pathname={pathname} />
+      <Sidebar
+        teacher={teacher}
+        pathname={pathname}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:px-6">
-          <span className="text-base font-semibold text-gray-900 dark:text-white md:hidden">
-            NextGenTra LMS
-          </span>
-
-          <div className="flex items-center gap-3">
-            {teacher && (
-              <div className="hidden text-right sm:block">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  {teacher.name}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {teacher.role ?? 'Giáo viên'}
-                </p>
-              </div>
-            )}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:px-6">
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="shrink-0 rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 md:hidden"
+            aria-label="Mở menu"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              <span className="hidden sm:inline">Đăng xuất</span>
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          {/* Search bar */}
+          <form onSubmit={handleSearch} className="flex flex-1 items-center">
+            <div className="relative w-full max-w-lg">
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                ref={searchRef}
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Tìm kiếm khóa học, lớp học, câu hỏi..."
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-emerald-500 dark:focus:bg-gray-700"
+              />
+            </div>
+          </form>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>
   );

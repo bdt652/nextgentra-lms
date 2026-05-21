@@ -66,7 +66,7 @@ export function AddQuestionsDialog({
     if (!open) return;
     listExams()
       .then(setExams)
-      .catch(() => setError('Không thể tải danh sách đề'))
+      .catch(() => setError('Không thể tải danh sách bộ câu hỏi'))
       .finally(() => setLoadingExams(false));
   }, [open]);
 
@@ -102,7 +102,7 @@ export function AddQuestionsDialog({
         loadedIds.current.add(d.id);
         setExamCache((prev) => ({ ...prev, [d.id]: d }));
       })
-      .catch(() => setError('Không thể tải đề'));
+      .catch(() => setError('Không thể tải bộ câu hỏi'));
   }, [examId2]);
 
   const loadingQ = useMemo(() => {
@@ -298,7 +298,7 @@ export function AddQuestionsDialog({
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
               }`}
             >
-              {t === 'pick' ? 'Chọn từng câu' : 'Cả bộ đề'}
+              {t === 'pick' ? 'Chọn từng câu' : 'Cả bộ câu hỏi'}
             </button>
           ))}
         </div>
@@ -318,7 +318,7 @@ export function AddQuestionsDialog({
                 onChange={(e) => setFilterExamId(e.target.value)}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               >
-                <option value="all">Tất cả đề</option>
+                <option value="all">Tất cả bộ câu hỏi</option>
                 {exams.map((e) => (
                   <option key={e.id} value={e.id}>
                     {e.title}
@@ -348,7 +348,7 @@ export function AddQuestionsDialog({
                 onChange={(e) => setExamId2(e.target.value)}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               >
-                <option value="">-- Chọn bộ đề --</option>
+                <option value="">-- Chọn bộ câu hỏi --</option>
                 {exams.map((e) => (
                   <option key={e.id} value={e.id}>
                     {e.title} ({e.question_count} câu)
@@ -380,11 +380,11 @@ export function AddQuestionsDialog({
             <div className="flex-1 overflow-y-auto">
               {!examId2 ? (
                 <p className="py-10 text-center text-sm text-gray-400">
-                  Chọn bộ đề để xem câu hỏi
+                  Chọn bộ câu hỏi để xem danh sách câu hỏi
                 </p>
               ) : loadingExam2 ? (
                 <p className="py-10 text-center text-sm text-gray-400">
-                  Đang tải đề...
+                  Đang tải...
                 </p>
               ) : (
                 renderQuestionList(questionsForTab2, false)

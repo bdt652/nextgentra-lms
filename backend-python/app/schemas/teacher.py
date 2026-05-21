@@ -58,3 +58,14 @@ class TeacherUpdate(BaseModel):
 
 class ResetPasswordRequest(BaseModel):
     new_password: str = Field(..., min_length=8)
+
+
+class TeacherImportRow(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+    role: str = "teacher"
+
+
+class TeacherImportRequest(BaseModel):
+    rows: list[TeacherImportRow]

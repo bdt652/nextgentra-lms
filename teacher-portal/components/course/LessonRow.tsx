@@ -102,7 +102,9 @@ export function LessonRow({
         </span>
 
         {/* lesson type icon + badge */}
-        <span className="text-base">{TYPE_CONFIG[lesson.lesson_type].icon}</span>
+        <span className="text-base">
+          {TYPE_CONFIG[lesson.lesson_type].icon}
+        </span>
         <span
           className={`hidden shrink-0 rounded-full px-2 py-0.5 text-xs sm:inline ${TYPE_CONFIG[lesson.lesson_type].cls}`}
         >

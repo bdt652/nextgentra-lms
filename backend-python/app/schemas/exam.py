@@ -82,3 +82,18 @@ class ExamResponse(BaseModel):
 
 class ExamDetailResponse(ExamResponse):
     questions: list[QuestionResponse] = []
+
+
+class QuestionImportRow(BaseModel):
+    content: str
+    type: str = "multiple_choice"
+    option_a: Optional[str] = None
+    option_b: Optional[str] = None
+    option_c: Optional[str] = None
+    option_d: Optional[str] = None
+    correct_answer: Optional[str] = None
+    points: float = 1.0
+
+
+class QuestionImportRequest(BaseModel):
+    rows: list[QuestionImportRow]

@@ -10,6 +10,7 @@ from app.api._class_utils import (
     _generate_class_code,
     _get_class_or_404,
     _require_class_member,
+    _require_not_ta,
 )
 from app.core.database import Prisma, get_prisma
 from app.dependencies.auth import CurrentUser, require_permission
@@ -128,7 +129,10 @@ async def get_class(
         ClassExamResponse(
             exam_id=ce.exam_id,
             title=ce.exam.title if ce.exam else "",
+            display_name=ce.display_name,
             duration=ce.exam.duration if ce.exam else None,
+            shuffle_questions=ce.shuffle_questions,
+            question_limit=ce.question_limit,
             start_time=ce.start_time,
             end_time=ce.end_time,
             assigned_at=ce.assigned_at,
@@ -163,6 +167,7 @@ async def update_class(
 ) -> ClassResponse:
     cls = await _get_class_or_404(class_id, prisma)
     _require_class_member(cls, current_user.id)
+    _require_not_ta(cls, current_user.id)
 
     update_data: ClassroomUpdateInput = {}
     if data.name is not None:

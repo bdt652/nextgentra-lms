@@ -11,11 +11,16 @@ import {
   updateQuestion,
   deleteQuestion,
 } from '@/lib/api/exams';
+import { importQuestions, type QuestionImportRow } from '@/lib/api/import';
 import type { ExamDetail, Question, QuestionType } from '@/lib/types';
 import { Toast } from '@/components/Toast';
 import { Dialog } from '@/components/Dialog';
 import { RichTextEditor } from '@/components/RichTextEditor';
 import { RichTextRenderer } from '@/components/RichTextRenderer';
+import {
+  ImportDialog,
+  type ImportColumn,
+} from '@/components/common/ImportDialog';
 
 const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   multiple_choice: 'Trắc nghiệm',
@@ -309,12 +314,22 @@ export default function ExamDetailPage() {
   const [editingExam, setEditingExam] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editDesc, setEditDesc] = useState('');
-  const [editDuration, setEditDuration] = useState('');
-  const [editPassScore, setEditPassScore] = useState('');
   const [savingExam, setSavingExam] = useState(false);
 
   const [addingQuestion, setAddingQuestion] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [importQuestionsOpen, setImportQuestionsOpen] = useState(false);
+
+  const questionImportColumns: ImportColumn<QuestionImportRow>[] = [
+    { key: 'content', label: 'Nội dung' },
+    { key: 'type', label: 'Loại' },
+    { key: 'option_a', label: 'Đáp án A' },
+    { key: 'option_b', label: 'Đáp án B' },
+    { key: 'option_c', label: 'Đáp án C' },
+    { key: 'option_d', label: 'Đáp án D' },
+    { key: 'correct_answer', label: 'Đúng' },
+    { key: 'points', label: 'Điểm' },
+  ];
 
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type });
@@ -322,7 +337,7 @@ export default function ExamDetailPage() {
   useEffect(() => {
     getExam(id)
       .then(setExam)
-      .catch(() => showToast('Không thể tải đề thi', 'error'))
+      .catch(() => showToast('Không thể tải bộ câu hỏi', 'error'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -330,8 +345,6 @@ export default function ExamDetailPage() {
     if (!exam) return;
     setEditTitle(exam.title);
     setEditDesc(exam.description ?? '');
-    setEditDuration(exam.duration ? String(exam.duration) : '');
-    setEditPassScore(exam.pass_score ? String(exam.pass_score) : '');
     setEditingExam(true);
   };
 
@@ -343,12 +356,10 @@ export default function ExamDetailPage() {
       const updated = await updateExam(exam.id, {
         title: editTitle,
         description: editDesc || undefined,
-        duration: editDuration ? parseInt(editDuration) : undefined,
-        pass_score: editPassScore ? parseFloat(editPassScore) : undefined,
       });
       setExam({ ...exam, ...updated });
       setEditingExam(false);
-      showToast('Đã cập nhật đề thi', 'success');
+      showToast('Đã cập nhật bộ câu hỏi', 'success');
     } catch (err) {
       showToast((err as Error).message, 'error');
     } finally {
@@ -406,7 +417,7 @@ export default function ExamDetailPage() {
   if (!exam)
     return (
       <div className="py-12 text-center text-gray-500">
-        Không tìm thấy đề thi.{' '}
+        Không tìm thấy bộ câu hỏi.{' '}
         <Link href="/exams" className="text-emerald-600 hover:underline">
           Quay lại
         </Link>
@@ -417,7 +428,7 @@ export default function ExamDetailPage() {
     <div>
       <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
         <Link href="/exams" className="hover:text-gray-700">
-          Đề thi
+          Thư viện câu hỏi
         </Link>
         <span>/</span>
         <span className="font-medium text-gray-800 dark:text-gray-200">
@@ -436,8 +447,6 @@ export default function ExamDetailPage() {
           )}
           <div className="mt-2 flex gap-4 text-xs text-gray-400">
             <span>{exam.question_count} câu hỏi</span>
-            {exam.duration && <span>{exam.duration} phút</span>}
-            {exam.pass_score && <span>Đạt: {exam.pass_score}%</span>}
           </div>
         </div>
         {canUpdate && (
@@ -457,12 +466,20 @@ export default function ExamDetailPage() {
             Câu hỏi ({exam.questions.length})
           </h2>
           {canUpdate && (
-            <button
-              onClick={() => setAddingQuestion(true)}
-              className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700"
-            >
-              + Thêm câu hỏi
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setImportQuestionsOpen(true)}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+              >
+                Nhập câu hỏi
+              </button>
+              <button
+                onClick={() => setAddingQuestion(true)}
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700"
+              >
+                + Thêm câu hỏi
+              </button>
+            </div>
           )}
         </div>
 
@@ -518,7 +535,7 @@ export default function ExamDetailPage() {
       <Dialog
         open={editingExam}
         onClose={() => setEditingExam(false)}
-        title="Sửa đề thi"
+        title="Sửa bộ câu hỏi"
         size="xl"
         footer={
           <div className="flex gap-3">
@@ -547,7 +564,7 @@ export default function ExamDetailPage() {
         >
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tên đề thi <span className="text-red-500">*</span>
+              Tên bộ câu hỏi <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -555,7 +572,7 @@ export default function ExamDetailPage() {
               onChange={(e) => setEditTitle(e.target.value)}
               required
               autoFocus
-              placeholder="Tên đề thi"
+              placeholder="Tên bộ câu hỏi"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
@@ -570,34 +587,6 @@ export default function ExamDetailPage() {
               placeholder="Mô tả"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Thời gian (phút)
-              </label>
-              <input
-                type="number"
-                value={editDuration}
-                onChange={(e) => setEditDuration(e.target.value)}
-                placeholder="60"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Điểm đạt (%)
-              </label>
-              <input
-                type="number"
-                value={editPassScore}
-                onChange={(e) => setEditPassScore(e.target.value)}
-                placeholder="70"
-                min="0"
-                max="100"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
           </div>
         </form>
       </Dialog>
@@ -630,6 +619,30 @@ export default function ExamDetailPage() {
           />
         )}
       </Dialog>
+
+      <ImportDialog<QuestionImportRow>
+        open={importQuestionsOpen}
+        onClose={() => setImportQuestionsOpen(false)}
+        title="Nhập câu hỏi từ file"
+        templateHeaders={[
+          'content',
+          'type',
+          'option_a',
+          'option_b',
+          'option_c',
+          'option_d',
+          'correct_answer',
+          'points',
+        ]}
+        templateFilename="mau-cau-hoi.csv"
+        columns={questionImportColumns}
+        onImport={(rows) => importQuestions(exam.id, rows)}
+        onSuccess={async (res) => {
+          showToast(`Đã thêm ${res.created} câu hỏi`, 'success');
+          const updated = await getExam(exam.id);
+          setExam(updated);
+        }}
+      />
 
       {toast && (
         <Toast
